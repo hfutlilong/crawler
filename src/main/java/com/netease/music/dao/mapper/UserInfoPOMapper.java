@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 public interface UserInfoPOMapper {
-    long countByExample(UserInfoPOExample example);
+    int countByExample(UserInfoPOExample example);
 
     int deleteByPrimaryKey(Long id);
 

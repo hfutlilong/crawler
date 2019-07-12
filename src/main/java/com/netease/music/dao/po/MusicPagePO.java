@@ -8,6 +8,8 @@ import java.util.Date;
 public class MusicPagePO implements Serializable {
     private Long id;
 
+    private Integer resourceId;
+
     private String url;
 
     private String title;
@@ -36,6 +38,14 @@ public class MusicPagePO implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Integer getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(Integer resourceId) {
+        this.resourceId = resourceId;
     }
 
     public String getUrl() {

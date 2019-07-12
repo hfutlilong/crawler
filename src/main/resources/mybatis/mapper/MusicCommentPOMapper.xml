@@ -1,36 +1,37 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.netease.music.dao.mapper.MusicCommentPOMapper">
-  <resultMap id="BaseResultMap" type="com.netease.music.dao.po.MusicCommentPO">
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="url" jdbcType="VARCHAR" property="url" />
-    <result column="title" jdbcType="VARCHAR" property="title" />
-    <result column="comment_time" jdbcType="TIMESTAMP" property="commentTime" />
-    <result column="user_id" jdbcType="BIGINT" property="userId" />
-    <result column="db_update_time" jdbcType="TIMESTAMP" property="dbUpdateTime" />
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.netease.music.dao.mapper.MusicCommentPOMapper" >
+  <resultMap id="BaseResultMap" type="com.netease.music.dao.po.MusicCommentPO" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="resource_id" property="resourceId" jdbcType="INTEGER" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="comment_time" property="commentTime" jdbcType="TIMESTAMP" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="db_update_time" property="dbUpdateTime" jdbcType="TIMESTAMP" />
   </resultMap>
-  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.netease.music.dao.po.MusicCommentPO">
-    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  <resultMap id="ResultMapWithBLOBs" type="com.netease.music.dao.po.MusicCommentPO" extends="BaseResultMap" >
+    <result column="content" property="content" jdbcType="LONGVARCHAR" />
   </resultMap>
-  <sql id="Example_Where_Clause">
-    <where>
-      <foreach collection="oredCriteria" item="criteria" separator="or">
-        <if test="criteria.valid">
-          <trim prefix="(" prefixOverrides="and" suffix=")">
-            <foreach collection="criteria.criteria" item="criterion">
-              <choose>
-                <when test="criterion.noValue">
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
                   and ${criterion.condition}
                 </when>
-                <when test="criterion.singleValue">
+                <when test="criterion.singleValue" >
                   and ${criterion.condition} #{criterion.value}
                 </when>
-                <when test="criterion.betweenValue">
+                <when test="criterion.betweenValue" >
                   and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
                 </when>
-                <when test="criterion.listValue">
+                <when test="criterion.listValue" >
                   and ${criterion.condition}
-                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
                     #{listItem}
                   </foreach>
                 </when>
@@ -41,25 +42,25 @@
       </foreach>
     </where>
   </sql>
-  <sql id="Update_By_Example_Where_Clause">
-    <where>
-      <foreach collection="example.oredCriteria" item="criteria" separator="or">
-        <if test="criteria.valid">
-          <trim prefix="(" prefixOverrides="and" suffix=")">
-            <foreach collection="criteria.criteria" item="criterion">
-              <choose>
-                <when test="criterion.noValue">
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
                   and ${criterion.condition}
                 </when>
-                <when test="criterion.singleValue">
+                <when test="criterion.singleValue" >
                   and ${criterion.condition} #{criterion.value}
                 </when>
-                <when test="criterion.betweenValue">
+                <when test="criterion.betweenValue" >
                   and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
                 </when>
-                <when test="criterion.listValue">
+                <when test="criterion.listValue" >
                   and ${criterion.condition}
-                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
                     #{listItem}
                   </foreach>
                 </when>
@@ -70,43 +71,43 @@
       </foreach>
     </where>
   </sql>
-  <sql id="Base_Column_List">
-    id, url, title, comment_time, user_id, db_update_time
+  <sql id="Base_Column_List" >
+    id, resource_id, url, title, comment_time, user_id, db_update_time
   </sql>
-  <sql id="Blob_Column_List">
+  <sql id="Blob_Column_List" >
     content
   </sql>
-  <select id="selectByExampleWithBLOBs" parameterType="com.netease.music.dao.po.MusicCommentPOExample" resultMap="ResultMapWithBLOBs">
+  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.netease.music.dao.po.MusicCommentPOExample" >
     select
-    <if test="distinct">
+    <if test="distinct" >
       distinct
     </if>
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
     from music_comment
-    <if test="_parameter != null">
+    <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
-    <if test="orderByClause != null">
+    <if test="orderByClause != null" >
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectByExample" parameterType="com.netease.music.dao.po.MusicCommentPOExample" resultMap="BaseResultMap">
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.netease.music.dao.po.MusicCommentPOExample" >
     select
-    <if test="distinct">
+    <if test="distinct" >
       distinct
     </if>
     <include refid="Base_Column_List" />
     from music_comment
-    <if test="_parameter != null">
+    <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
-    <if test="orderByClause != null">
+    <if test="orderByClause != null" >
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Long" >
     select 
     <include refid="Base_Column_List" />
     ,
@@ -114,154 +115,169 @@
     from music_comment
     where id = #{id,jdbcType=BIGINT}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from music_comment
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.netease.music.dao.po.MusicCommentPO">
-    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+  <insert id="insert" parameterType="com.netease.music.dao.po.MusicCommentPO" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into music_comment (url, title, comment_time, 
-      user_id, db_update_time, content
-      )
-    values (#{url,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{commentTime,jdbcType=TIMESTAMP}, 
-      #{userId,jdbcType=BIGINT}, #{dbUpdateTime,jdbcType=TIMESTAMP}, #{content,jdbcType=LONGVARCHAR}
-      )
+    insert into music_comment (resource_id, url, title, 
+      comment_time, user_id, db_update_time, 
+      content)
+    values (#{resourceId,jdbcType=INTEGER}, #{url,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
+      #{commentTime,jdbcType=TIMESTAMP}, #{userId,jdbcType=BIGINT}, #{dbUpdateTime,jdbcType=TIMESTAMP}, 
+      #{content,jdbcType=LONGVARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.netease.music.dao.po.MusicCommentPO">
-    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+  <insert id="insertSelective" parameterType="com.netease.music.dao.po.MusicCommentPO" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into music_comment
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="url != null">
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="resourceId != null" >
+        resource_id,
+      </if>
+      <if test="url != null" >
         url,
       </if>
-      <if test="title != null">
+      <if test="title != null" >
         title,
       </if>
-      <if test="commentTime != null">
+      <if test="commentTime != null" >
         comment_time,
       </if>
-      <if test="userId != null">
+      <if test="userId != null" >
         user_id,
       </if>
-      <if test="dbUpdateTime != null">
+      <if test="dbUpdateTime != null" >
         db_update_time,
       </if>
-      <if test="content != null">
+      <if test="content != null" >
         content,
       </if>
     </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="url != null">
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="resourceId != null" >
+        #{resourceId,jdbcType=INTEGER},
+      </if>
+      <if test="url != null" >
         #{url,jdbcType=VARCHAR},
       </if>
-      <if test="title != null">
+      <if test="title != null" >
         #{title,jdbcType=VARCHAR},
       </if>
-      <if test="commentTime != null">
+      <if test="commentTime != null" >
         #{commentTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="userId != null">
+      <if test="userId != null" >
         #{userId,jdbcType=BIGINT},
       </if>
-      <if test="dbUpdateTime != null">
+      <if test="dbUpdateTime != null" >
         #{dbUpdateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="content != null">
+      <if test="content != null" >
         #{content,jdbcType=LONGVARCHAR},
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.netease.music.dao.po.MusicCommentPOExample" resultType="java.lang.Long">
+  <select id="countByExample" parameterType="com.netease.music.dao.po.MusicCommentPOExample" resultType="java.lang.Integer" >
     select count(*) from music_comment
-    <if test="_parameter != null">
+    <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
   </select>
-  <update id="updateByExampleSelective" parameterType="map">
+  <update id="updateByExampleSelective" parameterType="map" >
     update music_comment
-    <set>
-      <if test="record.id != null">
+    <set >
+      <if test="record.id != null" >
         id = #{record.id,jdbcType=BIGINT},
       </if>
-      <if test="record.url != null">
+      <if test="record.resourceId != null" >
+        resource_id = #{record.resourceId,jdbcType=INTEGER},
+      </if>
+      <if test="record.url != null" >
         url = #{record.url,jdbcType=VARCHAR},
       </if>
-      <if test="record.title != null">
+      <if test="record.title != null" >
         title = #{record.title,jdbcType=VARCHAR},
       </if>
-      <if test="record.commentTime != null">
+      <if test="record.commentTime != null" >
         comment_time = #{record.commentTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.userId != null">
+      <if test="record.userId != null" >
         user_id = #{record.userId,jdbcType=BIGINT},
       </if>
-      <if test="record.dbUpdateTime != null">
+      <if test="record.dbUpdateTime != null" >
         db_update_time = #{record.dbUpdateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.content != null">
+      <if test="record.content != null" >
         content = #{record.content,jdbcType=LONGVARCHAR},
       </if>
     </set>
-    <if test="_parameter != null">
+    <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByExampleWithBLOBs" parameterType="map">
+  <update id="updateByExampleWithBLOBs" parameterType="map" >
     update music_comment
     set id = #{record.id,jdbcType=BIGINT},
+      resource_id = #{record.resourceId,jdbcType=INTEGER},
       url = #{record.url,jdbcType=VARCHAR},
       title = #{record.title,jdbcType=VARCHAR},
       comment_time = #{record.commentTime,jdbcType=TIMESTAMP},
       user_id = #{record.userId,jdbcType=BIGINT},
       db_update_time = #{record.dbUpdateTime,jdbcType=TIMESTAMP},
       content = #{record.content,jdbcType=LONGVARCHAR}
-    <if test="_parameter != null">
+    <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByExample" parameterType="map">
+  <update id="updateByExample" parameterType="map" >
     update music_comment
     set id = #{record.id,jdbcType=BIGINT},
+      resource_id = #{record.resourceId,jdbcType=INTEGER},
       url = #{record.url,jdbcType=VARCHAR},
       title = #{record.title,jdbcType=VARCHAR},
       comment_time = #{record.commentTime,jdbcType=TIMESTAMP},
       user_id = #{record.userId,jdbcType=BIGINT},
       db_update_time = #{record.dbUpdateTime,jdbcType=TIMESTAMP}
-    <if test="_parameter != null">
+    <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.netease.music.dao.po.MusicCommentPO">
+  <update id="updateByPrimaryKeySelective" parameterType="com.netease.music.dao.po.MusicCommentPO" >
     update music_comment
-    <set>
-      <if test="url != null">
+    <set >
+      <if test="resourceId != null" >
+        resource_id = #{resourceId,jdbcType=INTEGER},
+      </if>
+      <if test="url != null" >
         url = #{url,jdbcType=VARCHAR},
       </if>
-      <if test="title != null">
+      <if test="title != null" >
         title = #{title,jdbcType=VARCHAR},
       </if>
-      <if test="commentTime != null">
+      <if test="commentTime != null" >
         comment_time = #{commentTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="userId != null">
+      <if test="userId != null" >
         user_id = #{userId,jdbcType=BIGINT},
       </if>
-      <if test="dbUpdateTime != null">
+      <if test="dbUpdateTime != null" >
         db_update_time = #{dbUpdateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="content != null">
+      <if test="content != null" >
         content = #{content,jdbcType=LONGVARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.netease.music.dao.po.MusicCommentPO">
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.netease.music.dao.po.MusicCommentPO" >
     update music_comment
-    set url = #{url,jdbcType=VARCHAR},
+    set resource_id = #{resourceId,jdbcType=INTEGER},
+      url = #{url,jdbcType=VARCHAR},
       title = #{title,jdbcType=VARCHAR},
       comment_time = #{commentTime,jdbcType=TIMESTAMP},
       user_id = #{userId,jdbcType=BIGINT},
@@ -269,9 +285,10 @@
       content = #{content,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.netease.music.dao.po.MusicCommentPO">
+  <update id="updateByPrimaryKey" parameterType="com.netease.music.dao.po.MusicCommentPO" >
     update music_comment
-    set url = #{url,jdbcType=VARCHAR},
+    set resource_id = #{resourceId,jdbcType=INTEGER},
+      url = #{url,jdbcType=VARCHAR},
       title = #{title,jdbcType=VARCHAR},
       comment_time = #{commentTime,jdbcType=TIMESTAMP},
       user_id = #{userId,jdbcType=BIGINT},

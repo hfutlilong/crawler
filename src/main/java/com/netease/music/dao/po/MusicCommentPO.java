@@ -6,6 +6,8 @@ import java.util.Date;
 public class MusicCommentPO implements Serializable {
     private Long id;
 
+    private Integer resourceId;
+
     private String url;
 
     private String title;
@@ -26,6 +28,14 @@ public class MusicCommentPO implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Integer getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(Integer resourceId) {
+        this.resourceId = resourceId;
     }
 
     public String getUrl() {

@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 public interface MusicCommentPOMapper {
-    long countByExample(MusicCommentPOExample example);
+    int countByExample(MusicCommentPOExample example);
 
     int deleteByPrimaryKey(Long id);
 

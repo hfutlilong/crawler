@@ -1,59 +1,59 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.netease.music.dao.mapper.UserInfoPOMapper">
-  <resultMap id="BaseResultMap" type="com.netease.music.dao.po.UserInfoPO">
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="user_id" jdbcType="BIGINT" property="userId" />
-    <result column="user_name" jdbcType="VARCHAR" property="userName" />
-    <result column="sex" jdbcType="TINYINT" property="sex" typeHandler="com.netease.music.dao.typehandler.SexEnumHandler" />
-    <result column="age" jdbcType="TINYINT" property="age" />
-    <result column="age_description" jdbcType="VARCHAR" property="ageDescription" />
-    <result column="area" jdbcType="VARCHAR" property="area" />
-    <result column="personal_description" jdbcType="VARCHAR" property="personalDescription" />
-    <result column="total_listen" jdbcType="INTEGER" property="totalListen" />
-    <result column="followee_count" jdbcType="INTEGER" property="followeeCount" />
-    <result column="follower_count" jdbcType="INTEGER" property="followerCount" />
-    <result column="vip_level" jdbcType="TINYINT" property="vipLevel" />
-    <result column="db_update_time" jdbcType="TIMESTAMP" property="dbUpdateTime" />
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.netease.music.dao.mapper.UserInfoPOMapper" >
+  <resultMap id="BaseResultMap" type="com.netease.music.dao.po.UserInfoPO" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="sex" property="sex" jdbcType="TINYINT" typeHandler="com.netease.music.dao.typehandler.SexEnumHandler" />
+    <result column="age" property="age" jdbcType="TINYINT" />
+    <result column="age_description" property="ageDescription" jdbcType="VARCHAR" />
+    <result column="area" property="area" jdbcType="VARCHAR" />
+    <result column="personal_description" property="personalDescription" jdbcType="VARCHAR" />
+    <result column="total_listen" property="totalListen" jdbcType="INTEGER" />
+    <result column="followee_count" property="followeeCount" jdbcType="INTEGER" />
+    <result column="follower_count" property="followerCount" jdbcType="INTEGER" />
+    <result column="vip_level" property="vipLevel" jdbcType="TINYINT" />
+    <result column="db_update_time" property="dbUpdateTime" jdbcType="TIMESTAMP" />
   </resultMap>
-  <sql id="Example_Where_Clause">
-    <where>
-      <foreach collection="oredCriteria" item="criteria" separator="or">
-        <if test="criteria.valid">
-          <trim prefix="(" prefixOverrides="and" suffix=")">
-            <foreach collection="criteria.criteria" item="criterion">
-              <choose>
-                <when test="criterion.noValue">
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
                   and ${criterion.condition}
                 </when>
-                <when test="criterion.singleValue">
+                <when test="criterion.singleValue" >
                   and ${criterion.condition} #{criterion.value}
                 </when>
-                <when test="criterion.betweenValue">
+                <when test="criterion.betweenValue" >
                   and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
                 </when>
-                <when test="criterion.listValue">
+                <when test="criterion.listValue" >
                   and ${criterion.condition}
-                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
                     #{listItem}
                   </foreach>
                 </when>
               </choose>
             </foreach>
-            <foreach collection="criteria.sexCriteria" item="criterion">
-              <choose>
-                <when test="criterion.noValue">
+            <foreach collection="criteria.sexCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
                   and ${criterion.condition}
                 </when>
-                <when test="criterion.singleValue">
+                <when test="criterion.singleValue" >
                   and ${criterion.condition} #{criterion.value,typeHandler=com.netease.music.dao.typehandler.SexEnumHandler}
                 </when>
-                <when test="criterion.betweenValue">
+                <when test="criterion.betweenValue" >
                   and ${criterion.condition} #{criterion.value,typeHandler=com.netease.music.dao.typehandler.SexEnumHandler} and #{criterion.secondValue,typeHandler=com.netease.music.dao.typehandler.SexEnumHandler}
                 </when>
-                <when test="criterion.listValue">
+                <when test="criterion.listValue" >
                   and ${criterion.condition}
-                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
                     #{listItem,typeHandler=com.netease.music.dao.typehandler.SexEnumHandler}
                   </foreach>
                 </when>
@@ -64,44 +64,44 @@
       </foreach>
     </where>
   </sql>
-  <sql id="Update_By_Example_Where_Clause">
-    <where>
-      <foreach collection="example.oredCriteria" item="criteria" separator="or">
-        <if test="criteria.valid">
-          <trim prefix="(" prefixOverrides="and" suffix=")">
-            <foreach collection="criteria.criteria" item="criterion">
-              <choose>
-                <when test="criterion.noValue">
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
                   and ${criterion.condition}
                 </when>
-                <when test="criterion.singleValue">
+                <when test="criterion.singleValue" >
                   and ${criterion.condition} #{criterion.value}
                 </when>
-                <when test="criterion.betweenValue">
+                <when test="criterion.betweenValue" >
                   and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
                 </when>
-                <when test="criterion.listValue">
+                <when test="criterion.listValue" >
                   and ${criterion.condition}
-                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
                     #{listItem}
                   </foreach>
                 </when>
               </choose>
             </foreach>
-            <foreach collection="criteria.sexCriteria" item="criterion">
-              <choose>
-                <when test="criterion.noValue">
+            <foreach collection="criteria.sexCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
                   and ${criterion.condition}
                 </when>
-                <when test="criterion.singleValue">
+                <when test="criterion.singleValue" >
                   and ${criterion.condition} #{criterion.value,typeHandler=com.netease.music.dao.typehandler.SexEnumHandler}
                 </when>
-                <when test="criterion.betweenValue">
+                <when test="criterion.betweenValue" >
                   and ${criterion.condition} #{criterion.value,typeHandler=com.netease.music.dao.typehandler.SexEnumHandler} and #{criterion.secondValue,typeHandler=com.netease.music.dao.typehandler.SexEnumHandler}
                 </when>
-                <when test="criterion.listValue">
+                <when test="criterion.listValue" >
                   and ${criterion.condition}
-                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
                     #{listItem,typeHandler=com.netease.music.dao.typehandler.SexEnumHandler}
                   </foreach>
                 </when>
@@ -112,36 +112,36 @@
       </foreach>
     </where>
   </sql>
-  <sql id="Base_Column_List">
+  <sql id="Base_Column_List" >
     id, user_id, user_name, sex, age, age_description, area, personal_description, total_listen, 
     followee_count, follower_count, vip_level, db_update_time
   </sql>
-  <select id="selectByExample" parameterType="com.netease.music.dao.po.UserInfoPOExample" resultMap="BaseResultMap">
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.netease.music.dao.po.UserInfoPOExample" >
     select
-    <if test="distinct">
+    <if test="distinct" >
       distinct
     </if>
     <include refid="Base_Column_List" />
     from user_info
-    <if test="_parameter != null">
+    <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
-    <if test="orderByClause != null">
+    <if test="orderByClause != null" >
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
     <include refid="Base_Column_List" />
     from user_info
     where id = #{id,jdbcType=BIGINT}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from user_info
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.netease.music.dao.po.UserInfoPO">
-    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+  <insert id="insert" parameterType="com.netease.music.dao.po.UserInfoPO" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into user_info (user_id, user_name, sex, 
@@ -155,142 +155,142 @@
       #{followerCount,jdbcType=INTEGER}, #{vipLevel,jdbcType=TINYINT}, #{dbUpdateTime,jdbcType=TIMESTAMP}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.netease.music.dao.po.UserInfoPO">
-    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+  <insert id="insertSelective" parameterType="com.netease.music.dao.po.UserInfoPO" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into user_info
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="userId != null">
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
         user_id,
       </if>
-      <if test="userName != null">
+      <if test="userName != null" >
         user_name,
       </if>
-      <if test="sex != null">
+      <if test="sex != null" >
         sex,
       </if>
-      <if test="age != null">
+      <if test="age != null" >
         age,
       </if>
-      <if test="ageDescription != null">
+      <if test="ageDescription != null" >
         age_description,
       </if>
-      <if test="area != null">
+      <if test="area != null" >
         area,
       </if>
-      <if test="personalDescription != null">
+      <if test="personalDescription != null" >
         personal_description,
       </if>
-      <if test="totalListen != null">
+      <if test="totalListen != null" >
         total_listen,
       </if>
-      <if test="followeeCount != null">
+      <if test="followeeCount != null" >
         followee_count,
       </if>
-      <if test="followerCount != null">
+      <if test="followerCount != null" >
         follower_count,
       </if>
-      <if test="vipLevel != null">
+      <if test="vipLevel != null" >
         vip_level,
       </if>
-      <if test="dbUpdateTime != null">
+      <if test="dbUpdateTime != null" >
         db_update_time,
       </if>
     </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="userId != null">
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
         #{userId,jdbcType=BIGINT},
       </if>
-      <if test="userName != null">
+      <if test="userName != null" >
         #{userName,jdbcType=VARCHAR},
       </if>
-      <if test="sex != null">
+      <if test="sex != null" >
         #{sex,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.SexEnumHandler},
       </if>
-      <if test="age != null">
+      <if test="age != null" >
         #{age,jdbcType=TINYINT},
       </if>
-      <if test="ageDescription != null">
+      <if test="ageDescription != null" >
         #{ageDescription,jdbcType=VARCHAR},
       </if>
-      <if test="area != null">
+      <if test="area != null" >
         #{area,jdbcType=VARCHAR},
       </if>
-      <if test="personalDescription != null">
+      <if test="personalDescription != null" >
         #{personalDescription,jdbcType=VARCHAR},
       </if>
-      <if test="totalListen != null">
+      <if test="totalListen != null" >
         #{totalListen,jdbcType=INTEGER},
       </if>
-      <if test="followeeCount != null">
+      <if test="followeeCount != null" >
         #{followeeCount,jdbcType=INTEGER},
       </if>
-      <if test="followerCount != null">
+      <if test="followerCount != null" >
         #{followerCount,jdbcType=INTEGER},
       </if>
-      <if test="vipLevel != null">
+      <if test="vipLevel != null" >
         #{vipLevel,jdbcType=TINYINT},
       </if>
-      <if test="dbUpdateTime != null">
+      <if test="dbUpdateTime != null" >
         #{dbUpdateTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.netease.music.dao.po.UserInfoPOExample" resultType="java.lang.Long">
+  <select id="countByExample" parameterType="com.netease.music.dao.po.UserInfoPOExample" resultType="java.lang.Integer" >
     select count(*) from user_info
-    <if test="_parameter != null">
+    <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
   </select>
-  <update id="updateByExampleSelective" parameterType="map">
+  <update id="updateByExampleSelective" parameterType="map" >
     update user_info
-    <set>
-      <if test="record.id != null">
+    <set >
+      <if test="record.id != null" >
         id = #{record.id,jdbcType=BIGINT},
       </if>
-      <if test="record.userId != null">
+      <if test="record.userId != null" >
         user_id = #{record.userId,jdbcType=BIGINT},
       </if>
-      <if test="record.userName != null">
+      <if test="record.userName != null" >
         user_name = #{record.userName,jdbcType=VARCHAR},
       </if>
-      <if test="record.sex != null">
+      <if test="record.sex != null" >
         sex = #{record.sex,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.SexEnumHandler},
       </if>
-      <if test="record.age != null">
+      <if test="record.age != null" >
         age = #{record.age,jdbcType=TINYINT},
       </if>
-      <if test="record.ageDescription != null">
+      <if test="record.ageDescription != null" >
         age_description = #{record.ageDescription,jdbcType=VARCHAR},
       </if>
-      <if test="record.area != null">
+      <if test="record.area != null" >
         area = #{record.area,jdbcType=VARCHAR},
       </if>
-      <if test="record.personalDescription != null">
+      <if test="record.personalDescription != null" >
         personal_description = #{record.personalDescription,jdbcType=VARCHAR},
       </if>
-      <if test="record.totalListen != null">
+      <if test="record.totalListen != null" >
         total_listen = #{record.totalListen,jdbcType=INTEGER},
       </if>
-      <if test="record.followeeCount != null">
+      <if test="record.followeeCount != null" >
         followee_count = #{record.followeeCount,jdbcType=INTEGER},
       </if>
-      <if test="record.followerCount != null">
+      <if test="record.followerCount != null" >
         follower_count = #{record.followerCount,jdbcType=INTEGER},
       </if>
-      <if test="record.vipLevel != null">
+      <if test="record.vipLevel != null" >
         vip_level = #{record.vipLevel,jdbcType=TINYINT},
       </if>
-      <if test="record.dbUpdateTime != null">
+      <if test="record.dbUpdateTime != null" >
         db_update_time = #{record.dbUpdateTime,jdbcType=TIMESTAMP},
       </if>
     </set>
-    <if test="_parameter != null">
+    <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByExample" parameterType="map">
+  <update id="updateByExample" parameterType="map" >
     update user_info
     set id = #{record.id,jdbcType=BIGINT},
       user_id = #{record.userId,jdbcType=BIGINT},
@@ -305,53 +305,53 @@
       follower_count = #{record.followerCount,jdbcType=INTEGER},
       vip_level = #{record.vipLevel,jdbcType=TINYINT},
       db_update_time = #{record.dbUpdateTime,jdbcType=TIMESTAMP}
-    <if test="_parameter != null">
+    <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.netease.music.dao.po.UserInfoPO">
+  <update id="updateByPrimaryKeySelective" parameterType="com.netease.music.dao.po.UserInfoPO" >
     update user_info
-    <set>
-      <if test="userId != null">
+    <set >
+      <if test="userId != null" >
         user_id = #{userId,jdbcType=BIGINT},
       </if>
-      <if test="userName != null">
+      <if test="userName != null" >
         user_name = #{userName,jdbcType=VARCHAR},
       </if>
-      <if test="sex != null">
+      <if test="sex != null" >
         sex = #{sex,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.SexEnumHandler},
       </if>
-      <if test="age != null">
+      <if test="age != null" >
         age = #{age,jdbcType=TINYINT},
       </if>
-      <if test="ageDescription != null">
+      <if test="ageDescription != null" >
         age_description = #{ageDescription,jdbcType=VARCHAR},
       </if>
-      <if test="area != null">
+      <if test="area != null" >
         area = #{area,jdbcType=VARCHAR},
       </if>
-      <if test="personalDescription != null">
+      <if test="personalDescription != null" >
         personal_description = #{personalDescription,jdbcType=VARCHAR},
       </if>
-      <if test="totalListen != null">
+      <if test="totalListen != null" >
         total_listen = #{totalListen,jdbcType=INTEGER},
       </if>
-      <if test="followeeCount != null">
+      <if test="followeeCount != null" >
         followee_count = #{followeeCount,jdbcType=INTEGER},
       </if>
-      <if test="followerCount != null">
+      <if test="followerCount != null" >
         follower_count = #{followerCount,jdbcType=INTEGER},
       </if>
-      <if test="vipLevel != null">
+      <if test="vipLevel != null" >
         vip_level = #{vipLevel,jdbcType=TINYINT},
       </if>
-      <if test="dbUpdateTime != null">
+      <if test="dbUpdateTime != null" >
         db_update_time = #{dbUpdateTime,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.netease.music.dao.po.UserInfoPO">
+  <update id="updateByPrimaryKey" parameterType="com.netease.music.dao.po.UserInfoPO" >
     update user_info
     set user_id = #{userId,jdbcType=BIGINT},
       user_name = #{userName,jdbcType=VARCHAR},
