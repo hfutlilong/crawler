@@ -8,7 +8,7 @@ import java.util.Date;
 public class MusicPagePO implements Serializable {
     private Long id;
 
-    private Integer resourceId;
+    private Long resourceId;
 
     private String url;
 
@@ -40,11 +40,11 @@ public class MusicPagePO implements Serializable {
         this.id = id;
     }
 
-    public Integer getResourceId() {
+    public Long getResourceId() {
         return resourceId;
     }
 
-    public void setResourceId(Integer resourceId) {
+    public void setResourceId(Long resourceId) {
         this.resourceId = resourceId;
     }
 

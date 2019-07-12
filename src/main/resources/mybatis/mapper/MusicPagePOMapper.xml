@@ -3,7 +3,7 @@
 <mapper namespace="com.netease.music.dao.mapper.MusicPagePOMapper" >
   <resultMap id="BaseResultMap" type="com.netease.music.dao.po.MusicPagePO" >
     <id column="id" property="id" jdbcType="BIGINT" />
-    <result column="resource_id" property="resourceId" jdbcType="INTEGER" />
+    <result column="resource_id" property="resourceId" jdbcType="BIGINT" />
     <result column="url" property="url" jdbcType="VARCHAR" />
     <result column="title" property="title" jdbcType="VARCHAR" />
     <result column="artist" property="artist" jdbcType="VARCHAR" />
@@ -186,7 +186,7 @@
       crawling_status, 
       play_count, favorites_count, forward_count, 
       comment_count, db_update_time)
-    values (#{resourceId,jdbcType=INTEGER}, #{url,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
+    values (#{resourceId,jdbcType=BIGINT}, #{url,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
       #{artist,jdbcType=VARCHAR}, #{pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler}, 
       #{crawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler}, 
       #{playCount,jdbcType=INTEGER}, #{favoritesCount,jdbcType=INTEGER}, #{forwardCount,jdbcType=INTEGER}, 
@@ -234,7 +234,7 @@
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="resourceId != null" >
-        #{resourceId,jdbcType=INTEGER},
+        #{resourceId,jdbcType=BIGINT},
       </if>
       <if test="url != null" >
         #{url,jdbcType=VARCHAR},
@@ -281,7 +281,7 @@
         id = #{record.id,jdbcType=BIGINT},
       </if>
       <if test="record.resourceId != null" >
-        resource_id = #{record.resourceId,jdbcType=INTEGER},
+        resource_id = #{record.resourceId,jdbcType=BIGINT},
       </if>
       <if test="record.url != null" >
         url = #{record.url,jdbcType=VARCHAR},
@@ -321,7 +321,7 @@
   <update id="updateByExample" parameterType="map" >
     update music_page
     set id = #{record.id,jdbcType=BIGINT},
-      resource_id = #{record.resourceId,jdbcType=INTEGER},
+      resource_id = #{record.resourceId,jdbcType=BIGINT},
       url = #{record.url,jdbcType=VARCHAR},
       title = #{record.title,jdbcType=VARCHAR},
       artist = #{record.artist,jdbcType=VARCHAR},
@@ -340,7 +340,7 @@
     update music_page
     <set >
       <if test="resourceId != null" >
-        resource_id = #{resourceId,jdbcType=INTEGER},
+        resource_id = #{resourceId,jdbcType=BIGINT},
       </if>
       <if test="url != null" >
         url = #{url,jdbcType=VARCHAR},
@@ -377,7 +377,7 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.netease.music.dao.po.MusicPagePO" >
     update music_page
-    set resource_id = #{resourceId,jdbcType=INTEGER},
+    set resource_id = #{resourceId,jdbcType=BIGINT},
       url = #{url,jdbcType=VARCHAR},
       title = #{title,jdbcType=VARCHAR},
       artist = #{artist,jdbcType=VARCHAR},

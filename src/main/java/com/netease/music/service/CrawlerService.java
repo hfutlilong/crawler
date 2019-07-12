@@ -12,7 +12,7 @@ public interface CrawlerService {
      * 获取一个分类下的所有歌单id
      * @param categoryName
      */
-    List<Integer> getPlayListIdOneCategory(String categoryName);
+    List<Long> getPlayListIdOneCategory(String categoryName);
 
 
     /**
@@ -20,5 +20,5 @@ public interface CrawlerService {
      *
      * @param url
      */
-    List<Integer> getPlayListIdOnePage(String url);
+    List<Long> getPlayListIdOnePage(String url);
 }

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CrawlerServiceImpl implements CrawlerService {
@@ -39,7 +40,7 @@ public class CrawlerServiceImpl implements CrawlerService {
     }
 
     @Override
-    public List<Integer> getPlayListIdOneCategory(String categoryName) {
+    public List<Long> getPlayListIdOneCategory(String categoryName) {
         if (StringUtils.isBlank(categoryName)) {
             LogConstant.BUS.error("crawlingWithCategory failed, param categoryName cannot be blank.");
             return null;
@@ -55,13 +56,21 @@ public class CrawlerServiceImpl implements CrawlerService {
             return null;
         }
 
-        for (;;) {
+        List<Long> playListIdOneCategory = new ArrayList<>();
 
+        for (;;) {
+            List<Long> playListOnePage = getPlayListIdOnePage(playListsUrl);
+            if (CollectionUtils.isEmpty(playListOnePage)) {
+                break;
+            }
+            playListIdOneCategory.addAll(playListOnePage);
         }
+
+        return playListIdOneCategory.stream().distinct().collect(Collectors.toList());
     }
 
     @Override
-    public List<Integer> getPlayListIdOnePage(String url) {
+    public List<Long> getPlayListIdOnePage(String url) {
         return null;
     }
 

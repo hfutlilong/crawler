@@ -236,52 +236,52 @@ public class MusicPagePOExample {
             return (Criteria) this;
         }
 
-        public Criteria andResourceIdEqualTo(Integer value) {
+        public Criteria andResourceIdEqualTo(Long value) {
             addCriterion("resource_id =", value, "resourceId");
             return (Criteria) this;
         }
 
-        public Criteria andResourceIdNotEqualTo(Integer value) {
+        public Criteria andResourceIdNotEqualTo(Long value) {
             addCriterion("resource_id <>", value, "resourceId");
             return (Criteria) this;
         }
 
-        public Criteria andResourceIdGreaterThan(Integer value) {
+        public Criteria andResourceIdGreaterThan(Long value) {
             addCriterion("resource_id >", value, "resourceId");
             return (Criteria) this;
         }
 
-        public Criteria andResourceIdGreaterThanOrEqualTo(Integer value) {
+        public Criteria andResourceIdGreaterThanOrEqualTo(Long value) {
             addCriterion("resource_id >=", value, "resourceId");
             return (Criteria) this;
         }
 
-        public Criteria andResourceIdLessThan(Integer value) {
+        public Criteria andResourceIdLessThan(Long value) {
             addCriterion("resource_id <", value, "resourceId");
             return (Criteria) this;
         }
 
-        public Criteria andResourceIdLessThanOrEqualTo(Integer value) {
+        public Criteria andResourceIdLessThanOrEqualTo(Long value) {
             addCriterion("resource_id <=", value, "resourceId");
             return (Criteria) this;
         }
 
-        public Criteria andResourceIdIn(List<Integer> values) {
+        public Criteria andResourceIdIn(List<Long> values) {
             addCriterion("resource_id in", values, "resourceId");
             return (Criteria) this;
         }
 
-        public Criteria andResourceIdNotIn(List<Integer> values) {
+        public Criteria andResourceIdNotIn(List<Long> values) {
             addCriterion("resource_id not in", values, "resourceId");
             return (Criteria) this;
         }
 
-        public Criteria andResourceIdBetween(Integer value1, Integer value2) {
+        public Criteria andResourceIdBetween(Long value1, Long value2) {
             addCriterion("resource_id between", value1, value2, "resourceId");
             return (Criteria) this;
         }
 
-        public Criteria andResourceIdNotBetween(Integer value1, Integer value2) {
+        public Criteria andResourceIdNotBetween(Long value1, Long value2) {
             addCriterion("resource_id not between", value1, value2, "resourceId");
             return (Criteria) this;
         }

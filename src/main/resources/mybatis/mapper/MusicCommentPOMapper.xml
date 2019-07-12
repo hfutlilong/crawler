@@ -3,7 +3,7 @@
 <mapper namespace="com.netease.music.dao.mapper.MusicCommentPOMapper" >
   <resultMap id="BaseResultMap" type="com.netease.music.dao.po.MusicCommentPO" >
     <id column="id" property="id" jdbcType="BIGINT" />
-    <result column="resource_id" property="resourceId" jdbcType="INTEGER" />
+    <result column="resource_id" property="resourceId" jdbcType="BIGINT" />
     <result column="url" property="url" jdbcType="VARCHAR" />
     <result column="title" property="title" jdbcType="VARCHAR" />
     <result column="comment_time" property="commentTime" jdbcType="TIMESTAMP" />
@@ -126,7 +126,7 @@
     insert into music_comment (resource_id, url, title, 
       comment_time, user_id, db_update_time, 
       content)
-    values (#{resourceId,jdbcType=INTEGER}, #{url,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
+    values (#{resourceId,jdbcType=BIGINT}, #{url,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
       #{commentTime,jdbcType=TIMESTAMP}, #{userId,jdbcType=BIGINT}, #{dbUpdateTime,jdbcType=TIMESTAMP}, 
       #{content,jdbcType=LONGVARCHAR})
   </insert>
@@ -160,7 +160,7 @@
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="resourceId != null" >
-        #{resourceId,jdbcType=INTEGER},
+        #{resourceId,jdbcType=BIGINT},
       </if>
       <if test="url != null" >
         #{url,jdbcType=VARCHAR},
@@ -195,7 +195,7 @@
         id = #{record.id,jdbcType=BIGINT},
       </if>
       <if test="record.resourceId != null" >
-        resource_id = #{record.resourceId,jdbcType=INTEGER},
+        resource_id = #{record.resourceId,jdbcType=BIGINT},
       </if>
       <if test="record.url != null" >
         url = #{record.url,jdbcType=VARCHAR},
@@ -223,7 +223,7 @@
   <update id="updateByExampleWithBLOBs" parameterType="map" >
     update music_comment
     set id = #{record.id,jdbcType=BIGINT},
-      resource_id = #{record.resourceId,jdbcType=INTEGER},
+      resource_id = #{record.resourceId,jdbcType=BIGINT},
       url = #{record.url,jdbcType=VARCHAR},
       title = #{record.title,jdbcType=VARCHAR},
       comment_time = #{record.commentTime,jdbcType=TIMESTAMP},
@@ -237,7 +237,7 @@
   <update id="updateByExample" parameterType="map" >
     update music_comment
     set id = #{record.id,jdbcType=BIGINT},
-      resource_id = #{record.resourceId,jdbcType=INTEGER},
+      resource_id = #{record.resourceId,jdbcType=BIGINT},
       url = #{record.url,jdbcType=VARCHAR},
       title = #{record.title,jdbcType=VARCHAR},
       comment_time = #{record.commentTime,jdbcType=TIMESTAMP},
@@ -251,7 +251,7 @@
     update music_comment
     <set >
       <if test="resourceId != null" >
-        resource_id = #{resourceId,jdbcType=INTEGER},
+        resource_id = #{resourceId,jdbcType=BIGINT},
       </if>
       <if test="url != null" >
         url = #{url,jdbcType=VARCHAR},
@@ -276,7 +276,7 @@
   </update>
   <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.netease.music.dao.po.MusicCommentPO" >
     update music_comment
-    set resource_id = #{resourceId,jdbcType=INTEGER},
+    set resource_id = #{resourceId,jdbcType=BIGINT},
       url = #{url,jdbcType=VARCHAR},
       title = #{title,jdbcType=VARCHAR},
       comment_time = #{commentTime,jdbcType=TIMESTAMP},
@@ -287,7 +287,7 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.netease.music.dao.po.MusicCommentPO" >
     update music_comment
-    set resource_id = #{resourceId,jdbcType=INTEGER},
+    set resource_id = #{resourceId,jdbcType=BIGINT},
       url = #{url,jdbcType=VARCHAR},
       title = #{title,jdbcType=VARCHAR},
       comment_time = #{commentTime,jdbcType=TIMESTAMP},
