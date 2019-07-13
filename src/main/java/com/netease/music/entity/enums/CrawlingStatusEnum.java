@@ -2,8 +2,9 @@ package com.netease.music.entity.enums;
 
 public enum CrawlingStatusEnum {
     UN_CRAWLERED(0, "未爬取"),
-    CRAWLERED(1, "已爬取"),
-    CRAWLING_FAILED(2, "爬取失败");
+    CRAWLING(1, "爬取中"),
+    CRAWLERED(2, "已爬取"),
+    CRAWLING_FAILED(3, "爬取失败");
 
     private int intValue;
     private String desc;
