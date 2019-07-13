@@ -15,7 +15,7 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
     <property name="LOG_HOME" value="D:/logs"/>
     <property name="GLOBAL_LOG_PATTERN" value="%d - crawler - %c - %p [%t] %X [%C{0}:%M:%L] - %m%n"/>
 
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
         <!-- encoder的默认实现类是ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
         <encoder>
             <pattern>${GLOBAL_LOG_PATTERN}</pattern>
@@ -28,10 +28,10 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
 
     <!-- 业务日志，预定义logger，分业务模块打日志 config start -->
     <appender name="busLogAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>${LOG_HOME}/log/bus.log</File>
+        <File>${LOG_HOME}/crawler/bus.log</File>
         <append>true</append>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_HOME}/log/bus.log.%d{yyyy-MM-dd}.%i</fileNamePattern>
+            <fileNamePattern>${LOG_HOME}/crawler/bus.log.%d{yyyy-MM-dd}.%i</fileNamePattern>
             <MaxHistory>60</MaxHistory>
             <maxFileSize>200MB</maxFileSize>
         </rollingPolicy>
@@ -40,13 +40,33 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
             <charset>utf8</charset>
         </encoder>
     </appender>
-    <logger name="busLog" level="INFO" additivity="false">
+
+    <appender name="errorLogAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_HOME}/crawler/error.log</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/crawler/error.log.%d{yyyy-MM-dd}.%i</fileNamePattern>
+            <MaxHistory>60</MaxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>200MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${GLOBAL_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+    </appender>
+
+    <logger name="busLog" level="INFO" additivity="true">
         <appender-ref ref="busLogAppender"/>
-        <appender-ref ref="STDOUT" />
     </logger>
 
     <!-- root的默认level是DEBUG -->
     <root level="INFO">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="consoleAppender" />
+        <appender-ref ref="errorLogAppender"/>
     </root>
 </configuration>
