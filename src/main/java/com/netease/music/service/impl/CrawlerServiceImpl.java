@@ -1,8 +1,10 @@
 package com.netease.music.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.netease.music.dao.mapper.MusicPagePOMapperExt;
 import com.netease.music.dao.po.MusicPagePO;
+import com.netease.music.dao.po.MusicPagePOExample;
 import com.netease.music.entity.bo.PlayListDetailBO;
 import com.netease.music.entity.constant.CrawlerConstant;
 import com.netease.music.entity.constant.LogConstant;
@@ -23,6 +25,10 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,6 +36,16 @@ import java.util.regex.Pattern;
 public class CrawlerServiceImpl implements CrawlerService {
     @Autowired
     private MusicPagePOMapperExt musicPagePOMapper;
+
+    private static final ThreadPoolExecutor crawlerPlayListExecutor = new ThreadPoolExecutor(4, 8, 30, TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>(1000),
+            new ThreadFactoryBuilder().setNameFormat("crawlerPlayListExecutor-%d").build(),
+            new RejectedExecutionHandler() {
+                @Override
+                public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+                    LogConstant.BUS.error("crawlerPlayListExecutor reject execute.");
+                }
+            });
 
     @Override
     @Async
@@ -46,9 +62,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 
         for (String categoryName : categoryNameList) {
             // 获取分类下的所有id
-            initPlayListOneCategory(categoryName);
-
-            // 写到数据库
+            crawlerPlayListExecutor.execute(() -> initPlayListOneCategory(categoryName));
         }
     }
 
@@ -71,11 +85,13 @@ public class CrawlerServiceImpl implements CrawlerService {
                 return;
             }
 
-            LogConstant.BUS.info("start getPlayListIdOneCategory, category {}, page {}.", categoryName, offset / 35 + 1);
+            LogConstant.BUS.info("start getPlayListIdOneCategory, category {}, page {}.", categoryName,
+                    offset / 35 + 1);
             try {
                 List<PlayListDetailBO> playListDetailBOList = getPlayListOnePage(playListsUrl);
                 if (CollectionUtils.isEmpty(playListDetailBOList)) {
-                    LogConstant.BUS.info("playListDetailBOList is empty, category {}, page {}.", categoryName, offset / 35 + 1);
+                    LogConstant.BUS.info("playListDetailBOList is empty, category {}, page {}.", categoryName,
+                            offset / 35 + 1);
                     break;
                 }
 
@@ -85,12 +101,21 @@ public class CrawlerServiceImpl implements CrawlerService {
                     BeanUtils.copyProperties(playListDetailBO, musicPagePO);
                     musicPagePO.setPageType(PageTypeEnum.PLAY_LIST);
                     musicPagePO.setCrawlingStatus(CrawlingStatusEnum.UN_CRAWLERED);
-                    musicPagePOMapper.insertSelective(musicPagePO);
+
+                    MusicPagePOExample example = new MusicPagePOExample();
+                    example.createCriteria().andResourceIdEqualTo(playListDetailBO.getResourceId())
+                            .andPageTypeEqualTo(playListDetailBO.getPageTypeEnum());
+                    int existsMusicPageCount = musicPagePOMapper.countByExample(example);
+                    if (existsMusicPageCount == 0) {
+                        musicPagePOMapper.insertSelective(musicPagePO);
+                    }
                 }
 
-                LogConstant.BUS.info("getPlayListIdOneCategory success, category {}, page {}.", categoryName, limit / 35 + 1);
+                LogConstant.BUS.info("getPlayListIdOneCategory success, category {}, page {}.", categoryName,
+                        limit / 35 + 1);
             } catch (Exception e) {
-                LogConstant.BUS.error("getPlayListIdOneCategory failed, category {}, page {}.", categoryName, limit / 35 + 1);
+                LogConstant.BUS.error("getPlayListIdOneCategory failed, category {}, page {}.", categoryName,
+                        limit / 35 + 1);
             }
             offset += limit;
         }
