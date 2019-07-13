@@ -1,9 +1,8 @@
 package com.netease.music.entity.enums;
 
 public enum PageTypeEnum {
-    PLAY_LISTS(0, "歌单列表页"),
-    PLAY_LIST(1, "歌单歌曲列表页"),
-    SONG(2, "歌曲页");
+    PLAY_LIST(0, "歌单"),
+    SONG(1, "歌曲");
 
     private int intValue;
     private String desc;

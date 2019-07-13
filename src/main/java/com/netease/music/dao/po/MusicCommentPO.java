@@ -8,6 +8,8 @@ public class MusicCommentPO implements Serializable {
 
     private Long resourceId;
 
+    private Byte pageType;
+
     private String url;
 
     private String title;
@@ -36,6 +38,14 @@ public class MusicCommentPO implements Serializable {
 
     public void setResourceId(Long resourceId) {
         this.resourceId = resourceId;
+    }
+
+    public Byte getPageType() {
+        return pageType;
+    }
+
+    public void setPageType(Byte pageType) {
+        this.pageType = pageType;
     }
 
     public String getUrl() {

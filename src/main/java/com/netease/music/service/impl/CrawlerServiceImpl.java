@@ -1,6 +1,9 @@
 package com.netease.music.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.netease.music.dao.mapper.MusicPagePOMapperExt;
+import com.netease.music.dao.po.MusicPagePO;
+import com.netease.music.entity.bo.PlayListDetailBO;
 import com.netease.music.entity.constant.CrawlerConstant;
 import com.netease.music.entity.constant.LogConstant;
 import com.netease.music.service.CrawlerService;
@@ -10,20 +13,25 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class CrawlerServiceImpl implements CrawlerService {
+    @Autowired
+    private MusicPagePOMapperExt musicPagePOMapper;
 
     @Override
     @Async
-    public void autoCrawling() {
+    public void initCrawling() {
         // 获取全部歌单类别
         List<String> categoryNameList = getAllCategoryNames();
         LogConstant.BUS.info("all categories: {}.", JSON.toJSONString(categoryNameList));
@@ -35,43 +43,103 @@ public class CrawlerServiceImpl implements CrawlerService {
         }
 
         for (String categoryName : categoryNameList) {
-            getPlayListIdOneCategory(categoryName);
+            // 获取分类下的所有id
+            initPlayListOneCategory(categoryName);
+
+            // 写到数据库
         }
     }
 
     @Override
-    public List<Long> getPlayListIdOneCategory(String categoryName) {
+    public void initPlayListOneCategory(String categoryName) {
         if (StringUtils.isBlank(categoryName)) {
             LogConstant.BUS.error("crawlingWithCategory failed, param categoryName cannot be blank.");
-            return null;
+            return;
         }
 
         int offset = 0;
         int limit = CrawlerConstant.DEFAULT_PAGE_SIZE;
 
-        // 歌单页url
-        String playListsUrl = CrawlerConstant.getPlayListsUrl(categoryName, limit, offset);
-        if (StringUtils.isBlank(playListsUrl)) {
-            LogConstant.BUS.error("crawlingWithCategory failed, playListsUrl is blank, .categoryName={}.", categoryName);
-            return null;
-        }
-
-        List<Long> playListIdOneCategory = new ArrayList<>();
-
         for (;;) {
-            List<Long> playListOnePage = getPlayListIdOnePage(playListsUrl);
-            if (CollectionUtils.isEmpty(playListOnePage)) {
-                break;
+            // 歌单页url
+            String playListsUrl = CrawlerConstant.getPlayListsUrl(categoryName, limit, offset);
+            if (StringUtils.isBlank(playListsUrl)) {
+                LogConstant.BUS.error("crawlingWithCategory failed, playListsUrl is blank, categoryName={}.",
+                        categoryName);
+                return;
             }
-            playListIdOneCategory.addAll(playListOnePage);
-        }
 
-        return playListIdOneCategory.stream().distinct().collect(Collectors.toList());
+            LogConstant.BUS.info("start getPlayListIdOneCategory, category {}, page {}.", categoryName, offset / 35 + 1);
+            try {
+                List<PlayListDetailBO> playListDetailBOList = getPlayListOnePage(playListsUrl);
+                if (CollectionUtils.isEmpty(playListDetailBOList)) {
+                    LogConstant.BUS.info("playListDetailBOList is empty, category {}, page {}.", categoryName, offset / 35 + 1);
+                    break;
+                }
+
+                // 插入数据库
+                for (PlayListDetailBO playListDetailBO : playListDetailBOList) {
+                    MusicPagePO musicPagePO = new MusicPagePO();
+                    BeanUtils.copyProperties(playListDetailBO, musicPagePO);
+                    musicPagePOMapper.insertSelective(musicPagePO);
+                }
+
+                LogConstant.BUS.info("getPlayListIdOneCategory success, category {}, page {}.", categoryName, limit / 35 + 1);
+            } catch (Exception e) {
+                LogConstant.BUS.error("getPlayListIdOneCategory failed, category {}, page {}.", categoryName, limit / 35 + 1);
+            }
+            offset += limit;
+        }
     }
 
     @Override
-    public List<Long> getPlayListIdOnePage(String url) {
-        return null;
+    public List<PlayListDetailBO> getPlayListOnePage(String url) throws Exception {
+        Document doc = Jsoup.connect(url).get();
+        if (doc == null) {
+            LogConstant.BUS.info("doc is null, url={}.", url);
+            return null;
+        }
+
+        Elements playListElements = doc.select("ul#m-pl-container");
+        if (playListElements == null || playListElements.size() == 0) {
+            LogConstant.BUS.info("playListElements is null, url={}.", url);
+            return null;
+        }
+
+        Element playListElement = playListElements.get(0);
+        if (playListElement == null) {
+            LogConstant.BUS.info("playListElement is null, url={}.", url);
+            return null;
+        }
+
+        List<PlayListDetailBO> playListDetailBOList = new ArrayList<>();
+        Pattern p = Pattern.compile("^(/playlist\\?id=)(\\d+)$");
+        Elements playListUrlElements = playListElement.getElementsByClass("msk");
+        if (playListUrlElements == null || playListUrlElements.size() == 0) {
+            LogConstant.BUS.info("playListUrlElements is null, url={}.", url);
+            return null;
+        }
+
+        for (Element playListUrlElement : playListUrlElements) {
+            String playListUrl = playListUrlElement.attr("href");
+            if (StringUtils.isBlank(playListUrl)) {
+                continue;
+            }
+
+            Matcher m = p.matcher(playListUrl);
+            if (m.find()) {
+                PlayListDetailBO playListDetailBO = new PlayListDetailBO();
+                playListDetailBO.setUrl(playListUrl);
+                String playListIdString = m.group(2);
+                if (StringUtils.isNotBlank(playListIdString)) {
+                    Long playListId = Long.valueOf(playListIdString);
+                    playListDetailBO.setResourceId(playListId);
+                }
+                playListDetailBOList.add(playListDetailBO);
+            }
+        }
+
+        return playListDetailBOList;
     }
 
     /**

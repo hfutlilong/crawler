@@ -1,46 +1,61 @@
-package com.netease.music.dao.po;
+package com.netease.music.entity.bo;
 
 import com.netease.music.entity.enums.CrawlingStatusEnum;
 import com.netease.music.entity.enums.PageTypeEnum;
-import java.io.Serializable;
-import java.util.Date;
 
-public class MusicPagePO implements Serializable {
-    private Long id;
-
+/**
+ * 歌单详情
+ */
+public class PlayListDetailBO {
+    /**
+     * 资源id
+     */
     private Long resourceId;
 
-    private PageTypeEnum pageType;
+    /**
+     * 页面类型：歌单
+     */
+    private PageTypeEnum pageTypeEnum = PageTypeEnum.PLAY_LIST;
 
+    /**
+     * url
+     */
     private String url;
 
+    /**
+     * 标题（歌单名）
+     */
     private String title;
 
-    private String artist;
+    /**
+     * 爬取状态，初始为未爬取
+     */
+    private CrawlingStatusEnum crawlingStatusEnum = CrawlingStatusEnum.UN_CRAWLERED;
 
-    private CrawlingStatusEnum crawlingStatus;
-
+    /**
+     * 播放数
+     */
     private Integer playCount;
 
+    /**
+     * 收藏数
+     */
     private Integer favoritesCount;
 
+    /**
+     * 转发数
+     */
     private Integer forwardCount;
 
+    /**
+     * 评论数
+     */
     private Integer commentCount;
 
+    /**
+     * 歌曲数
+     */
     private Integer songCount;
-
-    private Date dbUpdateTime;
-
-    private static final long serialVersionUID = 1L;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public Long getResourceId() {
         return resourceId;
@@ -50,12 +65,12 @@ public class MusicPagePO implements Serializable {
         this.resourceId = resourceId;
     }
 
-    public PageTypeEnum getPageType() {
-        return pageType;
+    public PageTypeEnum getPageTypeEnum() {
+        return pageTypeEnum;
     }
 
-    public void setPageType(PageTypeEnum pageType) {
-        this.pageType = pageType;
+    public void setPageTypeEnum(PageTypeEnum pageTypeEnum) {
+        this.pageTypeEnum = pageTypeEnum;
     }
 
     public String getUrl() {
@@ -63,7 +78,7 @@ public class MusicPagePO implements Serializable {
     }
 
     public void setUrl(String url) {
-        this.url = url == null ? null : url.trim();
+        this.url = url;
     }
 
     public String getTitle() {
@@ -71,23 +86,15 @@ public class MusicPagePO implements Serializable {
     }
 
     public void setTitle(String title) {
-        this.title = title == null ? null : title.trim();
+        this.title = title;
     }
 
-    public String getArtist() {
-        return artist;
+    public CrawlingStatusEnum getCrawlingStatusEnum() {
+        return crawlingStatusEnum;
     }
 
-    public void setArtist(String artist) {
-        this.artist = artist == null ? null : artist.trim();
-    }
-
-    public CrawlingStatusEnum getCrawlingStatus() {
-        return crawlingStatus;
-    }
-
-    public void setCrawlingStatus(CrawlingStatusEnum crawlingStatus) {
-        this.crawlingStatus = crawlingStatus;
+    public void setCrawlingStatusEnum(CrawlingStatusEnum crawlingStatusEnum) {
+        this.crawlingStatusEnum = crawlingStatusEnum;
     }
 
     public Integer getPlayCount() {
@@ -128,13 +135,5 @@ public class MusicPagePO implements Serializable {
 
     public void setSongCount(Integer songCount) {
         this.songCount = songCount;
-    }
-
-    public Date getDbUpdateTime() {
-        return dbUpdateTime;
-    }
-
-    public void setDbUpdateTime(Date dbUpdateTime) {
-        this.dbUpdateTime = dbUpdateTime;
     }
 }

@@ -4,15 +4,16 @@
   <resultMap id="BaseResultMap" type="com.netease.music.dao.po.MusicPagePO" >
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="resource_id" property="resourceId" jdbcType="BIGINT" />
+    <result column="page_type" property="pageType" jdbcType="TINYINT" typeHandler="com.netease.music.dao.typehandler.PageTypeEnumHandler" />
     <result column="url" property="url" jdbcType="VARCHAR" />
     <result column="title" property="title" jdbcType="VARCHAR" />
     <result column="artist" property="artist" jdbcType="VARCHAR" />
-    <result column="page_type" property="pageType" jdbcType="TINYINT" typeHandler="com.netease.music.dao.typehandler.PageTypeEnumHandler" />
     <result column="crawling_status" property="crawlingStatus" jdbcType="TINYINT" typeHandler="com.netease.music.dao.typehandler.CrawlingStatusEnumHandler" />
     <result column="play_count" property="playCount" jdbcType="INTEGER" />
     <result column="favorites_count" property="favoritesCount" jdbcType="INTEGER" />
     <result column="forward_count" property="forwardCount" jdbcType="INTEGER" />
     <result column="comment_count" property="commentCount" jdbcType="INTEGER" />
+    <result column="song_count" property="songCount" jdbcType="INTEGER" />
     <result column="db_update_time" property="dbUpdateTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Example_Where_Clause" >
@@ -150,8 +151,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, resource_id, url, title, artist, page_type, crawling_status, play_count, favorites_count, 
-    forward_count, comment_count, db_update_time
+    id, resource_id, page_type, url, title, artist, crawling_status, play_count, favorites_count, 
+    forward_count, comment_count, song_count, db_update_time
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.netease.music.dao.po.MusicPagePOExample" >
     select
@@ -181,16 +182,18 @@
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into music_page (resource_id, url, title, 
-      artist, page_type, 
+    insert into music_page (resource_id, page_type, 
+      url, title, artist, 
       crawling_status, 
       play_count, favorites_count, forward_count, 
-      comment_count, db_update_time)
-    values (#{resourceId,jdbcType=BIGINT}, #{url,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
-      #{artist,jdbcType=VARCHAR}, #{pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler}, 
+      comment_count, song_count, db_update_time
+      )
+    values (#{resourceId,jdbcType=BIGINT}, #{pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler}, 
+      #{url,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{artist,jdbcType=VARCHAR}, 
       #{crawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler}, 
       #{playCount,jdbcType=INTEGER}, #{favoritesCount,jdbcType=INTEGER}, #{forwardCount,jdbcType=INTEGER}, 
-      #{commentCount,jdbcType=INTEGER}, #{dbUpdateTime,jdbcType=TIMESTAMP})
+      #{commentCount,jdbcType=INTEGER}, #{songCount,jdbcType=INTEGER}, #{dbUpdateTime,jdbcType=TIMESTAMP}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.netease.music.dao.po.MusicPagePO" >
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
@@ -201,6 +204,9 @@
       <if test="resourceId != null" >
         resource_id,
       </if>
+      <if test="pageType != null" >
+        page_type,
+      </if>
       <if test="url != null" >
         url,
       </if>
@@ -209,9 +215,6 @@
       </if>
       <if test="artist != null" >
         artist,
-      </if>
-      <if test="pageType != null" >
-        page_type,
       </if>
       <if test="crawlingStatus != null" >
         crawling_status,
@@ -228,6 +231,9 @@
       <if test="commentCount != null" >
         comment_count,
       </if>
+      <if test="songCount != null" >
+        song_count,
+      </if>
       <if test="dbUpdateTime != null" >
         db_update_time,
       </if>
@@ -235,6 +241,9 @@
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="resourceId != null" >
         #{resourceId,jdbcType=BIGINT},
+      </if>
+      <if test="pageType != null" >
+        #{pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
       </if>
       <if test="url != null" >
         #{url,jdbcType=VARCHAR},
@@ -244,9 +253,6 @@
       </if>
       <if test="artist != null" >
         #{artist,jdbcType=VARCHAR},
-      </if>
-      <if test="pageType != null" >
-        #{pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
       </if>
       <if test="crawlingStatus != null" >
         #{crawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler},
@@ -262,6 +268,9 @@
       </if>
       <if test="commentCount != null" >
         #{commentCount,jdbcType=INTEGER},
+      </if>
+      <if test="songCount != null" >
+        #{songCount,jdbcType=INTEGER},
       </if>
       <if test="dbUpdateTime != null" >
         #{dbUpdateTime,jdbcType=TIMESTAMP},
@@ -283,6 +292,9 @@
       <if test="record.resourceId != null" >
         resource_id = #{record.resourceId,jdbcType=BIGINT},
       </if>
+      <if test="record.pageType != null" >
+        page_type = #{record.pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
+      </if>
       <if test="record.url != null" >
         url = #{record.url,jdbcType=VARCHAR},
       </if>
@@ -291,9 +303,6 @@
       </if>
       <if test="record.artist != null" >
         artist = #{record.artist,jdbcType=VARCHAR},
-      </if>
-      <if test="record.pageType != null" >
-        page_type = #{record.pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
       </if>
       <if test="record.crawlingStatus != null" >
         crawling_status = #{record.crawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler},
@@ -310,6 +319,9 @@
       <if test="record.commentCount != null" >
         comment_count = #{record.commentCount,jdbcType=INTEGER},
       </if>
+      <if test="record.songCount != null" >
+        song_count = #{record.songCount,jdbcType=INTEGER},
+      </if>
       <if test="record.dbUpdateTime != null" >
         db_update_time = #{record.dbUpdateTime,jdbcType=TIMESTAMP},
       </if>
@@ -322,15 +334,16 @@
     update music_page
     set id = #{record.id,jdbcType=BIGINT},
       resource_id = #{record.resourceId,jdbcType=BIGINT},
+      page_type = #{record.pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
       url = #{record.url,jdbcType=VARCHAR},
       title = #{record.title,jdbcType=VARCHAR},
       artist = #{record.artist,jdbcType=VARCHAR},
-      page_type = #{record.pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
       crawling_status = #{record.crawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler},
       play_count = #{record.playCount,jdbcType=INTEGER},
       favorites_count = #{record.favoritesCount,jdbcType=INTEGER},
       forward_count = #{record.forwardCount,jdbcType=INTEGER},
       comment_count = #{record.commentCount,jdbcType=INTEGER},
+      song_count = #{record.songCount,jdbcType=INTEGER},
       db_update_time = #{record.dbUpdateTime,jdbcType=TIMESTAMP}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -342,6 +355,9 @@
       <if test="resourceId != null" >
         resource_id = #{resourceId,jdbcType=BIGINT},
       </if>
+      <if test="pageType != null" >
+        page_type = #{pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
+      </if>
       <if test="url != null" >
         url = #{url,jdbcType=VARCHAR},
       </if>
@@ -350,9 +366,6 @@
       </if>
       <if test="artist != null" >
         artist = #{artist,jdbcType=VARCHAR},
-      </if>
-      <if test="pageType != null" >
-        page_type = #{pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
       </if>
       <if test="crawlingStatus != null" >
         crawling_status = #{crawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler},
@@ -369,6 +382,9 @@
       <if test="commentCount != null" >
         comment_count = #{commentCount,jdbcType=INTEGER},
       </if>
+      <if test="songCount != null" >
+        song_count = #{songCount,jdbcType=INTEGER},
+      </if>
       <if test="dbUpdateTime != null" >
         db_update_time = #{dbUpdateTime,jdbcType=TIMESTAMP},
       </if>
@@ -378,15 +394,16 @@
   <update id="updateByPrimaryKey" parameterType="com.netease.music.dao.po.MusicPagePO" >
     update music_page
     set resource_id = #{resourceId,jdbcType=BIGINT},
+      page_type = #{pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
       url = #{url,jdbcType=VARCHAR},
       title = #{title,jdbcType=VARCHAR},
       artist = #{artist,jdbcType=VARCHAR},
-      page_type = #{pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
       crawling_status = #{crawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler},
       play_count = #{playCount,jdbcType=INTEGER},
       favorites_count = #{favoritesCount,jdbcType=INTEGER},
       forward_count = #{forwardCount,jdbcType=INTEGER},
       comment_count = #{commentCount,jdbcType=INTEGER},
+      song_count = #{songCount,jdbcType=INTEGER},
       db_update_time = #{dbUpdateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>

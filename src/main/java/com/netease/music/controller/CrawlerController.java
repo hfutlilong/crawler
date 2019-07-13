@@ -12,10 +12,10 @@ public class CrawlerController {
     @Autowired
     private CrawlerService crawlerService;
 
-    @RequestMapping("autoCrawling")
+    @RequestMapping("initCrawling")
     @ResponseBody
-    public String autoCrawling() {
-        crawlerService.autoCrawling();
+    public String initCrawling() {
+        crawlerService.initCrawling();
         return "success";
     }
 

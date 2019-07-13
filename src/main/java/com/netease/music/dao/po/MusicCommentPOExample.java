@@ -225,6 +225,66 @@ public class MusicCommentPOExample {
             return (Criteria) this;
         }
 
+        public Criteria andPageTypeIsNull() {
+            addCriterion("page_type is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPageTypeIsNotNull() {
+            addCriterion("page_type is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPageTypeEqualTo(Byte value) {
+            addCriterion("page_type =", value, "pageType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPageTypeNotEqualTo(Byte value) {
+            addCriterion("page_type <>", value, "pageType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPageTypeGreaterThan(Byte value) {
+            addCriterion("page_type >", value, "pageType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPageTypeGreaterThanOrEqualTo(Byte value) {
+            addCriterion("page_type >=", value, "pageType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPageTypeLessThan(Byte value) {
+            addCriterion("page_type <", value, "pageType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPageTypeLessThanOrEqualTo(Byte value) {
+            addCriterion("page_type <=", value, "pageType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPageTypeIn(List<Byte> values) {
+            addCriterion("page_type in", values, "pageType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPageTypeNotIn(List<Byte> values) {
+            addCriterion("page_type not in", values, "pageType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPageTypeBetween(Byte value1, Byte value2) {
+            addCriterion("page_type between", value1, value2, "pageType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPageTypeNotBetween(Byte value1, Byte value2) {
+            addCriterion("page_type not between", value1, value2, "pageType");
+            return (Criteria) this;
+        }
+
         public Criteria andUrlIsNull() {
             addCriterion("url is null");
             return (Criteria) this;

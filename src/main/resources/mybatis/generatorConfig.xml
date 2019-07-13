@@ -65,5 +65,8 @@
                             javaType="com.netease.music.entity.enums.SexEnum"
                             typeHandler="com.netease.music.dao.typehandler.SexEnumHandler"/>
         </table>
+        <table tableName="play_list_song_relation" domainObjectName="PlayListSongRelationPO" enableDeleteByExample="false">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
     </context>
 </generatorConfiguration>

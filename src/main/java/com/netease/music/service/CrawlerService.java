@@ -1,24 +1,28 @@
 package com.netease.music.service;
 
+import com.netease.music.entity.bo.PlayListDetailBO;
+
 import java.util.List;
 
 public interface CrawlerService {
     /**
-     * 从头爬
+     * 初始化，获取所有歌单信息
      */
-    void autoCrawling();
+    void initCrawling();
 
     /**
-     * 获取一个分类下的所有歌单id
+     * 初始化一个类别的歌单
+     * 
      * @param categoryName
      */
-    List<Long> getPlayListIdOneCategory(String categoryName);
-
+    void initPlayListOneCategory(String categoryName);
 
     /**
-     * 获取单个页面上的所有歌单id
-     *
+     * 获取一个页面的所有歌单
+     * 
      * @param url
+     * @return
+     * @throws Exception
      */
-    List<Long> getPlayListIdOnePage(String url);
+    List<PlayListDetailBO> getPlayListOnePage(String url) throws Exception;
 }

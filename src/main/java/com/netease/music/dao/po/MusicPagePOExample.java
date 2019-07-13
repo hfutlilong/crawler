@@ -286,6 +286,66 @@ public class MusicPagePOExample {
             return (Criteria) this;
         }
 
+        public Criteria andPageTypeIsNull() {
+            addCriterion("page_type is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPageTypeIsNotNull() {
+            addCriterion("page_type is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPageTypeEqualTo(PageTypeEnum value) {
+            addPageTypeCriterion("page_type =", value, "pageType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPageTypeNotEqualTo(PageTypeEnum value) {
+            addPageTypeCriterion("page_type <>", value, "pageType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPageTypeGreaterThan(PageTypeEnum value) {
+            addPageTypeCriterion("page_type >", value, "pageType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPageTypeGreaterThanOrEqualTo(PageTypeEnum value) {
+            addPageTypeCriterion("page_type >=", value, "pageType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPageTypeLessThan(PageTypeEnum value) {
+            addPageTypeCriterion("page_type <", value, "pageType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPageTypeLessThanOrEqualTo(PageTypeEnum value) {
+            addPageTypeCriterion("page_type <=", value, "pageType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPageTypeIn(List<PageTypeEnum> values) {
+            addPageTypeCriterion("page_type in", values, "pageType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPageTypeNotIn(List<PageTypeEnum> values) {
+            addPageTypeCriterion("page_type not in", values, "pageType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPageTypeBetween(PageTypeEnum value1, PageTypeEnum value2) {
+            addPageTypeCriterion("page_type between", value1, value2, "pageType");
+            return (Criteria) this;
+        }
+
+        public Criteria andPageTypeNotBetween(PageTypeEnum value1, PageTypeEnum value2) {
+            addPageTypeCriterion("page_type not between", value1, value2, "pageType");
+            return (Criteria) this;
+        }
+
         public Criteria andUrlIsNull() {
             addCriterion("url is null");
             return (Criteria) this;
@@ -493,66 +553,6 @@ public class MusicPagePOExample {
 
         public Criteria andArtistNotBetween(String value1, String value2) {
             addCriterion("artist not between", value1, value2, "artist");
-            return (Criteria) this;
-        }
-
-        public Criteria andPageTypeIsNull() {
-            addCriterion("page_type is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andPageTypeIsNotNull() {
-            addCriterion("page_type is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andPageTypeEqualTo(PageTypeEnum value) {
-            addPageTypeCriterion("page_type =", value, "pageType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPageTypeNotEqualTo(PageTypeEnum value) {
-            addPageTypeCriterion("page_type <>", value, "pageType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPageTypeGreaterThan(PageTypeEnum value) {
-            addPageTypeCriterion("page_type >", value, "pageType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPageTypeGreaterThanOrEqualTo(PageTypeEnum value) {
-            addPageTypeCriterion("page_type >=", value, "pageType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPageTypeLessThan(PageTypeEnum value) {
-            addPageTypeCriterion("page_type <", value, "pageType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPageTypeLessThanOrEqualTo(PageTypeEnum value) {
-            addPageTypeCriterion("page_type <=", value, "pageType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPageTypeIn(List<PageTypeEnum> values) {
-            addPageTypeCriterion("page_type in", values, "pageType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPageTypeNotIn(List<PageTypeEnum> values) {
-            addPageTypeCriterion("page_type not in", values, "pageType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPageTypeBetween(PageTypeEnum value1, PageTypeEnum value2) {
-            addPageTypeCriterion("page_type between", value1, value2, "pageType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPageTypeNotBetween(PageTypeEnum value1, PageTypeEnum value2) {
-            addPageTypeCriterion("page_type not between", value1, value2, "pageType");
             return (Criteria) this;
         }
 
@@ -853,6 +853,66 @@ public class MusicPagePOExample {
 
         public Criteria andCommentCountNotBetween(Integer value1, Integer value2) {
             addCriterion("comment_count not between", value1, value2, "commentCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongCountIsNull() {
+            addCriterion("song_count is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongCountIsNotNull() {
+            addCriterion("song_count is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongCountEqualTo(Integer value) {
+            addCriterion("song_count =", value, "songCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongCountNotEqualTo(Integer value) {
+            addCriterion("song_count <>", value, "songCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongCountGreaterThan(Integer value) {
+            addCriterion("song_count >", value, "songCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongCountGreaterThanOrEqualTo(Integer value) {
+            addCriterion("song_count >=", value, "songCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongCountLessThan(Integer value) {
+            addCriterion("song_count <", value, "songCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongCountLessThanOrEqualTo(Integer value) {
+            addCriterion("song_count <=", value, "songCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongCountIn(List<Integer> values) {
+            addCriterion("song_count in", values, "songCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongCountNotIn(List<Integer> values) {
+            addCriterion("song_count not in", values, "songCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongCountBetween(Integer value1, Integer value2) {
+            addCriterion("song_count between", value1, value2, "songCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongCountNotBetween(Integer value1, Integer value2) {
+            addCriterion("song_count not between", value1, value2, "songCount");
             return (Criteria) this;
         }
 

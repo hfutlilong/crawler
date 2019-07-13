@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="com.netease.music.dao.po.MusicCommentPO" >
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="resource_id" property="resourceId" jdbcType="BIGINT" />
+    <result column="page_type" property="pageType" jdbcType="TINYINT" />
     <result column="url" property="url" jdbcType="VARCHAR" />
     <result column="title" property="title" jdbcType="VARCHAR" />
     <result column="comment_time" property="commentTime" jdbcType="TIMESTAMP" />
@@ -72,7 +73,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, resource_id, url, title, comment_time, user_id, db_update_time
+    id, resource_id, page_type, url, title, comment_time, user_id, db_update_time
   </sql>
   <sql id="Blob_Column_List" >
     content
@@ -123,12 +124,12 @@
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into music_comment (resource_id, url, title, 
-      comment_time, user_id, db_update_time, 
-      content)
-    values (#{resourceId,jdbcType=BIGINT}, #{url,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
-      #{commentTime,jdbcType=TIMESTAMP}, #{userId,jdbcType=BIGINT}, #{dbUpdateTime,jdbcType=TIMESTAMP}, 
-      #{content,jdbcType=LONGVARCHAR})
+    insert into music_comment (resource_id, page_type, url, 
+      title, comment_time, user_id, 
+      db_update_time, content)
+    values (#{resourceId,jdbcType=BIGINT}, #{pageType,jdbcType=TINYINT}, #{url,jdbcType=VARCHAR}, 
+      #{title,jdbcType=VARCHAR}, #{commentTime,jdbcType=TIMESTAMP}, #{userId,jdbcType=BIGINT}, 
+      #{dbUpdateTime,jdbcType=TIMESTAMP}, #{content,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.netease.music.dao.po.MusicCommentPO" >
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
@@ -138,6 +139,9 @@
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="resourceId != null" >
         resource_id,
+      </if>
+      <if test="pageType != null" >
+        page_type,
       </if>
       <if test="url != null" >
         url,
@@ -161,6 +165,9 @@
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="resourceId != null" >
         #{resourceId,jdbcType=BIGINT},
+      </if>
+      <if test="pageType != null" >
+        #{pageType,jdbcType=TINYINT},
       </if>
       <if test="url != null" >
         #{url,jdbcType=VARCHAR},
@@ -197,6 +204,9 @@
       <if test="record.resourceId != null" >
         resource_id = #{record.resourceId,jdbcType=BIGINT},
       </if>
+      <if test="record.pageType != null" >
+        page_type = #{record.pageType,jdbcType=TINYINT},
+      </if>
       <if test="record.url != null" >
         url = #{record.url,jdbcType=VARCHAR},
       </if>
@@ -224,6 +234,7 @@
     update music_comment
     set id = #{record.id,jdbcType=BIGINT},
       resource_id = #{record.resourceId,jdbcType=BIGINT},
+      page_type = #{record.pageType,jdbcType=TINYINT},
       url = #{record.url,jdbcType=VARCHAR},
       title = #{record.title,jdbcType=VARCHAR},
       comment_time = #{record.commentTime,jdbcType=TIMESTAMP},
@@ -238,6 +249,7 @@
     update music_comment
     set id = #{record.id,jdbcType=BIGINT},
       resource_id = #{record.resourceId,jdbcType=BIGINT},
+      page_type = #{record.pageType,jdbcType=TINYINT},
       url = #{record.url,jdbcType=VARCHAR},
       title = #{record.title,jdbcType=VARCHAR},
       comment_time = #{record.commentTime,jdbcType=TIMESTAMP},
@@ -252,6 +264,9 @@
     <set >
       <if test="resourceId != null" >
         resource_id = #{resourceId,jdbcType=BIGINT},
+      </if>
+      <if test="pageType != null" >
+        page_type = #{pageType,jdbcType=TINYINT},
       </if>
       <if test="url != null" >
         url = #{url,jdbcType=VARCHAR},
@@ -277,6 +292,7 @@
   <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.netease.music.dao.po.MusicCommentPO" >
     update music_comment
     set resource_id = #{resourceId,jdbcType=BIGINT},
+      page_type = #{pageType,jdbcType=TINYINT},
       url = #{url,jdbcType=VARCHAR},
       title = #{title,jdbcType=VARCHAR},
       comment_time = #{commentTime,jdbcType=TIMESTAMP},
@@ -288,6 +304,7 @@
   <update id="updateByPrimaryKey" parameterType="com.netease.music.dao.po.MusicCommentPO" >
     update music_comment
     set resource_id = #{resourceId,jdbcType=BIGINT},
+      page_type = #{pageType,jdbcType=TINYINT},
       url = #{url,jdbcType=VARCHAR},
       title = #{title,jdbcType=VARCHAR},
       comment_time = #{commentTime,jdbcType=TIMESTAMP},
