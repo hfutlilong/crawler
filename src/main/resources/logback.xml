@@ -12,7 +12,7 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
     <conversionRule conversionWord="LL"
                     converterClass="com.netease.kaola.cs.aichat.common.utils.logger.LineOfLastLastCallerConverter"/>
 
-    <property name="LOG_HOME" value="${log.dir:-../logs}"/>
+    <property name="LOG_HOME" value="D:/logs"/>
     <property name="GLOBAL_LOG_PATTERN" value="%d - crawler - %c - %p [%t] %X [%C{0}:%M:%L] - %m%n"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -42,6 +42,7 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
     </appender>
     <logger name="busLog" level="INFO" additivity="false">
         <appender-ref ref="busLogAppender"/>
+        <appender-ref ref="STDOUT" />
     </logger>
 
     <!-- root的默认level是DEBUG -->

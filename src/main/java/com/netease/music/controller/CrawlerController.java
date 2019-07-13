@@ -1,5 +1,6 @@
 package com.netease.music.controller;
 
+import com.netease.music.entity.constant.LogConstant;
 import com.netease.music.service.CrawlerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,6 +23,10 @@ public class CrawlerController {
     @RequestMapping("hello")
     @ResponseBody
     public String testHello() {
+        LogConstant.BUS.debug("DEBUG LOG TEST");
+        LogConstant.BUS.info("INFO LOG TEST");
+        LogConstant.BUS.error("ERROR LOG TEST");
+
         return "66666666666";
     }
 }
