@@ -8,7 +8,7 @@ public interface CrawlerService {
     /**
      * 初始化，获取所有歌单信息
      */
-    void initCrawling();
+    void initCrawling() throws InterruptedException;
 
     /**
      * 初始化一个类别的歌单
@@ -25,4 +25,12 @@ public interface CrawlerService {
      * @throws Exception
      */
     List<PlayListDetailBO> getPlayListOnePage(String url) throws Exception;
+
+    /**
+     * 获取歌单详情
+     * 
+     * @param url
+     * @return
+     */
+    PlayListDetailBO getPlayListDetail(String url);
 }

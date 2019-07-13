@@ -1,5 +1,6 @@
 package com.netease.music.dao.po;
 
+import com.netease.music.entity.enums.PageTypeEnum;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -8,7 +9,7 @@ public class MusicCommentPO implements Serializable {
 
     private Long resourceId;
 
-    private Byte pageType;
+    private PageTypeEnum pageType;
 
     private String url;
 
@@ -17,6 +18,8 @@ public class MusicCommentPO implements Serializable {
     private Date commentTime;
 
     private Long userId;
+
+    private Integer likeCount;
 
     private Date dbUpdateTime;
 
@@ -40,11 +43,11 @@ public class MusicCommentPO implements Serializable {
         this.resourceId = resourceId;
     }
 
-    public Byte getPageType() {
+    public PageTypeEnum getPageType() {
         return pageType;
     }
 
-    public void setPageType(Byte pageType) {
+    public void setPageType(PageTypeEnum pageType) {
         this.pageType = pageType;
     }
 
@@ -78,6 +81,14 @@ public class MusicCommentPO implements Serializable {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public Integer getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(Integer likeCount) {
+        this.likeCount = likeCount;
     }
 
     public Date getDbUpdateTime() {

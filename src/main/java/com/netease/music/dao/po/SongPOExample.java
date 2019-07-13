@@ -1,19 +1,18 @@
 package com.netease.music.dao.po;
 
 import com.netease.music.entity.enums.CrawlingStatusEnum;
-import com.netease.music.entity.enums.PageTypeEnum;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class MusicPagePOExample {
+public class SongPOExample {
     protected String orderByClause;
 
     protected boolean distinct;
 
     protected List<Criteria> oredCriteria;
 
-    public MusicPagePOExample() {
+    public SongPOExample() {
         oredCriteria = new ArrayList<Criteria>();
     }
 
@@ -67,8 +66,6 @@ public class MusicPagePOExample {
     }
 
     protected abstract static class GeneratedCriteria {
-        protected List<Criterion> pageTypeCriteria;
-
         protected List<Criterion> crawlingStatusCriteria;
 
         protected List<Criterion> allCriteria;
@@ -78,28 +75,7 @@ public class MusicPagePOExample {
         protected GeneratedCriteria() {
             super();
             criteria = new ArrayList<Criterion>();
-            pageTypeCriteria = new ArrayList<Criterion>();
             crawlingStatusCriteria = new ArrayList<Criterion>();
-        }
-
-        public List<Criterion> getPageTypeCriteria() {
-            return pageTypeCriteria;
-        }
-
-        protected void addPageTypeCriterion(String condition, Object value, String property) {
-            if (value == null) {
-                throw new RuntimeException("Value for " + property + " cannot be null");
-            }
-            pageTypeCriteria.add(new Criterion(condition, value, "com.netease.music.dao.typehandler.PageTypeEnumHandler"));
-            allCriteria = null;
-        }
-
-        protected void addPageTypeCriterion(String condition, PageTypeEnum value1, PageTypeEnum value2, String property) {
-            if (value1 == null || value2 == null) {
-                throw new RuntimeException("Between values for " + property + " cannot be null");
-            }
-            pageTypeCriteria.add(new Criterion(condition, value1, value2, "com.netease.music.dao.typehandler.PageTypeEnumHandler"));
-            allCriteria = null;
         }
 
         public List<Criterion> getCrawlingStatusCriteria() {
@@ -124,7 +100,6 @@ public class MusicPagePOExample {
 
         public boolean isValid() {
             return criteria.size() > 0
-                || pageTypeCriteria.size() > 0
                 || crawlingStatusCriteria.size() > 0;
         }
 
@@ -132,7 +107,6 @@ public class MusicPagePOExample {
             if (allCriteria == null) {
                 allCriteria = new ArrayList<Criterion>();
                 allCriteria.addAll(criteria);
-                allCriteria.addAll(pageTypeCriteria);
                 allCriteria.addAll(crawlingStatusCriteria);
             }
             return allCriteria;
@@ -286,66 +260,6 @@ public class MusicPagePOExample {
             return (Criteria) this;
         }
 
-        public Criteria andPageTypeIsNull() {
-            addCriterion("page_type is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andPageTypeIsNotNull() {
-            addCriterion("page_type is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andPageTypeEqualTo(PageTypeEnum value) {
-            addPageTypeCriterion("page_type =", value, "pageType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPageTypeNotEqualTo(PageTypeEnum value) {
-            addPageTypeCriterion("page_type <>", value, "pageType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPageTypeGreaterThan(PageTypeEnum value) {
-            addPageTypeCriterion("page_type >", value, "pageType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPageTypeGreaterThanOrEqualTo(PageTypeEnum value) {
-            addPageTypeCriterion("page_type >=", value, "pageType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPageTypeLessThan(PageTypeEnum value) {
-            addPageTypeCriterion("page_type <", value, "pageType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPageTypeLessThanOrEqualTo(PageTypeEnum value) {
-            addPageTypeCriterion("page_type <=", value, "pageType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPageTypeIn(List<PageTypeEnum> values) {
-            addPageTypeCriterion("page_type in", values, "pageType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPageTypeNotIn(List<PageTypeEnum> values) {
-            addPageTypeCriterion("page_type not in", values, "pageType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPageTypeBetween(PageTypeEnum value1, PageTypeEnum value2) {
-            addPageTypeCriterion("page_type between", value1, value2, "pageType");
-            return (Criteria) this;
-        }
-
-        public Criteria andPageTypeNotBetween(PageTypeEnum value1, PageTypeEnum value2) {
-            addPageTypeCriterion("page_type not between", value1, value2, "pageType");
-            return (Criteria) this;
-        }
-
         public Criteria andUrlIsNull() {
             addCriterion("url is null");
             return (Criteria) this;
@@ -486,313 +400,133 @@ public class MusicPagePOExample {
             return (Criteria) this;
         }
 
-        public Criteria andArtistIsNull() {
-            addCriterion("artist is null");
+        public Criteria andArtistIdIsNull() {
+            addCriterion("artist_id is null");
             return (Criteria) this;
         }
 
-        public Criteria andArtistIsNotNull() {
-            addCriterion("artist is not null");
+        public Criteria andArtistIdIsNotNull() {
+            addCriterion("artist_id is not null");
             return (Criteria) this;
         }
 
-        public Criteria andArtistEqualTo(String value) {
-            addCriterion("artist =", value, "artist");
+        public Criteria andArtistIdEqualTo(Long value) {
+            addCriterion("artist_id =", value, "artistId");
             return (Criteria) this;
         }
 
-        public Criteria andArtistNotEqualTo(String value) {
-            addCriterion("artist <>", value, "artist");
+        public Criteria andArtistIdNotEqualTo(Long value) {
+            addCriterion("artist_id <>", value, "artistId");
             return (Criteria) this;
         }
 
-        public Criteria andArtistGreaterThan(String value) {
-            addCriterion("artist >", value, "artist");
+        public Criteria andArtistIdGreaterThan(Long value) {
+            addCriterion("artist_id >", value, "artistId");
             return (Criteria) this;
         }
 
-        public Criteria andArtistGreaterThanOrEqualTo(String value) {
-            addCriterion("artist >=", value, "artist");
+        public Criteria andArtistIdGreaterThanOrEqualTo(Long value) {
+            addCriterion("artist_id >=", value, "artistId");
             return (Criteria) this;
         }
 
-        public Criteria andArtistLessThan(String value) {
-            addCriterion("artist <", value, "artist");
+        public Criteria andArtistIdLessThan(Long value) {
+            addCriterion("artist_id <", value, "artistId");
             return (Criteria) this;
         }
 
-        public Criteria andArtistLessThanOrEqualTo(String value) {
-            addCriterion("artist <=", value, "artist");
+        public Criteria andArtistIdLessThanOrEqualTo(Long value) {
+            addCriterion("artist_id <=", value, "artistId");
             return (Criteria) this;
         }
 
-        public Criteria andArtistLike(String value) {
-            addCriterion("artist like", value, "artist");
+        public Criteria andArtistIdIn(List<Long> values) {
+            addCriterion("artist_id in", values, "artistId");
             return (Criteria) this;
         }
 
-        public Criteria andArtistNotLike(String value) {
-            addCriterion("artist not like", value, "artist");
+        public Criteria andArtistIdNotIn(List<Long> values) {
+            addCriterion("artist_id not in", values, "artistId");
             return (Criteria) this;
         }
 
-        public Criteria andArtistIn(List<String> values) {
-            addCriterion("artist in", values, "artist");
+        public Criteria andArtistIdBetween(Long value1, Long value2) {
+            addCriterion("artist_id between", value1, value2, "artistId");
             return (Criteria) this;
         }
 
-        public Criteria andArtistNotIn(List<String> values) {
-            addCriterion("artist not in", values, "artist");
+        public Criteria andArtistIdNotBetween(Long value1, Long value2) {
+            addCriterion("artist_id not between", value1, value2, "artistId");
             return (Criteria) this;
         }
 
-        public Criteria andArtistBetween(String value1, String value2) {
-            addCriterion("artist between", value1, value2, "artist");
+        public Criteria andArtistNameIsNull() {
+            addCriterion("artist_name is null");
             return (Criteria) this;
         }
 
-        public Criteria andArtistNotBetween(String value1, String value2) {
-            addCriterion("artist not between", value1, value2, "artist");
+        public Criteria andArtistNameIsNotNull() {
+            addCriterion("artist_name is not null");
             return (Criteria) this;
         }
 
-        public Criteria andCrawlingStatusIsNull() {
-            addCriterion("crawling_status is null");
+        public Criteria andArtistNameEqualTo(String value) {
+            addCriterion("artist_name =", value, "artistName");
             return (Criteria) this;
         }
 
-        public Criteria andCrawlingStatusIsNotNull() {
-            addCriterion("crawling_status is not null");
+        public Criteria andArtistNameNotEqualTo(String value) {
+            addCriterion("artist_name <>", value, "artistName");
             return (Criteria) this;
         }
 
-        public Criteria andCrawlingStatusEqualTo(CrawlingStatusEnum value) {
-            addCrawlingStatusCriterion("crawling_status =", value, "crawlingStatus");
+        public Criteria andArtistNameGreaterThan(String value) {
+            addCriterion("artist_name >", value, "artistName");
             return (Criteria) this;
         }
 
-        public Criteria andCrawlingStatusNotEqualTo(CrawlingStatusEnum value) {
-            addCrawlingStatusCriterion("crawling_status <>", value, "crawlingStatus");
+        public Criteria andArtistNameGreaterThanOrEqualTo(String value) {
+            addCriterion("artist_name >=", value, "artistName");
             return (Criteria) this;
         }
 
-        public Criteria andCrawlingStatusGreaterThan(CrawlingStatusEnum value) {
-            addCrawlingStatusCriterion("crawling_status >", value, "crawlingStatus");
+        public Criteria andArtistNameLessThan(String value) {
+            addCriterion("artist_name <", value, "artistName");
             return (Criteria) this;
         }
 
-        public Criteria andCrawlingStatusGreaterThanOrEqualTo(CrawlingStatusEnum value) {
-            addCrawlingStatusCriterion("crawling_status >=", value, "crawlingStatus");
+        public Criteria andArtistNameLessThanOrEqualTo(String value) {
+            addCriterion("artist_name <=", value, "artistName");
             return (Criteria) this;
         }
 
-        public Criteria andCrawlingStatusLessThan(CrawlingStatusEnum value) {
-            addCrawlingStatusCriterion("crawling_status <", value, "crawlingStatus");
+        public Criteria andArtistNameLike(String value) {
+            addCriterion("artist_name like", value, "artistName");
             return (Criteria) this;
         }
 
-        public Criteria andCrawlingStatusLessThanOrEqualTo(CrawlingStatusEnum value) {
-            addCrawlingStatusCriterion("crawling_status <=", value, "crawlingStatus");
+        public Criteria andArtistNameNotLike(String value) {
+            addCriterion("artist_name not like", value, "artistName");
             return (Criteria) this;
         }
 
-        public Criteria andCrawlingStatusIn(List<CrawlingStatusEnum> values) {
-            addCrawlingStatusCriterion("crawling_status in", values, "crawlingStatus");
+        public Criteria andArtistNameIn(List<String> values) {
+            addCriterion("artist_name in", values, "artistName");
             return (Criteria) this;
         }
 
-        public Criteria andCrawlingStatusNotIn(List<CrawlingStatusEnum> values) {
-            addCrawlingStatusCriterion("crawling_status not in", values, "crawlingStatus");
+        public Criteria andArtistNameNotIn(List<String> values) {
+            addCriterion("artist_name not in", values, "artistName");
             return (Criteria) this;
         }
 
-        public Criteria andCrawlingStatusBetween(CrawlingStatusEnum value1, CrawlingStatusEnum value2) {
-            addCrawlingStatusCriterion("crawling_status between", value1, value2, "crawlingStatus");
+        public Criteria andArtistNameBetween(String value1, String value2) {
+            addCriterion("artist_name between", value1, value2, "artistName");
             return (Criteria) this;
         }
 
-        public Criteria andCrawlingStatusNotBetween(CrawlingStatusEnum value1, CrawlingStatusEnum value2) {
-            addCrawlingStatusCriterion("crawling_status not between", value1, value2, "crawlingStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andPlayCountIsNull() {
-            addCriterion("play_count is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andPlayCountIsNotNull() {
-            addCriterion("play_count is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andPlayCountEqualTo(Integer value) {
-            addCriterion("play_count =", value, "playCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andPlayCountNotEqualTo(Integer value) {
-            addCriterion("play_count <>", value, "playCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andPlayCountGreaterThan(Integer value) {
-            addCriterion("play_count >", value, "playCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andPlayCountGreaterThanOrEqualTo(Integer value) {
-            addCriterion("play_count >=", value, "playCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andPlayCountLessThan(Integer value) {
-            addCriterion("play_count <", value, "playCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andPlayCountLessThanOrEqualTo(Integer value) {
-            addCriterion("play_count <=", value, "playCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andPlayCountIn(List<Integer> values) {
-            addCriterion("play_count in", values, "playCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andPlayCountNotIn(List<Integer> values) {
-            addCriterion("play_count not in", values, "playCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andPlayCountBetween(Integer value1, Integer value2) {
-            addCriterion("play_count between", value1, value2, "playCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andPlayCountNotBetween(Integer value1, Integer value2) {
-            addCriterion("play_count not between", value1, value2, "playCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andFavoritesCountIsNull() {
-            addCriterion("favorites_count is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andFavoritesCountIsNotNull() {
-            addCriterion("favorites_count is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andFavoritesCountEqualTo(Integer value) {
-            addCriterion("favorites_count =", value, "favoritesCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andFavoritesCountNotEqualTo(Integer value) {
-            addCriterion("favorites_count <>", value, "favoritesCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andFavoritesCountGreaterThan(Integer value) {
-            addCriterion("favorites_count >", value, "favoritesCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andFavoritesCountGreaterThanOrEqualTo(Integer value) {
-            addCriterion("favorites_count >=", value, "favoritesCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andFavoritesCountLessThan(Integer value) {
-            addCriterion("favorites_count <", value, "favoritesCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andFavoritesCountLessThanOrEqualTo(Integer value) {
-            addCriterion("favorites_count <=", value, "favoritesCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andFavoritesCountIn(List<Integer> values) {
-            addCriterion("favorites_count in", values, "favoritesCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andFavoritesCountNotIn(List<Integer> values) {
-            addCriterion("favorites_count not in", values, "favoritesCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andFavoritesCountBetween(Integer value1, Integer value2) {
-            addCriterion("favorites_count between", value1, value2, "favoritesCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andFavoritesCountNotBetween(Integer value1, Integer value2) {
-            addCriterion("favorites_count not between", value1, value2, "favoritesCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andForwardCountIsNull() {
-            addCriterion("forward_count is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andForwardCountIsNotNull() {
-            addCriterion("forward_count is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andForwardCountEqualTo(Integer value) {
-            addCriterion("forward_count =", value, "forwardCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andForwardCountNotEqualTo(Integer value) {
-            addCriterion("forward_count <>", value, "forwardCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andForwardCountGreaterThan(Integer value) {
-            addCriterion("forward_count >", value, "forwardCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andForwardCountGreaterThanOrEqualTo(Integer value) {
-            addCriterion("forward_count >=", value, "forwardCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andForwardCountLessThan(Integer value) {
-            addCriterion("forward_count <", value, "forwardCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andForwardCountLessThanOrEqualTo(Integer value) {
-            addCriterion("forward_count <=", value, "forwardCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andForwardCountIn(List<Integer> values) {
-            addCriterion("forward_count in", values, "forwardCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andForwardCountNotIn(List<Integer> values) {
-            addCriterion("forward_count not in", values, "forwardCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andForwardCountBetween(Integer value1, Integer value2) {
-            addCriterion("forward_count between", value1, value2, "forwardCount");
-            return (Criteria) this;
-        }
-
-        public Criteria andForwardCountNotBetween(Integer value1, Integer value2) {
-            addCriterion("forward_count not between", value1, value2, "forwardCount");
+        public Criteria andArtistNameNotBetween(String value1, String value2) {
+            addCriterion("artist_name not between", value1, value2, "artistName");
             return (Criteria) this;
         }
 
@@ -856,63 +590,63 @@ public class MusicPagePOExample {
             return (Criteria) this;
         }
 
-        public Criteria andSongCountIsNull() {
-            addCriterion("song_count is null");
+        public Criteria andCrawlingStatusIsNull() {
+            addCriterion("crawling_status is null");
             return (Criteria) this;
         }
 
-        public Criteria andSongCountIsNotNull() {
-            addCriterion("song_count is not null");
+        public Criteria andCrawlingStatusIsNotNull() {
+            addCriterion("crawling_status is not null");
             return (Criteria) this;
         }
 
-        public Criteria andSongCountEqualTo(Integer value) {
-            addCriterion("song_count =", value, "songCount");
+        public Criteria andCrawlingStatusEqualTo(CrawlingStatusEnum value) {
+            addCrawlingStatusCriterion("crawling_status =", value, "crawlingStatus");
             return (Criteria) this;
         }
 
-        public Criteria andSongCountNotEqualTo(Integer value) {
-            addCriterion("song_count <>", value, "songCount");
+        public Criteria andCrawlingStatusNotEqualTo(CrawlingStatusEnum value) {
+            addCrawlingStatusCriterion("crawling_status <>", value, "crawlingStatus");
             return (Criteria) this;
         }
 
-        public Criteria andSongCountGreaterThan(Integer value) {
-            addCriterion("song_count >", value, "songCount");
+        public Criteria andCrawlingStatusGreaterThan(CrawlingStatusEnum value) {
+            addCrawlingStatusCriterion("crawling_status >", value, "crawlingStatus");
             return (Criteria) this;
         }
 
-        public Criteria andSongCountGreaterThanOrEqualTo(Integer value) {
-            addCriterion("song_count >=", value, "songCount");
+        public Criteria andCrawlingStatusGreaterThanOrEqualTo(CrawlingStatusEnum value) {
+            addCrawlingStatusCriterion("crawling_status >=", value, "crawlingStatus");
             return (Criteria) this;
         }
 
-        public Criteria andSongCountLessThan(Integer value) {
-            addCriterion("song_count <", value, "songCount");
+        public Criteria andCrawlingStatusLessThan(CrawlingStatusEnum value) {
+            addCrawlingStatusCriterion("crawling_status <", value, "crawlingStatus");
             return (Criteria) this;
         }
 
-        public Criteria andSongCountLessThanOrEqualTo(Integer value) {
-            addCriterion("song_count <=", value, "songCount");
+        public Criteria andCrawlingStatusLessThanOrEqualTo(CrawlingStatusEnum value) {
+            addCrawlingStatusCriterion("crawling_status <=", value, "crawlingStatus");
             return (Criteria) this;
         }
 
-        public Criteria andSongCountIn(List<Integer> values) {
-            addCriterion("song_count in", values, "songCount");
+        public Criteria andCrawlingStatusIn(List<CrawlingStatusEnum> values) {
+            addCrawlingStatusCriterion("crawling_status in", values, "crawlingStatus");
             return (Criteria) this;
         }
 
-        public Criteria andSongCountNotIn(List<Integer> values) {
-            addCriterion("song_count not in", values, "songCount");
+        public Criteria andCrawlingStatusNotIn(List<CrawlingStatusEnum> values) {
+            addCrawlingStatusCriterion("crawling_status not in", values, "crawlingStatus");
             return (Criteria) this;
         }
 
-        public Criteria andSongCountBetween(Integer value1, Integer value2) {
-            addCriterion("song_count between", value1, value2, "songCount");
+        public Criteria andCrawlingStatusBetween(CrawlingStatusEnum value1, CrawlingStatusEnum value2) {
+            addCrawlingStatusCriterion("crawling_status between", value1, value2, "crawlingStatus");
             return (Criteria) this;
         }
 
-        public Criteria andSongCountNotBetween(Integer value1, Integer value2) {
-            addCriterion("song_count not between", value1, value2, "songCount");
+        public Criteria andCrawlingStatusNotBetween(CrawlingStatusEnum value1, CrawlingStatusEnum value2) {
+            addCrawlingStatusCriterion("crawling_status not between", value1, value2, "crawlingStatus");
             return (Criteria) this;
         }
 

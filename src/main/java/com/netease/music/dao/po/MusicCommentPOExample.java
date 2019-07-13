@@ -1,5 +1,6 @@
 package com.netease.music.dao.po;
 
+import com.netease.music.entity.enums.PageTypeEnum;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -65,19 +66,50 @@ public class MusicCommentPOExample {
     }
 
     protected abstract static class GeneratedCriteria {
+        protected List<Criterion> pageTypeCriteria;
+
+        protected List<Criterion> allCriteria;
+
         protected List<Criterion> criteria;
 
         protected GeneratedCriteria() {
             super();
             criteria = new ArrayList<Criterion>();
+            pageTypeCriteria = new ArrayList<Criterion>();
+        }
+
+        public List<Criterion> getPageTypeCriteria() {
+            return pageTypeCriteria;
+        }
+
+        protected void addPageTypeCriterion(String condition, Object value, String property) {
+            if (value == null) {
+                throw new RuntimeException("Value for " + property + " cannot be null");
+            }
+            pageTypeCriteria.add(new Criterion(condition, value, "com.netease.music.dao.typehandler.PageTypeEnumHandler"));
+            allCriteria = null;
+        }
+
+        protected void addPageTypeCriterion(String condition, PageTypeEnum value1, PageTypeEnum value2, String property) {
+            if (value1 == null || value2 == null) {
+                throw new RuntimeException("Between values for " + property + " cannot be null");
+            }
+            pageTypeCriteria.add(new Criterion(condition, value1, value2, "com.netease.music.dao.typehandler.PageTypeEnumHandler"));
+            allCriteria = null;
         }
 
         public boolean isValid() {
-            return criteria.size() > 0;
+            return criteria.size() > 0
+                || pageTypeCriteria.size() > 0;
         }
 
         public List<Criterion> getAllCriteria() {
-            return criteria;
+            if (allCriteria == null) {
+                allCriteria = new ArrayList<Criterion>();
+                allCriteria.addAll(criteria);
+                allCriteria.addAll(pageTypeCriteria);
+            }
+            return allCriteria;
         }
 
         public List<Criterion> getCriteria() {
@@ -89,6 +121,7 @@ public class MusicCommentPOExample {
                 throw new RuntimeException("Value for condition cannot be null");
             }
             criteria.add(new Criterion(condition));
+            allCriteria = null;
         }
 
         protected void addCriterion(String condition, Object value, String property) {
@@ -96,6 +129,7 @@ public class MusicCommentPOExample {
                 throw new RuntimeException("Value for " + property + " cannot be null");
             }
             criteria.add(new Criterion(condition, value));
+            allCriteria = null;
         }
 
         protected void addCriterion(String condition, Object value1, Object value2, String property) {
@@ -103,6 +137,7 @@ public class MusicCommentPOExample {
                 throw new RuntimeException("Between values for " + property + " cannot be null");
             }
             criteria.add(new Criterion(condition, value1, value2));
+            allCriteria = null;
         }
 
         public Criteria andIdIsNull() {
@@ -235,53 +270,53 @@ public class MusicCommentPOExample {
             return (Criteria) this;
         }
 
-        public Criteria andPageTypeEqualTo(Byte value) {
-            addCriterion("page_type =", value, "pageType");
+        public Criteria andPageTypeEqualTo(PageTypeEnum value) {
+            addPageTypeCriterion("page_type =", value, "pageType");
             return (Criteria) this;
         }
 
-        public Criteria andPageTypeNotEqualTo(Byte value) {
-            addCriterion("page_type <>", value, "pageType");
+        public Criteria andPageTypeNotEqualTo(PageTypeEnum value) {
+            addPageTypeCriterion("page_type <>", value, "pageType");
             return (Criteria) this;
         }
 
-        public Criteria andPageTypeGreaterThan(Byte value) {
-            addCriterion("page_type >", value, "pageType");
+        public Criteria andPageTypeGreaterThan(PageTypeEnum value) {
+            addPageTypeCriterion("page_type >", value, "pageType");
             return (Criteria) this;
         }
 
-        public Criteria andPageTypeGreaterThanOrEqualTo(Byte value) {
-            addCriterion("page_type >=", value, "pageType");
+        public Criteria andPageTypeGreaterThanOrEqualTo(PageTypeEnum value) {
+            addPageTypeCriterion("page_type >=", value, "pageType");
             return (Criteria) this;
         }
 
-        public Criteria andPageTypeLessThan(Byte value) {
-            addCriterion("page_type <", value, "pageType");
+        public Criteria andPageTypeLessThan(PageTypeEnum value) {
+            addPageTypeCriterion("page_type <", value, "pageType");
             return (Criteria) this;
         }
 
-        public Criteria andPageTypeLessThanOrEqualTo(Byte value) {
-            addCriterion("page_type <=", value, "pageType");
+        public Criteria andPageTypeLessThanOrEqualTo(PageTypeEnum value) {
+            addPageTypeCriterion("page_type <=", value, "pageType");
             return (Criteria) this;
         }
 
-        public Criteria andPageTypeIn(List<Byte> values) {
-            addCriterion("page_type in", values, "pageType");
+        public Criteria andPageTypeIn(List<PageTypeEnum> values) {
+            addPageTypeCriterion("page_type in", values, "pageType");
             return (Criteria) this;
         }
 
-        public Criteria andPageTypeNotIn(List<Byte> values) {
-            addCriterion("page_type not in", values, "pageType");
+        public Criteria andPageTypeNotIn(List<PageTypeEnum> values) {
+            addPageTypeCriterion("page_type not in", values, "pageType");
             return (Criteria) this;
         }
 
-        public Criteria andPageTypeBetween(Byte value1, Byte value2) {
-            addCriterion("page_type between", value1, value2, "pageType");
+        public Criteria andPageTypeBetween(PageTypeEnum value1, PageTypeEnum value2) {
+            addPageTypeCriterion("page_type between", value1, value2, "pageType");
             return (Criteria) this;
         }
 
-        public Criteria andPageTypeNotBetween(Byte value1, Byte value2) {
-            addCriterion("page_type not between", value1, value2, "pageType");
+        public Criteria andPageTypeNotBetween(PageTypeEnum value1, PageTypeEnum value2) {
+            addPageTypeCriterion("page_type not between", value1, value2, "pageType");
             return (Criteria) this;
         }
 
@@ -542,6 +577,66 @@ public class MusicCommentPOExample {
 
         public Criteria andUserIdNotBetween(Long value1, Long value2) {
             addCriterion("user_id not between", value1, value2, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andLikeCountIsNull() {
+            addCriterion("like_count is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andLikeCountIsNotNull() {
+            addCriterion("like_count is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andLikeCountEqualTo(Integer value) {
+            addCriterion("like_count =", value, "likeCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andLikeCountNotEqualTo(Integer value) {
+            addCriterion("like_count <>", value, "likeCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andLikeCountGreaterThan(Integer value) {
+            addCriterion("like_count >", value, "likeCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andLikeCountGreaterThanOrEqualTo(Integer value) {
+            addCriterion("like_count >=", value, "likeCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andLikeCountLessThan(Integer value) {
+            addCriterion("like_count <", value, "likeCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andLikeCountLessThanOrEqualTo(Integer value) {
+            addCriterion("like_count <=", value, "likeCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andLikeCountIn(List<Integer> values) {
+            addCriterion("like_count in", values, "likeCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andLikeCountNotIn(List<Integer> values) {
+            addCriterion("like_count not in", values, "likeCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andLikeCountBetween(Integer value1, Integer value2) {
+            addCriterion("like_count between", value1, value2, "likeCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andLikeCountNotBetween(Integer value1, Integer value2) {
+            addCriterion("like_count not between", value1, value2, "likeCount");
             return (Criteria) this;
         }
 

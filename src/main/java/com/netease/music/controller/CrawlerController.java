@@ -16,7 +16,11 @@ public class CrawlerController {
     @RequestMapping("initCrawling")
     @ResponseBody
     public String initCrawling() {
-        crawlerService.initCrawling();
+        try {
+            crawlerService.initCrawling();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return "success";
     }
 

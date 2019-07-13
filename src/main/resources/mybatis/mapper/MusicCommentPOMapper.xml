@@ -4,11 +4,12 @@
   <resultMap id="BaseResultMap" type="com.netease.music.dao.po.MusicCommentPO" >
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="resource_id" property="resourceId" jdbcType="BIGINT" />
-    <result column="page_type" property="pageType" jdbcType="TINYINT" />
+    <result column="page_type" property="pageType" jdbcType="TINYINT" typeHandler="com.netease.music.dao.typehandler.PageTypeEnumHandler" />
     <result column="url" property="url" jdbcType="VARCHAR" />
     <result column="title" property="title" jdbcType="VARCHAR" />
     <result column="comment_time" property="commentTime" jdbcType="TIMESTAMP" />
     <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="like_count" property="likeCount" jdbcType="INTEGER" />
     <result column="db_update_time" property="dbUpdateTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <resultMap id="ResultMapWithBLOBs" type="com.netease.music.dao.po.MusicCommentPO" extends="BaseResultMap" >
@@ -34,6 +35,25 @@
                   and ${criterion.condition}
                   <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
                     #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.pageTypeCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler} and #{criterion.secondValue,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler}
                   </foreach>
                 </when>
               </choose>
@@ -67,13 +87,32 @@
                 </when>
               </choose>
             </foreach>
+            <foreach collection="criteria.pageTypeCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler} and #{criterion.secondValue,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
           </trim>
         </if>
       </foreach>
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, resource_id, page_type, url, title, comment_time, user_id, db_update_time
+    id, resource_id, page_type, url, title, comment_time, user_id, like_count, db_update_time
   </sql>
   <sql id="Blob_Column_List" >
     content
@@ -124,12 +163,14 @@
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into music_comment (resource_id, page_type, url, 
-      title, comment_time, user_id, 
-      db_update_time, content)
-    values (#{resourceId,jdbcType=BIGINT}, #{pageType,jdbcType=TINYINT}, #{url,jdbcType=VARCHAR}, 
-      #{title,jdbcType=VARCHAR}, #{commentTime,jdbcType=TIMESTAMP}, #{userId,jdbcType=BIGINT}, 
-      #{dbUpdateTime,jdbcType=TIMESTAMP}, #{content,jdbcType=LONGVARCHAR})
+    insert into music_comment (resource_id, page_type, 
+      url, title, comment_time, 
+      user_id, like_count, db_update_time, 
+      content)
+    values (#{resourceId,jdbcType=BIGINT}, #{pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler}, 
+      #{url,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{commentTime,jdbcType=TIMESTAMP}, 
+      #{userId,jdbcType=BIGINT}, #{likeCount,jdbcType=INTEGER}, #{dbUpdateTime,jdbcType=TIMESTAMP}, 
+      #{content,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.netease.music.dao.po.MusicCommentPO" >
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
@@ -155,6 +196,9 @@
       <if test="userId != null" >
         user_id,
       </if>
+      <if test="likeCount != null" >
+        like_count,
+      </if>
       <if test="dbUpdateTime != null" >
         db_update_time,
       </if>
@@ -167,7 +211,7 @@
         #{resourceId,jdbcType=BIGINT},
       </if>
       <if test="pageType != null" >
-        #{pageType,jdbcType=TINYINT},
+        #{pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
       </if>
       <if test="url != null" >
         #{url,jdbcType=VARCHAR},
@@ -180,6 +224,9 @@
       </if>
       <if test="userId != null" >
         #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="likeCount != null" >
+        #{likeCount,jdbcType=INTEGER},
       </if>
       <if test="dbUpdateTime != null" >
         #{dbUpdateTime,jdbcType=TIMESTAMP},
@@ -205,7 +252,7 @@
         resource_id = #{record.resourceId,jdbcType=BIGINT},
       </if>
       <if test="record.pageType != null" >
-        page_type = #{record.pageType,jdbcType=TINYINT},
+        page_type = #{record.pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
       </if>
       <if test="record.url != null" >
         url = #{record.url,jdbcType=VARCHAR},
@@ -218,6 +265,9 @@
       </if>
       <if test="record.userId != null" >
         user_id = #{record.userId,jdbcType=BIGINT},
+      </if>
+      <if test="record.likeCount != null" >
+        like_count = #{record.likeCount,jdbcType=INTEGER},
       </if>
       <if test="record.dbUpdateTime != null" >
         db_update_time = #{record.dbUpdateTime,jdbcType=TIMESTAMP},
@@ -234,11 +284,12 @@
     update music_comment
     set id = #{record.id,jdbcType=BIGINT},
       resource_id = #{record.resourceId,jdbcType=BIGINT},
-      page_type = #{record.pageType,jdbcType=TINYINT},
+      page_type = #{record.pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
       url = #{record.url,jdbcType=VARCHAR},
       title = #{record.title,jdbcType=VARCHAR},
       comment_time = #{record.commentTime,jdbcType=TIMESTAMP},
       user_id = #{record.userId,jdbcType=BIGINT},
+      like_count = #{record.likeCount,jdbcType=INTEGER},
       db_update_time = #{record.dbUpdateTime,jdbcType=TIMESTAMP},
       content = #{record.content,jdbcType=LONGVARCHAR}
     <if test="_parameter != null" >
@@ -249,11 +300,12 @@
     update music_comment
     set id = #{record.id,jdbcType=BIGINT},
       resource_id = #{record.resourceId,jdbcType=BIGINT},
-      page_type = #{record.pageType,jdbcType=TINYINT},
+      page_type = #{record.pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
       url = #{record.url,jdbcType=VARCHAR},
       title = #{record.title,jdbcType=VARCHAR},
       comment_time = #{record.commentTime,jdbcType=TIMESTAMP},
       user_id = #{record.userId,jdbcType=BIGINT},
+      like_count = #{record.likeCount,jdbcType=INTEGER},
       db_update_time = #{record.dbUpdateTime,jdbcType=TIMESTAMP}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -266,7 +318,7 @@
         resource_id = #{resourceId,jdbcType=BIGINT},
       </if>
       <if test="pageType != null" >
-        page_type = #{pageType,jdbcType=TINYINT},
+        page_type = #{pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
       </if>
       <if test="url != null" >
         url = #{url,jdbcType=VARCHAR},
@@ -280,6 +332,9 @@
       <if test="userId != null" >
         user_id = #{userId,jdbcType=BIGINT},
       </if>
+      <if test="likeCount != null" >
+        like_count = #{likeCount,jdbcType=INTEGER},
+      </if>
       <if test="dbUpdateTime != null" >
         db_update_time = #{dbUpdateTime,jdbcType=TIMESTAMP},
       </if>
@@ -292,11 +347,12 @@
   <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.netease.music.dao.po.MusicCommentPO" >
     update music_comment
     set resource_id = #{resourceId,jdbcType=BIGINT},
-      page_type = #{pageType,jdbcType=TINYINT},
+      page_type = #{pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
       url = #{url,jdbcType=VARCHAR},
       title = #{title,jdbcType=VARCHAR},
       comment_time = #{commentTime,jdbcType=TIMESTAMP},
       user_id = #{userId,jdbcType=BIGINT},
+      like_count = #{likeCount,jdbcType=INTEGER},
       db_update_time = #{dbUpdateTime,jdbcType=TIMESTAMP},
       content = #{content,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=BIGINT}
@@ -304,11 +360,12 @@
   <update id="updateByPrimaryKey" parameterType="com.netease.music.dao.po.MusicCommentPO" >
     update music_comment
     set resource_id = #{resourceId,jdbcType=BIGINT},
-      page_type = #{pageType,jdbcType=TINYINT},
+      page_type = #{pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
       url = #{url,jdbcType=VARCHAR},
       title = #{title,jdbcType=VARCHAR},
       comment_time = #{commentTime,jdbcType=TIMESTAMP},
       user_id = #{userId,jdbcType=BIGINT},
+      like_count = #{likeCount,jdbcType=INTEGER},
       db_update_time = #{dbUpdateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>

@@ -2,9 +2,9 @@ package com.netease.music.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.netease.music.dao.mapper.MusicPagePOMapperExt;
-import com.netease.music.dao.po.MusicPagePO;
-import com.netease.music.dao.po.MusicPagePOExample;
+import com.netease.music.dao.mapper.PlayListPOMapperExt;
+import com.netease.music.dao.po.PlayListPO;
+import com.netease.music.dao.po.PlayListPOExample;
 import com.netease.music.entity.bo.PlayListDetailBO;
 import com.netease.music.entity.constant.CrawlerConstant;
 import com.netease.music.entity.constant.LogConstant;
@@ -25,17 +25,14 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
 public class CrawlerServiceImpl implements CrawlerService {
     @Autowired
-    private MusicPagePOMapperExt musicPagePOMapper;
+    private PlayListPOMapperExt PlayListPOMapper;
 
     private static final ThreadPoolExecutor crawlerPlayListExecutor = new ThreadPoolExecutor(4, 8, 30, TimeUnit.SECONDS,
             new LinkedBlockingQueue<>(1000),
@@ -49,7 +46,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 
     @Override
     @Async
-    public void initCrawling() {
+    public void initCrawling() throws InterruptedException {
         // 获取全部歌单类别
         List<String> categoryNameList = getAllCategoryNames();
         LogConstant.BUS.info("all categories: {}.", JSON.toJSONString(categoryNameList));
@@ -60,9 +57,28 @@ public class CrawlerServiceImpl implements CrawlerService {
             return;
         }
 
+        int categoryCount = categoryNameList.size();
+        CountDownLatch countDownLatch = new CountDownLatch(categoryCount);
         for (String categoryName : categoryNameList) {
             // 获取分类下的所有id
-            crawlerPlayListExecutor.execute(() -> initPlayListOneCategory(categoryName));
+            crawlerPlayListExecutor.execute(() -> {
+                try {
+                    LogConstant.BUS.info("start... init category {}.", categoryName);
+                    initPlayListOneCategory(categoryName);
+                    LogConstant.BUS.info("end... init category {} end with success.", categoryName);
+                } catch (Exception e) {
+                    LogConstant.BUS.error("init category {} failed, exception info:{}.", categoryName, e.getMessage(), e);
+                } finally {
+                    countDownLatch.countDown();
+                }
+            });
+        }
+
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            LogConstant.BUS.error("initCrawling InterruptedException:", e);
+            throw new InterruptedException();
         }
     }
 
@@ -97,17 +113,15 @@ public class CrawlerServiceImpl implements CrawlerService {
 
                 // 插入数据库
                 for (PlayListDetailBO playListDetailBO : playListDetailBOList) {
-                    MusicPagePO musicPagePO = new MusicPagePO();
-                    BeanUtils.copyProperties(playListDetailBO, musicPagePO);
-                    musicPagePO.setPageType(PageTypeEnum.PLAY_LIST);
-                    musicPagePO.setCrawlingStatus(CrawlingStatusEnum.UN_CRAWLERED);
+                    PlayListPO PlayListPO = new PlayListPO();
+                    BeanUtils.copyProperties(playListDetailBO, PlayListPO);
+                    PlayListPO.setCrawlingStatus(CrawlingStatusEnum.UN_CRAWLERED);
 
-                    MusicPagePOExample example = new MusicPagePOExample();
-                    example.createCriteria().andResourceIdEqualTo(playListDetailBO.getResourceId())
-                            .andPageTypeEqualTo(playListDetailBO.getPageTypeEnum());
-                    int existsMusicPageCount = musicPagePOMapper.countByExample(example);
-                    if (existsMusicPageCount == 0) {
-                        musicPagePOMapper.insertSelective(musicPagePO);
+                    PlayListPOExample example = new PlayListPOExample();
+                    example.createCriteria().andResourceIdEqualTo(playListDetailBO.getResourceId());
+                    int existsPlayListCount = PlayListPOMapper.countByExample(example);
+                    if (existsPlayListCount == 0) {
+                        PlayListPOMapper.insertSelective(PlayListPO);
                     }
                 }
 
@@ -135,37 +149,54 @@ public class CrawlerServiceImpl implements CrawlerService {
             return null;
         }
 
-        Element playListElement = playListElements.get(0);
+        Element playListElement = playListElements.first();
         if (playListElement == null) {
             LogConstant.BUS.info("playListElement is null, url={}.", url);
             return null;
         }
 
         List<PlayListDetailBO> playListDetailBOList = new ArrayList<>();
-        Pattern p = Pattern.compile("^(/playlist\\?id=)(\\d+)$");
-        Elements playListUrlElements = playListElement.getElementsByClass("msk");
-        if (playListUrlElements == null || playListUrlElements.size() == 0) {
-            LogConstant.BUS.info("playListUrlElements is null, url={}.", url);
-            return null;
-        }
+        Pattern playListPattern = Pattern.compile("^(/playlist\\?id=)(\\d+)$");
+        Pattern publisherPattern = Pattern.compile("^(/user/home\\?id=)(\\d+)$");
 
-        for (Element playListUrlElement : playListUrlElements) {
+        Elements playListBlockElements = playListElement.getElementsByTag("li");
+        for (Element playListBlockElement : playListBlockElements) {
+            PlayListDetailBO playListDetailBO = new PlayListDetailBO();
+
+            // 填充歌单信息
+            Element playListUrlElement = playListBlockElement.getElementsByClass("msk").first();
             String playListUrl = playListUrlElement.attr("href");
+            String title = playListUrlElement.attr("title");
             if (StringUtils.isBlank(playListUrl)) {
                 continue;
             }
 
-            Matcher m = p.matcher(playListUrl);
-            if (m.find()) {
-                PlayListDetailBO playListDetailBO = new PlayListDetailBO();
+            Matcher playListMatcher = playListPattern.matcher(playListUrl);
+            if (playListMatcher.find()) {
+
                 playListDetailBO.setUrl(playListUrl);
-                String playListIdString = m.group(2);
+                playListDetailBO.setTitle(title);
+                String playListIdString = playListMatcher.group(2);
                 if (StringUtils.isNotBlank(playListIdString)) {
                     Long playListId = Long.valueOf(playListIdString);
                     playListDetailBO.setResourceId(playListId);
                 }
-                playListDetailBOList.add(playListDetailBO);
             }
+
+            // 填充发布者信息
+            Element publisherElement = playListBlockElement.getElementsByClass("nm").first();
+            String userUrl = publisherElement.attr("href");
+            Matcher publisherMatcher = publisherPattern.matcher(playListUrl);
+            if (publisherMatcher.find()) {
+                String userIdString = publisherMatcher.group(2);
+                if(StringUtils.isNotBlank(userIdString)) {
+                    playListDetailBO.setCreateUserId(Long.valueOf(userIdString));
+                }
+            }
+            String userName = publisherElement.attr("title");
+            playListDetailBO.setCreateUserName(userName);
+
+            playListDetailBOList.add(playListDetailBO);
         }
 
         return playListDetailBOList;
@@ -198,7 +229,7 @@ public class CrawlerServiceImpl implements CrawlerService {
             return null;
         }
 
-        Element categoryElement = categoryElements.get(0);
+        Element categoryElement = categoryElements.first();
         if (categoryElement == null) {
             LogConstant.BUS.info("categoryElement is null.");
             return null;
@@ -216,5 +247,30 @@ public class CrawlerServiceImpl implements CrawlerService {
         }
 
         return categoryNameList;
+    }
+
+    @Override
+    public PlayListDetailBO getPlayListDetail(String url) {
+        Document doc = null;
+
+        try {
+            doc = Jsoup.connect(url).get();
+        } catch (IOException e) {
+            LogConstant.BUS.error("jsoup connect url {} failed:{}.", url, e.getMessage(), e);
+        }
+
+        if (doc == null) {
+            LogConstant.BUS.error("doc for url {} is null.", url);
+            return null;
+        }
+
+        Elements playListElements = doc.select("div#m-playlist");
+        if (playListElements == null || playListElements.size() == 0) {
+            return null;
+        }
+
+        Element playListElement = playListElements.first();
+//        playListElement.getElementsByClass()
+return null;
     }
 }

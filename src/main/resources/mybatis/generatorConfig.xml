@@ -47,17 +47,23 @@
             <property name="enableSubPackages" value="false"/>
         </javaClientGenerator>
 
-        <table tableName="music_page" domainObjectName="MusicPagePO" enableDeleteByExample="false">
+        <table tableName="play_list" domainObjectName="PlayListPO" enableDeleteByExample="false">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
-            <columnOverride column="page_type" property="pageType" jdbcType="TINYINT"
-                            javaType="com.netease.music.entity.enums.PageTypeEnum"
-                            typeHandler="com.netease.music.dao.typehandler.PageTypeEnumHandler"/>
+            <columnOverride column="crawling_status" property="crawlingStatus" jdbcType="TINYINT"
+                            javaType="com.netease.music.entity.enums.CrawlingStatusEnum"
+                            typeHandler="com.netease.music.dao.typehandler.CrawlingStatusEnumHandler"/>
+        </table>
+        <table tableName="song" domainObjectName="SongPO" enableDeleteByExample="false">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <columnOverride column="crawling_status" property="crawlingStatus" jdbcType="TINYINT"
                             javaType="com.netease.music.entity.enums.CrawlingStatusEnum"
                             typeHandler="com.netease.music.dao.typehandler.CrawlingStatusEnumHandler"/>
         </table>
         <table tableName="music_comment" domainObjectName="MusicCommentPO" enableDeleteByExample="false">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+            <columnOverride column="page_type" property="pageType" jdbcType="TINYINT"
+                            javaType="com.netease.music.entity.enums.PageTypeEnum"
+                            typeHandler="com.netease.music.dao.typehandler.PageTypeEnumHandler"/>
         </table>
         <table tableName="user_info" domainObjectName="UserInfoPO" enableDeleteByExample="false">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>

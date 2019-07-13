@@ -1,22 +1,17 @@
 package com.netease.music.dao.po;
 
 import com.netease.music.entity.enums.CrawlingStatusEnum;
-import com.netease.music.entity.enums.PageTypeEnum;
 import java.io.Serializable;
 import java.util.Date;
 
-public class MusicPagePO implements Serializable {
+public class PlayListPO implements Serializable {
     private Long id;
 
     private Long resourceId;
 
-    private PageTypeEnum pageType;
-
     private String url;
 
     private String title;
-
-    private String artist;
 
     private CrawlingStatusEnum crawlingStatus;
 
@@ -29,6 +24,12 @@ public class MusicPagePO implements Serializable {
     private Integer commentCount;
 
     private Integer songCount;
+
+    private Date createTime;
+
+    private Long createUserId;
+
+    private String createUserName;
 
     private Date dbUpdateTime;
 
@@ -50,14 +51,6 @@ public class MusicPagePO implements Serializable {
         this.resourceId = resourceId;
     }
 
-    public PageTypeEnum getPageType() {
-        return pageType;
-    }
-
-    public void setPageType(PageTypeEnum pageType) {
-        this.pageType = pageType;
-    }
-
     public String getUrl() {
         return url;
     }
@@ -72,14 +65,6 @@ public class MusicPagePO implements Serializable {
 
     public void setTitle(String title) {
         this.title = title == null ? null : title.trim();
-    }
-
-    public String getArtist() {
-        return artist;
-    }
-
-    public void setArtist(String artist) {
-        this.artist = artist == null ? null : artist.trim();
     }
 
     public CrawlingStatusEnum getCrawlingStatus() {
@@ -128,6 +113,30 @@ public class MusicPagePO implements Serializable {
 
     public void setSongCount(Integer songCount) {
         this.songCount = songCount;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Long getCreateUserId() {
+        return createUserId;
+    }
+
+    public void setCreateUserId(Long createUserId) {
+        this.createUserId = createUserId;
+    }
+
+    public String getCreateUserName() {
+        return createUserName;
+    }
+
+    public void setCreateUserName(String createUserName) {
+        this.createUserName = createUserName == null ? null : createUserName.trim();
     }
 
     public Date getDbUpdateTime() {
