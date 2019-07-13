@@ -6,6 +6,8 @@ import com.netease.music.dao.po.MusicPagePO;
 import com.netease.music.entity.bo.PlayListDetailBO;
 import com.netease.music.entity.constant.CrawlerConstant;
 import com.netease.music.entity.constant.LogConstant;
+import com.netease.music.entity.enums.CrawlingStatusEnum;
+import com.netease.music.entity.enums.PageTypeEnum;
 import com.netease.music.service.CrawlerService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -81,6 +83,8 @@ public class CrawlerServiceImpl implements CrawlerService {
                 for (PlayListDetailBO playListDetailBO : playListDetailBOList) {
                     MusicPagePO musicPagePO = new MusicPagePO();
                     BeanUtils.copyProperties(playListDetailBO, musicPagePO);
+                    musicPagePO.setPageType(PageTypeEnum.PLAY_LIST);
+                    musicPagePO.setCrawlingStatus(CrawlingStatusEnum.UN_CRAWLERED);
                     musicPagePOMapper.insertSelective(musicPagePO);
                 }
 
