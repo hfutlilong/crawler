@@ -146,6 +146,9 @@
     <if test="orderByClause != null" >
       order by ${orderByClause}
     </if>
+    <if test="pageInfo != null" >
+      limit #{pageInfo.offset} , #{pageInfo.pageSize}
+    </if>
   </select>
   <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Long" >
     select 

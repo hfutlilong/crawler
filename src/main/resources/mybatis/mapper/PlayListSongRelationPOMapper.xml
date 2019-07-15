@@ -4,7 +4,9 @@
   <resultMap id="BaseResultMap" type="com.netease.music.dao.po.PlayListSongRelationPO" >
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="play_list_id" property="playListId" jdbcType="BIGINT" />
+    <result column="play_list_title" property="playListTitle" jdbcType="VARCHAR" />
     <result column="song_id" property="songId" jdbcType="BIGINT" />
+    <result column="song_title" property="songTitle" jdbcType="VARCHAR" />
     <result column="db_update_time" property="dbUpdateTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Example_Where_Clause" >
@@ -66,7 +68,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, play_list_id, song_id, db_update_time
+    id, play_list_id, play_list_title, song_id, song_title, db_update_time
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.netease.music.dao.po.PlayListSongRelationPOExample" >
     select
@@ -80,6 +82,9 @@
     </if>
     <if test="orderByClause != null" >
       order by ${orderByClause}
+    </if>
+    <if test="pageInfo != null" >
+      limit #{pageInfo.offset} , #{pageInfo.pageSize}
     </if>
   </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
@@ -96,10 +101,10 @@
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into play_list_song_relation (play_list_id, song_id, db_update_time
-      )
-    values (#{playListId,jdbcType=BIGINT}, #{songId,jdbcType=BIGINT}, #{dbUpdateTime,jdbcType=TIMESTAMP}
-      )
+    insert into play_list_song_relation (play_list_id, play_list_title, song_id, 
+      song_title, db_update_time)
+    values (#{playListId,jdbcType=BIGINT}, #{playListTitle,jdbcType=VARCHAR}, #{songId,jdbcType=BIGINT}, 
+      #{songTitle,jdbcType=VARCHAR}, #{dbUpdateTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.netease.music.dao.po.PlayListSongRelationPO" >
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
@@ -110,8 +115,14 @@
       <if test="playListId != null" >
         play_list_id,
       </if>
+      <if test="playListTitle != null" >
+        play_list_title,
+      </if>
       <if test="songId != null" >
         song_id,
+      </if>
+      <if test="songTitle != null" >
+        song_title,
       </if>
       <if test="dbUpdateTime != null" >
         db_update_time,
@@ -121,8 +132,14 @@
       <if test="playListId != null" >
         #{playListId,jdbcType=BIGINT},
       </if>
+      <if test="playListTitle != null" >
+        #{playListTitle,jdbcType=VARCHAR},
+      </if>
       <if test="songId != null" >
         #{songId,jdbcType=BIGINT},
+      </if>
+      <if test="songTitle != null" >
+        #{songTitle,jdbcType=VARCHAR},
       </if>
       <if test="dbUpdateTime != null" >
         #{dbUpdateTime,jdbcType=TIMESTAMP},
@@ -144,8 +161,14 @@
       <if test="record.playListId != null" >
         play_list_id = #{record.playListId,jdbcType=BIGINT},
       </if>
+      <if test="record.playListTitle != null" >
+        play_list_title = #{record.playListTitle,jdbcType=VARCHAR},
+      </if>
       <if test="record.songId != null" >
         song_id = #{record.songId,jdbcType=BIGINT},
+      </if>
+      <if test="record.songTitle != null" >
+        song_title = #{record.songTitle,jdbcType=VARCHAR},
       </if>
       <if test="record.dbUpdateTime != null" >
         db_update_time = #{record.dbUpdateTime,jdbcType=TIMESTAMP},
@@ -159,7 +182,9 @@
     update play_list_song_relation
     set id = #{record.id,jdbcType=BIGINT},
       play_list_id = #{record.playListId,jdbcType=BIGINT},
+      play_list_title = #{record.playListTitle,jdbcType=VARCHAR},
       song_id = #{record.songId,jdbcType=BIGINT},
+      song_title = #{record.songTitle,jdbcType=VARCHAR},
       db_update_time = #{record.dbUpdateTime,jdbcType=TIMESTAMP}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -171,8 +196,14 @@
       <if test="playListId != null" >
         play_list_id = #{playListId,jdbcType=BIGINT},
       </if>
+      <if test="playListTitle != null" >
+        play_list_title = #{playListTitle,jdbcType=VARCHAR},
+      </if>
       <if test="songId != null" >
         song_id = #{songId,jdbcType=BIGINT},
+      </if>
+      <if test="songTitle != null" >
+        song_title = #{songTitle,jdbcType=VARCHAR},
       </if>
       <if test="dbUpdateTime != null" >
         db_update_time = #{dbUpdateTime,jdbcType=TIMESTAMP},
@@ -183,7 +214,9 @@
   <update id="updateByPrimaryKey" parameterType="com.netease.music.dao.po.PlayListSongRelationPO" >
     update play_list_song_relation
     set play_list_id = #{playListId,jdbcType=BIGINT},
+      play_list_title = #{playListTitle,jdbcType=VARCHAR},
       song_id = #{songId,jdbcType=BIGINT},
+      song_title = #{songTitle,jdbcType=VARCHAR},
       db_update_time = #{dbUpdateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>

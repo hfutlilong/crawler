@@ -1,6 +1,6 @@
 package com.netease.music.common;
 
-import com.netease.music.entity.constant.LogConstant;
+import com.netease.music.common.log.LogConstant;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.propertyeditors.PropertiesEditor;
 

@@ -8,7 +8,11 @@ public class PlayListSongRelationPO implements Serializable {
 
     private Long playListId;
 
+    private String playListTitle;
+
     private Long songId;
+
+    private String songTitle;
 
     private Date dbUpdateTime;
 
@@ -30,12 +34,28 @@ public class PlayListSongRelationPO implements Serializable {
         this.playListId = playListId;
     }
 
+    public String getPlayListTitle() {
+        return playListTitle;
+    }
+
+    public void setPlayListTitle(String playListTitle) {
+        this.playListTitle = playListTitle == null ? null : playListTitle.trim();
+    }
+
     public Long getSongId() {
         return songId;
     }
 
     public void setSongId(Long songId) {
         this.songId = songId;
+    }
+
+    public String getSongTitle() {
+        return songTitle;
+    }
+
+    public void setSongTitle(String songTitle) {
+        this.songTitle = songTitle == null ? null : songTitle.trim();
     }
 
     public Date getDbUpdateTime() {

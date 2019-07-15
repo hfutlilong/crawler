@@ -1,6 +1,6 @@
 package com.netease.music.controller;
 
-import com.netease.music.entity.constant.LogConstant;
+import com.netease.music.common.log.LogConstant;
 import com.netease.music.service.CrawlerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,11 +13,11 @@ public class CrawlerController {
     @Autowired
     private CrawlerService crawlerService;
 
-    @RequestMapping("initCrawling")
+    @RequestMapping("autoCrawling")
     @ResponseBody
-    public String initCrawling() {
+    public String autoCrawling() {
         try {
-            crawlerService.initCrawling();
+            crawlerService.autoCrawling();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

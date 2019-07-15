@@ -1,5 +1,6 @@
 package com.netease.music.dao.po;
 
+import com.netease.kaola.cs.utils.pagination.PaginationInfo;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,6 +11,8 @@ public class PlayListSongRelationPOExample {
     protected boolean distinct;
 
     protected List<Criteria> oredCriteria;
+
+    protected PaginationInfo pageInfo;
 
     public PlayListSongRelationPOExample() {
         oredCriteria = new ArrayList<Criteria>();
@@ -62,6 +65,14 @@ public class PlayListSongRelationPOExample {
         oredCriteria.clear();
         orderByClause = null;
         distinct = false;
+    }
+
+    public void setPageInfo(PaginationInfo pageInfo) {
+        this.pageInfo=pageInfo;
+    }
+
+    public PaginationInfo getPageInfo() {
+        return pageInfo;
     }
 
     protected abstract static class GeneratedCriteria {
@@ -225,6 +236,76 @@ public class PlayListSongRelationPOExample {
             return (Criteria) this;
         }
 
+        public Criteria andPlayListTitleIsNull() {
+            addCriterion("play_list_title is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayListTitleIsNotNull() {
+            addCriterion("play_list_title is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayListTitleEqualTo(String value) {
+            addCriterion("play_list_title =", value, "playListTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayListTitleNotEqualTo(String value) {
+            addCriterion("play_list_title <>", value, "playListTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayListTitleGreaterThan(String value) {
+            addCriterion("play_list_title >", value, "playListTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayListTitleGreaterThanOrEqualTo(String value) {
+            addCriterion("play_list_title >=", value, "playListTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayListTitleLessThan(String value) {
+            addCriterion("play_list_title <", value, "playListTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayListTitleLessThanOrEqualTo(String value) {
+            addCriterion("play_list_title <=", value, "playListTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayListTitleLike(String value) {
+            addCriterion("play_list_title like", value, "playListTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayListTitleNotLike(String value) {
+            addCriterion("play_list_title not like", value, "playListTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayListTitleIn(List<String> values) {
+            addCriterion("play_list_title in", values, "playListTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayListTitleNotIn(List<String> values) {
+            addCriterion("play_list_title not in", values, "playListTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayListTitleBetween(String value1, String value2) {
+            addCriterion("play_list_title between", value1, value2, "playListTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayListTitleNotBetween(String value1, String value2) {
+            addCriterion("play_list_title not between", value1, value2, "playListTitle");
+            return (Criteria) this;
+        }
+
         public Criteria andSongIdIsNull() {
             addCriterion("song_id is null");
             return (Criteria) this;
@@ -282,6 +363,76 @@ public class PlayListSongRelationPOExample {
 
         public Criteria andSongIdNotBetween(Long value1, Long value2) {
             addCriterion("song_id not between", value1, value2, "songId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongTitleIsNull() {
+            addCriterion("song_title is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongTitleIsNotNull() {
+            addCriterion("song_title is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongTitleEqualTo(String value) {
+            addCriterion("song_title =", value, "songTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongTitleNotEqualTo(String value) {
+            addCriterion("song_title <>", value, "songTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongTitleGreaterThan(String value) {
+            addCriterion("song_title >", value, "songTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongTitleGreaterThanOrEqualTo(String value) {
+            addCriterion("song_title >=", value, "songTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongTitleLessThan(String value) {
+            addCriterion("song_title <", value, "songTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongTitleLessThanOrEqualTo(String value) {
+            addCriterion("song_title <=", value, "songTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongTitleLike(String value) {
+            addCriterion("song_title like", value, "songTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongTitleNotLike(String value) {
+            addCriterion("song_title not like", value, "songTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongTitleIn(List<String> values) {
+            addCriterion("song_title in", values, "songTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongTitleNotIn(List<String> values) {
+            addCriterion("song_title not in", values, "songTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongTitleBetween(String value1, String value2) {
+            addCriterion("song_title between", value1, value2, "songTitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSongTitleNotBetween(String value1, String value2) {
+            addCriterion("song_title not between", value1, value2, "songTitle");
             return (Criteria) this;
         }
 

@@ -2,14 +2,16 @@ package com.netease.music.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.netease.music.dao.mapper.PlayListPOMapperExt;
+import com.netease.kaola.cs.utils.pagination.PaginationInfo;
+import com.netease.music.dao.mapper.PlayListPOMapper;
 import com.netease.music.dao.po.PlayListPO;
 import com.netease.music.dao.po.PlayListPOExample;
 import com.netease.music.entity.bo.PlayListDetailBO;
-import com.netease.music.entity.constant.CrawlerConstant;
-import com.netease.music.entity.constant.LogConstant;
+import com.netease.music.common.constant.CrawlerConstant;
+import com.netease.music.common.log.LogConstant;
 import com.netease.music.entity.enums.CrawlingStatusEnum;
-import com.netease.music.entity.enums.PageTypeEnum;
+import com.netease.music.event.InitPlayListFinishEvent;
+import com.netease.music.event.base.CrawlerEventPublisher;
 import com.netease.music.service.CrawlerService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,10 +34,10 @@ import java.util.regex.Pattern;
 @Service
 public class CrawlerServiceImpl implements CrawlerService {
     @Autowired
-    private PlayListPOMapperExt PlayListPOMapper;
+    private PlayListPOMapper playListPOMapper;
 
-    private static final ThreadPoolExecutor crawlerPlayListExecutor = new ThreadPoolExecutor(4, 8, 30, TimeUnit.SECONDS,
-            new LinkedBlockingQueue<>(1000),
+    private static final ThreadPoolExecutor crawlerExecutor = new ThreadPoolExecutor(4, 8, 30, TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>(5000),
             new ThreadFactoryBuilder().setNameFormat("crawlerPlayListExecutor-%d").build(),
             new RejectedExecutionHandler() {
                 @Override
@@ -46,6 +48,17 @@ public class CrawlerServiceImpl implements CrawlerService {
 
     @Override
     @Async
+    public void autoCrawling() throws InterruptedException {
+        initCrawling();
+
+        // 发送初始化完成事件
+        CrawlerEventPublisher.publish(new InitPlayListFinishEvent());
+    }
+
+    /**
+     * 抓取所有歌单，存入数据库
+     * @throws InterruptedException
+     */
     public void initCrawling() throws InterruptedException {
         // 获取全部歌单类别
         List<String> categoryNameList = getAllCategoryNames();
@@ -61,13 +74,14 @@ public class CrawlerServiceImpl implements CrawlerService {
         CountDownLatch countDownLatch = new CountDownLatch(categoryCount);
         for (String categoryName : categoryNameList) {
             // 获取分类下的所有id
-            crawlerPlayListExecutor.execute(() -> {
+            crawlerExecutor.execute(() -> {
                 try {
-                    LogConstant.BUS.info("start... init category {}.", categoryName);
+                    LogConstant.BUS.info("start... auto crawling category {}.", categoryName);
                     initPlayListOneCategory(categoryName);
                     LogConstant.BUS.info("end... init category {} end with success.", categoryName);
                 } catch (Exception e) {
-                    LogConstant.BUS.error("init category {} failed, exception info:{}.", categoryName, e.getMessage(), e);
+                    LogConstant.BUS.error("init category {} failed, exception info:{}.", categoryName, e.getMessage(),
+                            e);
                 } finally {
                     countDownLatch.countDown();
                 }
@@ -80,10 +94,16 @@ public class CrawlerServiceImpl implements CrawlerService {
             LogConstant.BUS.error("initCrawling InterruptedException:", e);
             throw new InterruptedException();
         }
+
+        LogConstant.BUS.info("initCrawling done.");
     }
 
-    @Override
-    public void initPlayListOneCategory(String categoryName) {
+    /**
+     * 初始化一个类别的歌单
+     * 
+     * @param categoryName
+     */
+    private void initPlayListOneCategory(String categoryName) {
         if (StringUtils.isBlank(categoryName)) {
             LogConstant.BUS.error("crawlingWithCategory failed, param categoryName cannot be blank.");
             return;
@@ -119,9 +139,9 @@ public class CrawlerServiceImpl implements CrawlerService {
 
                     PlayListPOExample example = new PlayListPOExample();
                     example.createCriteria().andResourceIdEqualTo(playListDetailBO.getResourceId());
-                    int existsPlayListCount = PlayListPOMapper.countByExample(example);
+                    int existsPlayListCount = playListPOMapper.countByExample(example);
                     if (existsPlayListCount == 0) {
-                        PlayListPOMapper.insertSelective(PlayListPO);
+                        playListPOMapper.insertSelective(PlayListPO);
                     }
                 }
 
@@ -135,8 +155,14 @@ public class CrawlerServiceImpl implements CrawlerService {
         }
     }
 
-    @Override
-    public List<PlayListDetailBO> getPlayListOnePage(String url) throws Exception {
+    /**
+     * 获取一个页面的所有歌单
+     * 
+     * @param url
+     * @return
+     * @throws Exception
+     */
+    private List<PlayListDetailBO> getPlayListOnePage(String url) throws Exception {
         Document doc = Jsoup.connect(url).get();
         if (doc == null) {
             LogConstant.BUS.info("doc is null, url={}.", url);
@@ -189,7 +215,7 @@ public class CrawlerServiceImpl implements CrawlerService {
             Matcher publisherMatcher = publisherPattern.matcher(playListUrl);
             if (publisherMatcher.find()) {
                 String userIdString = publisherMatcher.group(2);
-                if(StringUtils.isNotBlank(userIdString)) {
+                if (StringUtils.isNotBlank(userIdString)) {
                     playListDetailBO.setCreateUserId(Long.valueOf(userIdString));
                 }
             }
@@ -250,27 +276,41 @@ public class CrawlerServiceImpl implements CrawlerService {
     }
 
     @Override
-    public PlayListDetailBO getPlayListDetail(String url) {
-        Document doc = null;
+    public void crawlingPlayList() {
+        for (;;) {
+            // 找到未爬取的歌单id
+            PlayListPOExample example = new PlayListPOExample();
+            example.createCriteria().andCrawlingStatusEqualTo(CrawlingStatusEnum.UN_CRAWLERED);
+            example.setPageInfo(new PaginationInfo(1, CrawlerConstant.CRAWLING_PLAY_LIST_BATCH_SIZE)); // 分批爬取
+            List<PlayListPO> playListPOList = playListPOMapper.selectByExample(example);
+            LogConstant.BUS.info("fetch play list success, fetch count:{}.", playListPOList.size());
+            if (CollectionUtils.isEmpty(playListPOList)) {
+                break;
+            }
 
-        try {
-            doc = Jsoup.connect(url).get();
-        } catch (IOException e) {
-            LogConstant.BUS.error("jsoup connect url {} failed:{}.", url, e.getMessage(), e);
+            for (PlayListPO playListPO : playListPOList) {
+                crawlerExecutor.execute(() -> doCrawlingPlayList(playListPO));
+            }
         }
+        LogConstant.BUS.info("crawling play list done.");
+    }
 
-        if (doc == null) {
-            LogConstant.BUS.error("doc for url {} is null.", url);
-            return null;
-        }
+    /**
+     * 爬取一批歌单
+     * 
+     * @param playListPO
+     */
+    private void doCrawlingPlayList(PlayListPO playListPO) {
+        // 开始爬取
+        playListPO.setCrawlingStatus(CrawlingStatusEnum.CRAWLING);
+        PlayListPOExample example = new PlayListPOExample();
+        example.createCriteria().andResourceIdEqualTo(playListPO.getResourceId());
+        playListPOMapper.updateByExampleSelective(playListPO, example);
 
-        Elements playListElements = doc.select("div#m-playlist");
-        if (playListElements == null || playListElements.size() == 0) {
-            return null;
-        }
+        // 获取歌单信息，获取歌单里面的歌曲，初始化歌曲表的id、名字、爬取状态，插入表单-歌曲关系
 
-        Element playListElement = playListElements.first();
-//        playListElement.getElementsByClass()
-return null;
+        // 爬取完成
+        playListPO.setCrawlingStatus(CrawlingStatusEnum.CRAWLERED);
+        playListPOMapper.updateByExampleSelective(playListPO, example);
     }
 }

@@ -1,5 +1,6 @@
 package com.netease.music.dao.po;
 
+import com.netease.kaola.cs.utils.pagination.PaginationInfo;
 import com.netease.music.entity.enums.SexEnum;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,6 +12,8 @@ public class UserInfoPOExample {
     protected boolean distinct;
 
     protected List<Criteria> oredCriteria;
+
+    protected PaginationInfo pageInfo;
 
     public UserInfoPOExample() {
         oredCriteria = new ArrayList<Criteria>();
@@ -63,6 +66,14 @@ public class UserInfoPOExample {
         oredCriteria.clear();
         orderByClause = null;
         distinct = false;
+    }
+
+    public void setPageInfo(PaginationInfo pageInfo) {
+        this.pageInfo=pageInfo;
+    }
+
+    public PaginationInfo getPageInfo() {
+        return pageInfo;
     }
 
     protected abstract static class GeneratedCriteria {

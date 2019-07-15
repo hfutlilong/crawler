@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="mybatis.mapper.PlayListSongRelationPOMapperExt" >
+<mapper namespace="com.netease.music.dao.mapper.PlayListSongRelationPOMapperExt" >
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into play_list_song_relation (play_list_id, play_list_title, song_id, song_title)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.playListId},#{item.playListTitle},#{item.songId},#{item.songTitle})
+        </foreach>
+    </insert>
 </mapper>

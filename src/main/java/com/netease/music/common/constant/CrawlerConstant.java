@@ -1,15 +1,10 @@
-package com.netease.music.entity.constant;
+package com.netease.music.common.constant;
 
 public class CrawlerConstant {
     /**
      * 网易云音乐url前缀
      */
     public static final String NETEASE_MUSIC_PREFIX = "https://music.163.com/";
-
-    /**
-     * 歌单页面
-     */
-    public static final String PLAY_LIST_PAGE = "https://music.163.com/playlist?id={playListId}";
 
     /**
      * 爬取起始页面
@@ -39,6 +34,11 @@ public class CrawlerConstant {
     }
 
     /**
+     * 歌单页面
+     */
+    public static final String PLAY_LIST_PAGE = "https://music.163.com/playlist?id={playListId}";
+
+    /**
      * 歌单页面id
      * @param playListId
      * @return
@@ -46,4 +46,9 @@ public class CrawlerConstant {
     public static String getPlayListPage(Long playListId) {
         return PLAY_LIST_PAGE.replace("{playListId}", String.valueOf(playListId));
     }
+
+    /**
+     * 分批爬取歌单页，每批爬多少个歌单
+     */
+    public static final Integer CRAWLING_PLAY_LIST_BATCH_SIZE = 2000;
 }
