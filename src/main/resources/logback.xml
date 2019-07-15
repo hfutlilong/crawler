@@ -19,11 +19,11 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
         <!-- encoder的默认实现类是ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
         <encoder>
             <pattern>${GLOBAL_LOG_PATTERN}</pattern>
-            <charset>utf8</charset>
-            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-                <level>INFO</level>
-            </filter>
+<!--            <charset>utf8</charset>-->
         </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
     </appender>
 
     <!-- 业务日志，预定义logger，分业务模块打日志 config start -->
@@ -65,7 +65,7 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
     </logger>
 
     <!-- root的默认level是DEBUG -->
-    <root level="INFO">
+    <root level="DEBUG">
         <appender-ref ref="consoleAppender" />
         <appender-ref ref="errorLogAppender"/>
     </root>

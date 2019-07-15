@@ -212,7 +212,7 @@ public class CrawlerServiceImpl implements CrawlerService {
             // 填充发布者信息
             Element publisherElement = playListBlockElement.getElementsByClass("nm").first();
             String userUrl = publisherElement.attr("href");
-            Matcher publisherMatcher = publisherPattern.matcher(playListUrl);
+            Matcher publisherMatcher = publisherPattern.matcher(userUrl);
             if (publisherMatcher.find()) {
                 String userIdString = publisherMatcher.group(2);
                 if (StringUtils.isNotBlank(userIdString)) {

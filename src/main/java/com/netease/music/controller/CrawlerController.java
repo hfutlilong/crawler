@@ -27,9 +27,9 @@ public class CrawlerController {
     @RequestMapping("hello")
     @ResponseBody
     public String testHello() {
-        LogConstant.BUS.debug("DEBUG LOG TEST");
-        LogConstant.BUS.info("INFO LOG TEST");
-        LogConstant.BUS.error("ERROR LOG TEST");
+        LogConstant.BUS.debug("DEBUG LOG TEST 测试");
+        LogConstant.BUS.info("INFO LOG TEST 测试");
+        LogConstant.BUS.error("ERROR LOG TEST 测试");
 
         return "66666666666";
     }
