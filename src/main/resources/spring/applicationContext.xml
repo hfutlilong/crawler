@@ -10,14 +10,13 @@
        http://www.springframework.org/schema/task  http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 
     <context:component-scan base-package="com.netease.music.service,com.netease.music.event"/>
+    <context:annotation-config/>
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
 
     <!-- @Async异步执行注解 -->
     <task:executor id="defaultTaskExecutor" keep-alive="300" pool-size="2-5" queue-capacity="500"
                    rejection-policy="ABORT"/>
-    <task:annotation-driven executor="defaultTaskExecutor"/>
-
-    <context:annotation-config/>
-    <aop:aspectj-autoproxy proxy-target-class="true"/>
+    <task:annotation-driven executor="defaultTaskExecutor" proxy-target-class="true" />
 
     <!-- bean -->
     <bean id="springContextUtil" class="com.netease.music.utils.SpringContextUtil" lazy-init="false" />

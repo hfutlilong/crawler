@@ -71,5 +71,5 @@
         <property name="dataSource" ref="localDataSource" />
     </bean>
 
-    <tx:annotation-driven/>
+    <tx:annotation-driven proxy-target-class="true"/>
 </beans>
