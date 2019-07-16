@@ -12,9 +12,9 @@
     <context:component-scan base-package="com.netease.music.service,com.netease.music.event"/>
 
     <!-- @Async异步执行注解 -->
-    <task:executor id="defaultExecutor" keep-alive="300" pool-size="2-5" queue-capacity="500"
+    <task:executor id="defaultTaskExecutor" keep-alive="300" pool-size="2-5" queue-capacity="500"
                    rejection-policy="ABORT"/>
-    <task:annotation-driven executor="defaultExecutor"/>
+    <task:annotation-driven executor="defaultTaskExecutor"/>
 
     <context:annotation-config/>
     <aop:aspectj-autoproxy proxy-target-class="true"/>
