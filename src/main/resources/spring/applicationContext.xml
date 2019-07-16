@@ -17,7 +17,7 @@
     <task:annotation-driven executor="defaultExecutor"/>
 
     <context:annotation-config/>
-    <aop:aspectj-autoproxy/>
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
 
     <!-- bean -->
     <bean id="springContextUtil" class="com.netease.music.utils.SpringContextUtil" lazy-init="false" />

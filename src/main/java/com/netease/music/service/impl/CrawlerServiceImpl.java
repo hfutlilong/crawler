@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,6 +37,8 @@ import java.util.regex.Pattern;
 public class CrawlerServiceImpl implements CrawlerService {
     @Autowired
     private PlayListPOMapper playListPOMapper;
+
+    private Lock playListLock = new ReentrantLock();
 
     private static final ThreadPoolExecutor crawlerExecutor = new ThreadPoolExecutor(4, 8, 30, TimeUnit.SECONDS,
             new LinkedBlockingQueue<>(5000),
@@ -57,6 +61,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 
     /**
      * 抓取所有歌单，存入数据库
+     * 
      * @throws InterruptedException
      */
     public void initCrawling() throws InterruptedException {
@@ -103,7 +108,8 @@ public class CrawlerServiceImpl implements CrawlerService {
      * 
      * @param categoryName
      */
-    private void initPlayListOneCategory(String categoryName) {
+    @Override
+    public void initPlayListOneCategory(String categoryName) {
         if (StringUtils.isBlank(categoryName)) {
             LogConstant.BUS.error("crawlingWithCategory failed, param categoryName cannot be blank.");
             return;
@@ -139,9 +145,15 @@ public class CrawlerServiceImpl implements CrawlerService {
 
                     PlayListPOExample example = new PlayListPOExample();
                     example.createCriteria().andResourceIdEqualTo(playListDetailBO.getResourceId());
-                    int existsPlayListCount = playListPOMapper.countByExample(example);
-                    if (existsPlayListCount == 0) {
-                        playListPOMapper.insertSelective(PlayListPO);
+
+                    playListLock.lock();
+                    try {
+                        int existsPlayListCount = playListPOMapper.countByExample(example);
+                        if (existsPlayListCount == 0) {
+                            playListPOMapper.insertSelective(PlayListPO);
+                        }
+                    } finally {
+                        playListLock.unlock();
                     }
                 }
 
@@ -301,6 +313,12 @@ public class CrawlerServiceImpl implements CrawlerService {
      * @param playListPO
      */
     private void doCrawlingPlayList(PlayListPO playListPO) {
+        Long playListId = playListPO.getResourceId();
+        if (playListId == null) {
+            LogConstant.BUS.error("doCrawlingPlayList failed, playListId in playListPO is null.");
+            return;
+        }
+
         // 开始爬取
         playListPO.setCrawlingStatus(CrawlingStatusEnum.CRAWLING);
         PlayListPOExample example = new PlayListPOExample();
@@ -308,9 +326,46 @@ public class CrawlerServiceImpl implements CrawlerService {
         playListPOMapper.updateByExampleSelective(playListPO, example);
 
         // 获取歌单信息，获取歌单里面的歌曲，初始化歌曲表的id、名字、爬取状态，插入表单-歌曲关系
+        try {
+            Document doc = Jsoup.connect(CrawlerConstant.getPlayListPage(playListId)).get();
+            if (doc == null) {
+                LogConstant.BUS.error("doc not exists, playListId={}.", playListId);
+                return;
+            }
+            Element statisticElement = doc.select("div#content-operation").first(); // 收藏数、转发数、播放数等统计信息
+            if (statisticElement == null) {
+                LogConstant.BUS.error("statisticElement not exists, playListId={}.", playListId);
+                return;
+            }
 
-        // 爬取完成
-        playListPO.setCrawlingStatus(CrawlingStatusEnum.CRAWLERED);
-        playListPOMapper.updateByExampleSelective(playListPO, example);
+            // 收藏数
+            Integer favoritesCount = 0;
+            Element favElement = statisticElement.select("a[data-res-action=fav]").first();
+            if (favElement != null) {
+                String favCountStr = favElement.attr("data-count");
+                if (StringUtils.isNotBlank(favCountStr)) {
+                    favoritesCount = Integer.valueOf(favoritesCount);
+                }
+            }
+
+            // 转发数
+            Integer forwardCount = 0;
+            Element shareElement = statisticElement.select("a[data-res-action=share]").first();
+            if (favElement != null) {
+                String shareCountStr = favElement.attr("data-count");
+                if (StringUtils.isNotBlank(shareCountStr)) {
+                    forwardCount = Integer.valueOf(shareCountStr);
+                }
+            }
+
+
+            // 爬取完成
+            playListPO.setCrawlingStatus(CrawlingStatusEnum.CRAWLERED);
+            playListPOMapper.updateByExampleSelective(playListPO, example);
+        } catch (Exception e) {
+            // 爬取失败
+            playListPO.setCrawlingStatus(CrawlingStatusEnum.CRAWLING_FAILED);
+            playListPOMapper.updateByExampleSelective(playListPO, example);
+        }
     }
 }

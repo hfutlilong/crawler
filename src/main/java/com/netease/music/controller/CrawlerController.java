@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("crawler")
-public class CrawlerController {
+public class CrawlerController extends BaseController {
     @Autowired
     private CrawlerService crawlerService;
 

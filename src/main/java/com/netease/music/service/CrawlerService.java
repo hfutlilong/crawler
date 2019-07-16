@@ -14,6 +14,12 @@ public interface CrawlerService {
     void initCrawling() throws InterruptedException;
 
     /**
+     * 初始化一个类别下的歌单
+     * @param categoryName
+     */
+    void initPlayListOneCategory(String categoryName);
+
+    /**
      * 爬取歌单
      */
     void crawlingPlayList();
