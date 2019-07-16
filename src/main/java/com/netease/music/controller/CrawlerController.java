@@ -5,6 +5,7 @@ import com.netease.music.service.CrawlerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -13,13 +14,26 @@ public class CrawlerController extends BaseController {
     @Autowired
     private CrawlerService crawlerService;
 
-    @RequestMapping("autoCrawling")
+    @RequestMapping(value = "autoCrawling", method = RequestMethod.GET)
     @ResponseBody
     public String autoCrawling() {
         try {
             crawlerService.autoCrawling();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            LogConstant.BUS.error("autoCrawling failed: {}", e.getMessage(), e);
+            return e.getMessage();
+        }
+        return "success";
+    }
+
+    @RequestMapping(value = "crawlingOnePlayList", method = RequestMethod.GET)
+    @ResponseBody
+    public String crawlingOnePlayList(Long playListId) {
+        try {
+            crawlerService.crawlingOnePlayList(playListId);
+        } catch (Exception e) {
+            LogConstant.BUS.error("autoCrawling failed: {}", e.getMessage(), e);
+            return e.getMessage();
         }
         return "success";
     }

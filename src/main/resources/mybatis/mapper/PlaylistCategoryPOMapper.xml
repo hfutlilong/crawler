@@ -1,17 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.netease.music.dao.mapper.SongPOMapper" >
-  <resultMap id="BaseResultMap" type="com.netease.music.dao.po.SongPO" >
+<mapper namespace="com.netease.music.dao.mapper.PlaylistCategoryPOMapper" >
+  <resultMap id="BaseResultMap" type="com.netease.music.dao.po.PlaylistCategoryPO" >
     <id column="id" property="id" jdbcType="BIGINT" />
-    <result column="resource_id" property="resourceId" jdbcType="BIGINT" />
-    <result column="url" property="url" jdbcType="VARCHAR" />
-    <result column="title" property="title" jdbcType="VARCHAR" />
-    <result column="artist_id" property="artistId" jdbcType="BIGINT" />
-    <result column="artist_name" property="artistName" jdbcType="VARCHAR" />
-    <result column="album_id" property="albumId" jdbcType="BIGINT" />
-    <result column="album_name" property="albumName" jdbcType="VARCHAR" />
-    <result column="play_duration" property="playDuration" jdbcType="VARCHAR" />
-    <result column="comment_count" property="commentCount" jdbcType="INTEGER" />
+    <result column="category_name" property="categoryName" jdbcType="VARCHAR" />
     <result column="crawling_status" property="crawlingStatus" jdbcType="TINYINT" typeHandler="com.netease.music.dao.typehandler.CrawlingStatusEnumHandler" />
     <result column="db_update_time" property="dbUpdateTime" jdbcType="TIMESTAMP" />
   </resultMap>
@@ -112,16 +104,15 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, resource_id, url, title, artist_id, artist_name, album_id, album_name, play_duration, 
-    comment_count, crawling_status, db_update_time
+    id, category_name, crawling_status, db_update_time
   </sql>
-  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.netease.music.dao.po.SongPOExample" >
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.netease.music.dao.po.PlaylistCategoryPOExample" >
     select
     <if test="distinct" >
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from song
+    from playlist_category
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
@@ -135,60 +126,30 @@
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
     <include refid="Base_Column_List" />
-    from song
+    from playlist_category
     where id = #{id,jdbcType=BIGINT}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
-    delete from song
+    delete from playlist_category
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.netease.music.dao.po.SongPO" >
+  <insert id="insert" parameterType="com.netease.music.dao.po.PlaylistCategoryPO" >
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into song (resource_id, url, title, 
-      artist_id, artist_name, album_id, 
-      album_name, play_duration, comment_count, 
-      crawling_status, 
+    insert into playlist_category (category_name, crawling_status, 
       db_update_time)
-    values (#{resourceId,jdbcType=BIGINT}, #{url,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
-      #{artistId,jdbcType=BIGINT}, #{artistName,jdbcType=VARCHAR}, #{albumId,jdbcType=BIGINT}, 
-      #{albumName,jdbcType=VARCHAR}, #{playDuration,jdbcType=VARCHAR}, #{commentCount,jdbcType=INTEGER}, 
-      #{crawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler}, 
+    values (#{categoryName,jdbcType=VARCHAR}, #{crawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler}, 
       #{dbUpdateTime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.netease.music.dao.po.SongPO" >
+  <insert id="insertSelective" parameterType="com.netease.music.dao.po.PlaylistCategoryPO" >
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into song
+    insert into playlist_category
     <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="resourceId != null" >
-        resource_id,
-      </if>
-      <if test="url != null" >
-        url,
-      </if>
-      <if test="title != null" >
-        title,
-      </if>
-      <if test="artistId != null" >
-        artist_id,
-      </if>
-      <if test="artistName != null" >
-        artist_name,
-      </if>
-      <if test="albumId != null" >
-        album_id,
-      </if>
-      <if test="albumName != null" >
-        album_name,
-      </if>
-      <if test="playDuration != null" >
-        play_duration,
-      </if>
-      <if test="commentCount != null" >
-        comment_count,
+      <if test="categoryName != null" >
+        category_name,
       </if>
       <if test="crawlingStatus != null" >
         crawling_status,
@@ -198,32 +159,8 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="resourceId != null" >
-        #{resourceId,jdbcType=BIGINT},
-      </if>
-      <if test="url != null" >
-        #{url,jdbcType=VARCHAR},
-      </if>
-      <if test="title != null" >
-        #{title,jdbcType=VARCHAR},
-      </if>
-      <if test="artistId != null" >
-        #{artistId,jdbcType=BIGINT},
-      </if>
-      <if test="artistName != null" >
-        #{artistName,jdbcType=VARCHAR},
-      </if>
-      <if test="albumId != null" >
-        #{albumId,jdbcType=BIGINT},
-      </if>
-      <if test="albumName != null" >
-        #{albumName,jdbcType=VARCHAR},
-      </if>
-      <if test="playDuration != null" >
-        #{playDuration,jdbcType=VARCHAR},
-      </if>
-      <if test="commentCount != null" >
-        #{commentCount,jdbcType=INTEGER},
+      <if test="categoryName != null" >
+        #{categoryName,jdbcType=VARCHAR},
       </if>
       <if test="crawlingStatus != null" >
         #{crawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler},
@@ -233,44 +170,20 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.netease.music.dao.po.SongPOExample" resultType="java.lang.Integer" >
-    select count(*) from song
+  <select id="countByExample" parameterType="com.netease.music.dao.po.PlaylistCategoryPOExample" resultType="java.lang.Integer" >
+    select count(*) from playlist_category
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map" >
-    update song
+    update playlist_category
     <set >
       <if test="record.id != null" >
         id = #{record.id,jdbcType=BIGINT},
       </if>
-      <if test="record.resourceId != null" >
-        resource_id = #{record.resourceId,jdbcType=BIGINT},
-      </if>
-      <if test="record.url != null" >
-        url = #{record.url,jdbcType=VARCHAR},
-      </if>
-      <if test="record.title != null" >
-        title = #{record.title,jdbcType=VARCHAR},
-      </if>
-      <if test="record.artistId != null" >
-        artist_id = #{record.artistId,jdbcType=BIGINT},
-      </if>
-      <if test="record.artistName != null" >
-        artist_name = #{record.artistName,jdbcType=VARCHAR},
-      </if>
-      <if test="record.albumId != null" >
-        album_id = #{record.albumId,jdbcType=BIGINT},
-      </if>
-      <if test="record.albumName != null" >
-        album_name = #{record.albumName,jdbcType=VARCHAR},
-      </if>
-      <if test="record.playDuration != null" >
-        play_duration = #{record.playDuration,jdbcType=VARCHAR},
-      </if>
-      <if test="record.commentCount != null" >
-        comment_count = #{record.commentCount,jdbcType=INTEGER},
+      <if test="record.categoryName != null" >
+        category_name = #{record.categoryName,jdbcType=VARCHAR},
       </if>
       <if test="record.crawlingStatus != null" >
         crawling_status = #{record.crawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler},
@@ -284,52 +197,20 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map" >
-    update song
+    update playlist_category
     set id = #{record.id,jdbcType=BIGINT},
-      resource_id = #{record.resourceId,jdbcType=BIGINT},
-      url = #{record.url,jdbcType=VARCHAR},
-      title = #{record.title,jdbcType=VARCHAR},
-      artist_id = #{record.artistId,jdbcType=BIGINT},
-      artist_name = #{record.artistName,jdbcType=VARCHAR},
-      album_id = #{record.albumId,jdbcType=BIGINT},
-      album_name = #{record.albumName,jdbcType=VARCHAR},
-      play_duration = #{record.playDuration,jdbcType=VARCHAR},
-      comment_count = #{record.commentCount,jdbcType=INTEGER},
+      category_name = #{record.categoryName,jdbcType=VARCHAR},
       crawling_status = #{record.crawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler},
       db_update_time = #{record.dbUpdateTime,jdbcType=TIMESTAMP}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.netease.music.dao.po.SongPO" >
-    update song
+  <update id="updateByPrimaryKeySelective" parameterType="com.netease.music.dao.po.PlaylistCategoryPO" >
+    update playlist_category
     <set >
-      <if test="resourceId != null" >
-        resource_id = #{resourceId,jdbcType=BIGINT},
-      </if>
-      <if test="url != null" >
-        url = #{url,jdbcType=VARCHAR},
-      </if>
-      <if test="title != null" >
-        title = #{title,jdbcType=VARCHAR},
-      </if>
-      <if test="artistId != null" >
-        artist_id = #{artistId,jdbcType=BIGINT},
-      </if>
-      <if test="artistName != null" >
-        artist_name = #{artistName,jdbcType=VARCHAR},
-      </if>
-      <if test="albumId != null" >
-        album_id = #{albumId,jdbcType=BIGINT},
-      </if>
-      <if test="albumName != null" >
-        album_name = #{albumName,jdbcType=VARCHAR},
-      </if>
-      <if test="playDuration != null" >
-        play_duration = #{playDuration,jdbcType=VARCHAR},
-      </if>
-      <if test="commentCount != null" >
-        comment_count = #{commentCount,jdbcType=INTEGER},
+      <if test="categoryName != null" >
+        category_name = #{categoryName,jdbcType=VARCHAR},
       </if>
       <if test="crawlingStatus != null" >
         crawling_status = #{crawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler},
@@ -340,17 +221,9 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.netease.music.dao.po.SongPO" >
-    update song
-    set resource_id = #{resourceId,jdbcType=BIGINT},
-      url = #{url,jdbcType=VARCHAR},
-      title = #{title,jdbcType=VARCHAR},
-      artist_id = #{artistId,jdbcType=BIGINT},
-      artist_name = #{artistName,jdbcType=VARCHAR},
-      album_id = #{albumId,jdbcType=BIGINT},
-      album_name = #{albumName,jdbcType=VARCHAR},
-      play_duration = #{playDuration,jdbcType=VARCHAR},
-      comment_count = #{commentCount,jdbcType=INTEGER},
+  <update id="updateByPrimaryKey" parameterType="com.netease.music.dao.po.PlaylistCategoryPO" >
+    update playlist_category
+    set category_name = #{categoryName,jdbcType=VARCHAR},
       crawling_status = #{crawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler},
       db_update_time = #{dbUpdateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}

@@ -23,4 +23,15 @@ public interface CrawlerService {
      * 爬取歌单
      */
     void crawlingPlayList();
+
+    /**
+     * 爬取一个歌单
+     * @param playListId
+     */
+    void crawlingOnePlayList(Long playListId);
+
+    /**
+     * 爬取所有歌曲信息
+     */
+    void crawlingSongInfo();
 }

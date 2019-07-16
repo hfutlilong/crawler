@@ -17,6 +17,12 @@ public class SongPO implements Serializable {
 
     private String artistName;
 
+    private Long albumId;
+
+    private String albumName;
+
+    private String playDuration;
+
     private Integer commentCount;
 
     private CrawlingStatusEnum crawlingStatus;
@@ -71,6 +77,30 @@ public class SongPO implements Serializable {
 
     public void setArtistName(String artistName) {
         this.artistName = artistName == null ? null : artistName.trim();
+    }
+
+    public Long getAlbumId() {
+        return albumId;
+    }
+
+    public void setAlbumId(Long albumId) {
+        this.albumId = albumId;
+    }
+
+    public String getAlbumName() {
+        return albumName;
+    }
+
+    public void setAlbumName(String albumName) {
+        this.albumName = albumName == null ? null : albumName.trim();
+    }
+
+    public String getPlayDuration() {
+        return playDuration;
+    }
+
+    public void setPlayDuration(String playDuration) {
+        this.playDuration = playDuration == null ? null : playDuration.trim();
     }
 
     public Integer getCommentCount() {

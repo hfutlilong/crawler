@@ -541,6 +541,206 @@ public class SongPOExample {
             return (Criteria) this;
         }
 
+        public Criteria andAlbumIdIsNull() {
+            addCriterion("album_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlbumIdIsNotNull() {
+            addCriterion("album_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlbumIdEqualTo(Long value) {
+            addCriterion("album_id =", value, "albumId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlbumIdNotEqualTo(Long value) {
+            addCriterion("album_id <>", value, "albumId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlbumIdGreaterThan(Long value) {
+            addCriterion("album_id >", value, "albumId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlbumIdGreaterThanOrEqualTo(Long value) {
+            addCriterion("album_id >=", value, "albumId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlbumIdLessThan(Long value) {
+            addCriterion("album_id <", value, "albumId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlbumIdLessThanOrEqualTo(Long value) {
+            addCriterion("album_id <=", value, "albumId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlbumIdIn(List<Long> values) {
+            addCriterion("album_id in", values, "albumId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlbumIdNotIn(List<Long> values) {
+            addCriterion("album_id not in", values, "albumId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlbumIdBetween(Long value1, Long value2) {
+            addCriterion("album_id between", value1, value2, "albumId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlbumIdNotBetween(Long value1, Long value2) {
+            addCriterion("album_id not between", value1, value2, "albumId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlbumNameIsNull() {
+            addCriterion("album_name is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlbumNameIsNotNull() {
+            addCriterion("album_name is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlbumNameEqualTo(String value) {
+            addCriterion("album_name =", value, "albumName");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlbumNameNotEqualTo(String value) {
+            addCriterion("album_name <>", value, "albumName");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlbumNameGreaterThan(String value) {
+            addCriterion("album_name >", value, "albumName");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlbumNameGreaterThanOrEqualTo(String value) {
+            addCriterion("album_name >=", value, "albumName");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlbumNameLessThan(String value) {
+            addCriterion("album_name <", value, "albumName");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlbumNameLessThanOrEqualTo(String value) {
+            addCriterion("album_name <=", value, "albumName");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlbumNameLike(String value) {
+            addCriterion("album_name like", value, "albumName");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlbumNameNotLike(String value) {
+            addCriterion("album_name not like", value, "albumName");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlbumNameIn(List<String> values) {
+            addCriterion("album_name in", values, "albumName");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlbumNameNotIn(List<String> values) {
+            addCriterion("album_name not in", values, "albumName");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlbumNameBetween(String value1, String value2) {
+            addCriterion("album_name between", value1, value2, "albumName");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlbumNameNotBetween(String value1, String value2) {
+            addCriterion("album_name not between", value1, value2, "albumName");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayDurationIsNull() {
+            addCriterion("play_duration is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayDurationIsNotNull() {
+            addCriterion("play_duration is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayDurationEqualTo(String value) {
+            addCriterion("play_duration =", value, "playDuration");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayDurationNotEqualTo(String value) {
+            addCriterion("play_duration <>", value, "playDuration");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayDurationGreaterThan(String value) {
+            addCriterion("play_duration >", value, "playDuration");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayDurationGreaterThanOrEqualTo(String value) {
+            addCriterion("play_duration >=", value, "playDuration");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayDurationLessThan(String value) {
+            addCriterion("play_duration <", value, "playDuration");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayDurationLessThanOrEqualTo(String value) {
+            addCriterion("play_duration <=", value, "playDuration");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayDurationLike(String value) {
+            addCriterion("play_duration like", value, "playDuration");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayDurationNotLike(String value) {
+            addCriterion("play_duration not like", value, "playDuration");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayDurationIn(List<String> values) {
+            addCriterion("play_duration in", values, "playDuration");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayDurationNotIn(List<String> values) {
+            addCriterion("play_duration not in", values, "playDuration");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayDurationBetween(String value1, String value2) {
+            addCriterion("play_duration between", value1, value2, "playDuration");
+            return (Criteria) this;
+        }
+
+        public Criteria andPlayDurationNotBetween(String value1, String value2) {
+            addCriterion("play_duration not between", value1, value2, "playDuration");
+            return (Criteria) this;
+        }
+
         public Criteria andCommentCountIsNull() {
             addCriterion("comment_count is null");
             return (Criteria) this;

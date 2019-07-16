@@ -14,12 +14,8 @@
     <aop:aspectj-autoproxy proxy-target-class="true"/>
 
     <!-- @Async异步执行注解 -->
-    <task:executor id="defaultTaskExecutor" keep-alive="300" pool-size="2-5" queue-capacity="500"
-                   rejection-policy="ABORT"/>
+    <task:executor id="defaultTaskExecutor" pool-size="5"/>
     <task:annotation-driven executor="defaultTaskExecutor" proxy-target-class="true" />
-
-    <!-- bean -->
-    <bean id="springContextUtil" class="com.netease.music.utils.SpringContextUtil" lazy-init="false" />
 
     <import resource="database.xml"/>
 </beans>

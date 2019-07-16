@@ -17,6 +17,23 @@ public class CrawlerConstant {
     public static final int DEFAULT_PAGE_SIZE = 35;
 
     /**
+     * 每页评论数
+     */
+    public static final int DEFAULT_COMMENT_PAGE_SIZE = 20;
+
+
+    /**
+     * 分批爬取歌单页，每批爬多少个歌单
+     */
+    public static final Integer CRAWLING_PLAY_LIST_BATCH_SIZE = 2000;
+
+
+    /**
+     * 分批爬取歌曲信息，每批爬取多少歌曲
+     */
+    public static final Integer CRAWLING_SONG_INFO_BATCH_SIZE = 2000;
+
+    /**
      * 歌单页url
      */
     public static final String PLAY_LISTS_URL = "https://music.163.com/discover/playlist/?order=hot&cat={category}&limit={limit}&offset={offset}";
@@ -46,9 +63,4 @@ public class CrawlerConstant {
     public static String getPlayListPage(Long playListId) {
         return PLAY_LIST_PAGE.replace("{playListId}", String.valueOf(playListId));
     }
-
-    /**
-     * 分批爬取歌单页，每批爬多少个歌单
-     */
-    public static final Integer CRAWLING_PLAY_LIST_BATCH_SIZE = 2000;
 }

@@ -79,5 +79,11 @@
         <table tableName="play_list_song_relation" domainObjectName="PlayListSongRelationPO" enableDeleteByExample="false">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
+        <table tableName="playlist_category" domainObjectName="PlaylistCategoryPO" enableDeleteByExample="false">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+            <columnOverride column="crawling_status" property="crawlingStatus" jdbcType="TINYINT"
+                            javaType="com.netease.music.entity.enums.CrawlingStatusEnum"
+                            typeHandler="com.netease.music.dao.typehandler.CrawlingStatusEnumHandler"/>
+        </table>
     </context>
 </generatorConfiguration>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.netease.music.dao.mapper.PlaylistCategoryPOMapperExt" >
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into playlist_category (category_name, crawling_status)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.playlistCategory},#{item.crawlingStatus})
+        </foreach>
+    </insert>
+</mapper>
