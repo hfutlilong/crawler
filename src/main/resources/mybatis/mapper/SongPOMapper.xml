@@ -6,7 +6,8 @@
     <result column="resource_id" property="resourceId" jdbcType="BIGINT" />
     <result column="url" property="url" jdbcType="VARCHAR" />
     <result column="title" property="title" jdbcType="VARCHAR" />
-    <result column="artist_id" property="artistId" jdbcType="BIGINT" />
+    <result column="sub_title" property="subTitle" jdbcType="VARCHAR" />
+    <result column="artist_id" property="artistId" jdbcType="VARCHAR" />
     <result column="artist_name" property="artistName" jdbcType="VARCHAR" />
     <result column="album_id" property="albumId" jdbcType="BIGINT" />
     <result column="album_name" property="albumName" jdbcType="VARCHAR" />
@@ -112,8 +113,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, resource_id, url, title, artist_id, artist_name, album_id, album_name, play_duration, 
-    comment_count, crawling_status, db_update_time
+    id, resource_id, url, title, sub_title, artist_id, artist_name, album_id, album_name, 
+    play_duration, comment_count, crawling_status, db_update_time
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.netease.music.dao.po.SongPOExample" >
     select
@@ -147,14 +148,14 @@
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into song (resource_id, url, title, 
-      artist_id, artist_name, album_id, 
-      album_name, play_duration, comment_count, 
-      crawling_status, 
+      sub_title, artist_id, artist_name, 
+      album_id, album_name, play_duration, 
+      comment_count, crawling_status, 
       db_update_time)
     values (#{resourceId,jdbcType=BIGINT}, #{url,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
-      #{artistId,jdbcType=BIGINT}, #{artistName,jdbcType=VARCHAR}, #{albumId,jdbcType=BIGINT}, 
-      #{albumName,jdbcType=VARCHAR}, #{playDuration,jdbcType=VARCHAR}, #{commentCount,jdbcType=INTEGER}, 
-      #{crawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler}, 
+      #{subTitle,jdbcType=VARCHAR}, #{artistId,jdbcType=VARCHAR}, #{artistName,jdbcType=VARCHAR}, 
+      #{albumId,jdbcType=BIGINT}, #{albumName,jdbcType=VARCHAR}, #{playDuration,jdbcType=VARCHAR}, 
+      #{commentCount,jdbcType=INTEGER}, #{crawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler}, 
       #{dbUpdateTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.netease.music.dao.po.SongPO" >
@@ -171,6 +172,9 @@
       </if>
       <if test="title != null" >
         title,
+      </if>
+      <if test="subTitle != null" >
+        sub_title,
       </if>
       <if test="artistId != null" >
         artist_id,
@@ -207,8 +211,11 @@
       <if test="title != null" >
         #{title,jdbcType=VARCHAR},
       </if>
+      <if test="subTitle != null" >
+        #{subTitle,jdbcType=VARCHAR},
+      </if>
       <if test="artistId != null" >
-        #{artistId,jdbcType=BIGINT},
+        #{artistId,jdbcType=VARCHAR},
       </if>
       <if test="artistName != null" >
         #{artistName,jdbcType=VARCHAR},
@@ -254,8 +261,11 @@
       <if test="record.title != null" >
         title = #{record.title,jdbcType=VARCHAR},
       </if>
+      <if test="record.subTitle != null" >
+        sub_title = #{record.subTitle,jdbcType=VARCHAR},
+      </if>
       <if test="record.artistId != null" >
-        artist_id = #{record.artistId,jdbcType=BIGINT},
+        artist_id = #{record.artistId,jdbcType=VARCHAR},
       </if>
       <if test="record.artistName != null" >
         artist_name = #{record.artistName,jdbcType=VARCHAR},
@@ -289,7 +299,8 @@
       resource_id = #{record.resourceId,jdbcType=BIGINT},
       url = #{record.url,jdbcType=VARCHAR},
       title = #{record.title,jdbcType=VARCHAR},
-      artist_id = #{record.artistId,jdbcType=BIGINT},
+      sub_title = #{record.subTitle,jdbcType=VARCHAR},
+      artist_id = #{record.artistId,jdbcType=VARCHAR},
       artist_name = #{record.artistName,jdbcType=VARCHAR},
       album_id = #{record.albumId,jdbcType=BIGINT},
       album_name = #{record.albumName,jdbcType=VARCHAR},
@@ -313,8 +324,11 @@
       <if test="title != null" >
         title = #{title,jdbcType=VARCHAR},
       </if>
+      <if test="subTitle != null" >
+        sub_title = #{subTitle,jdbcType=VARCHAR},
+      </if>
       <if test="artistId != null" >
-        artist_id = #{artistId,jdbcType=BIGINT},
+        artist_id = #{artistId,jdbcType=VARCHAR},
       </if>
       <if test="artistName != null" >
         artist_name = #{artistName,jdbcType=VARCHAR},
@@ -345,7 +359,8 @@
     set resource_id = #{resourceId,jdbcType=BIGINT},
       url = #{url,jdbcType=VARCHAR},
       title = #{title,jdbcType=VARCHAR},
-      artist_id = #{artistId,jdbcType=BIGINT},
+      sub_title = #{subTitle,jdbcType=VARCHAR},
+      artist_id = #{artistId,jdbcType=VARCHAR},
       artist_name = #{artistName,jdbcType=VARCHAR},
       album_id = #{albumId,jdbcType=BIGINT},
       album_name = #{albumName,jdbcType=VARCHAR},

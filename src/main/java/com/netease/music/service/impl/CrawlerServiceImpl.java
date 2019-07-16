@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
 @Service
 public class CrawlerServiceImpl implements CrawlerService {
     @Autowired
-    private PlaylistCategoryPOMapperExt playlistCategoryPOMapperExt;
+    private PlaylistCategoryPOMapperExt playlistCategoryPOMapper;
 
     @Autowired
     private PlayListPOMapperExt playListPOMapper;
@@ -47,15 +47,18 @@ public class CrawlerServiceImpl implements CrawlerService {
     private PlayListSongRelationPOMapperExt playListSongRelationPOMapper;
 
     @Autowired
-    private SongPOMapperExt songPOMapperExt;
+    private SongPOMapperExt songPOMapper;
 
     @Autowired
     private UserInfoPOMapperExt userInfoPOMapper;
 
     private Lock playListCategoryLock = new ReentrantLock();
+
     private Lock playListLock = new ReentrantLock();
+
     private Lock songLock = new ReentrantLock();
-    private Lock  userInfoLock = new ReentrantLock();
+
+    private Lock userInfoLock = new ReentrantLock();
 
     private static final ThreadPoolExecutor crawlerExecutor = new ThreadPoolExecutor(4, 8, 30, TimeUnit.SECONDS,
             new LinkedBlockingQueue<>(5000),
@@ -72,12 +75,14 @@ public class CrawlerServiceImpl implements CrawlerService {
     public void autoCrawling() throws InterruptedException {
         // 初始化歌单
         initCrawling();
-//        // 发送初始化完成事件
-//        CrawlerEventPublisher.publish(new InitPlayListFinishEvent());
+        // // 发送初始化完成事件
+        // CrawlerEventPublisher.publish(new InitPlayListFinishEvent());
         // 爬取歌单列表
         crawlingPlayList();
         // 爬取歌曲信息
         crawlingSongInfo();
+
+        LogConstant.BUS.info("歌单爬完啦！！！  PlayList Crawling Done!!!");
 
         // 爬取歌单评论
 
@@ -106,12 +111,12 @@ public class CrawlerServiceImpl implements CrawlerService {
 
             playListCategoryLock.lock();
             try {
-                int duplicateCount = playlistCategoryPOMapperExt.countByExample(playlistCategoryPOExample);
+                int duplicateCount = playlistCategoryPOMapper.countByExample(playlistCategoryPOExample);
                 if (duplicateCount == 0) {
                     PlaylistCategoryPO playlistCategoryPO = new PlaylistCategoryPO();
                     playlistCategoryPO.setCategoryName(categoryName);
                     playlistCategoryPO.setCrawlingStatus(CrawlingStatusEnum.UN_CRAWLERED);
-                    playlistCategoryPOMapperExt.insertSelective(playlistCategoryPO);
+                    playlistCategoryPOMapper.insertSelective(playlistCategoryPO);
                 }
             } catch (Exception e) {
                 LogConstant.BUS.error("insert new playlistCategory failed, categoryName={}.", categoryName);
@@ -163,7 +168,6 @@ public class CrawlerServiceImpl implements CrawlerService {
 
         // 更新歌单分类表的爬取状态为爬取中
         updatePlayListCategoryCrawlingStatus(categoryName, CrawlingStatusEnum.CRAWLING);
-
 
         int offset = 0;
         int limit = CrawlerConstant.DEFAULT_PAGE_SIZE;
@@ -222,6 +226,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 
     /**
      * 更新歌单分类名表
+     * 
      * @param categoryName
      * @param crawlingStatusEnum
      */
@@ -231,9 +236,8 @@ public class CrawlerServiceImpl implements CrawlerService {
         playlistCategoryPO.setCrawlingStatus(crawlingStatusEnum);
         PlaylistCategoryPOExample playlistCategoryPOExample = new PlaylistCategoryPOExample();
         playlistCategoryPOExample.createCriteria().andCategoryNameEqualTo(categoryName);
-        playlistCategoryPOMapperExt.updateByExampleSelective(playlistCategoryPO, playlistCategoryPOExample);
+        playlistCategoryPOMapper.updateByExampleSelective(playlistCategoryPO, playlistCategoryPOExample);
     }
-
 
     /**
      * 获取一个页面的所有歌单
@@ -375,22 +379,37 @@ public class CrawlerServiceImpl implements CrawlerService {
 
     @Override
     @Transactional
-    public void crawlingPlayList() {
+    public void crawlingPlayList() throws InterruptedException {
+        // 找到未爬取的歌单id
+        PlayListPOExample example = new PlayListPOExample();
+        example.createCriteria().andCrawlingStatusEqualTo(CrawlingStatusEnum.UN_CRAWLERED);
+        example.setPageInfo(new PaginationInfo(1, CrawlerConstant.CRAWLING_PLAY_LIST_BATCH_SIZE)); // 分批爬取
+
         for (;;) {
-            // 找到未爬取的歌单id
-            PlayListPOExample example = new PlayListPOExample();
-            example.createCriteria().andCrawlingStatusEqualTo(CrawlingStatusEnum.UN_CRAWLERED);
-            example.setPageInfo(new PaginationInfo(1, CrawlerConstant.CRAWLING_PLAY_LIST_BATCH_SIZE)); // 分批爬取
             List<PlayListPO> playListPOList = playListPOMapper.selectByExample(example);
             LogConstant.BUS.info("fetch play list success, fetch count:{}.", playListPOList.size());
             if (CollectionUtils.isEmpty(playListPOList)) {
                 break;
             }
 
+            CountDownLatch countDownLatch = new CountDownLatch(playListPOList.size());
+
             for (PlayListPO playListPO : playListPOList) {
-                crawlerExecutor.execute(() -> doCrawlingPlayList(playListPO));
+                crawlerExecutor.execute(() -> {
+                    try {
+                        doCrawlingPlayList(playListPO);
+                    } catch (Exception e) {
+                        LogConstant.BUS.error("execute doCrawlingPlayList failed, playListPO={}.",
+                                JSON.toJSONString(playListPO));
+                    } finally {
+                        countDownLatch.countDown();
+                    }
+                });
             }
+            countDownLatch.await();
+            LogConstant.BUS.info("crawling a batch play list success.");
         }
+
         LogConstant.BUS.info("crawling play list done.");
     }
 
@@ -489,7 +508,8 @@ public class CrawlerServiceImpl implements CrawlerService {
                     if (m.find()) {
                         String createTimeStr = m.group(1);
                         if (StringUtils.isNotBlank(createTimeStr)) {
-                            Timestamp createTime = DateUtil.formatToTimestamp(createTimeStr, DateUtil.H_24_FORMAT);
+                            Timestamp createTime = DateUtil.formatToTimestamp(createTimeStr,
+                                    DateUtil.DEFAULT_DATE_FORMAT);
                             playListPO.setCreateTime(createTime);
                         }
                     }
@@ -556,9 +576,9 @@ public class CrawlerServiceImpl implements CrawlerService {
                             try {
                                 SongPOExample songPOExample = new SongPOExample();
                                 songPOExample.createCriteria().andResourceIdEqualTo(songId);
-                                int duplicateCount = songPOMapperExt.countByExample(songPOExample);
+                                int duplicateCount = songPOMapper.countByExample(songPOExample);
                                 if (duplicateCount == 0) {
-                                    songPOMapperExt.insertSelective(songPO);
+                                    songPOMapper.insertSelective(songPO);
                                 }
                             } catch (Exception e) {
                                 LogConstant.BUS.error("insert into song tabal failed:", e);
@@ -571,8 +591,8 @@ public class CrawlerServiceImpl implements CrawlerService {
             }
 
             // 爬取完成
-            playListPOMapper.updateByExampleSelective(playListPO, example);
             playListPO.setCrawlingStatus(CrawlingStatusEnum.CRAWLERED);
+            playListPOMapper.updateByExampleSelective(playListPO, example);
         } catch (Exception e) {
             // 爬取失败
             playListPO.setCrawlingStatus(CrawlingStatusEnum.CRAWLING_FAILED);
@@ -580,10 +600,136 @@ public class CrawlerServiceImpl implements CrawlerService {
         }
     }
 
-    public void crawlingSongInfo() {
-        int offset = 0;
-        int limit = CrawlerConstant.CRAWLING_SONG_INFO_BATCH_SIZE;
+    @Override
+    public void crawlingSongInfo() throws InterruptedException {
+        SongPOExample songPOExample = new SongPOExample();
+        songPOExample.createCriteria().andCrawlingStatusEqualTo(CrawlingStatusEnum.UN_CRAWLERED);
+        songPOExample.setPageInfo(new PaginationInfo(1, CrawlerConstant.CRAWLING_SONG_INFO_BATCH_SIZE)); // 分批爬取
 
+        for (;;) {
+            List<SongPO> songPOList = songPOMapper.selectByExample(songPOExample);
+            LogConstant.BUS.info("fetch song success, fetch count:{}.", songPOList.size());
+            if (CollectionUtils.isEmpty(songPOList)) {
+                break;
+            }
+            CountDownLatch countDownLatch = new CountDownLatch(songPOList.size());
+            for (SongPO songPO : songPOList) {
+                crawlerExecutor.execute(() -> {
+                    try {
+                        doCrawlingSongInfo(songPO);
+                    } catch (Exception e) {
+                        LogConstant.BUS.error("execute doCrawlingPlayList failed, songPO={}.",
+                                JSON.toJSONString(songPO));
+                    } finally {
+                        countDownLatch.countDown();
+                    }
+                });
+            }
+            countDownLatch.await();
+            LogConstant.BUS.info("crawling a batch song success.");
+        }
+    }
 
+    @Override
+    public void doCrawlingSongInfo(SongPO songPO) {
+        if (songPO == null) {
+            LogConstant.BUS.error("doCrawlingSongInfo failed, songPO is null.");
+            return;
+        }
+
+        Long songId = songPO.getResourceId();
+        if (songId == null) {
+            LogConstant.BUS.error("songId is null, songPO={}.", JSON.toJSONString(songPO));
+            return;
+        }
+
+        SongPOExample example = new SongPOExample();
+        example.createCriteria().andResourceIdEqualTo(songPO.getResourceId());
+        songPO.setCrawlingStatus(CrawlingStatusEnum.CRAWLING);
+        songPOMapper.updateByExampleSelective(songPO, example);
+
+        String songUrl = CrawlerConstant.getSongUrl(songId);
+        Document doc = null;
+        try {
+            doc = Jsoup.connect(songUrl).get();
+        } catch (IOException e) {
+            LogConstant.BUS.error("get songId {} failed, Jsoup connnect {} IOException.", songId, songUrl);
+        }
+
+        if (doc == null) {
+            LogConstant.BUS.error("doc of url {} is null.", songUrl);
+            return;
+        }
+
+        Element titleAndSingerElement = doc.selectFirst("div.cnt");
+        if (titleAndSingerElement != null) {
+            // 歌曲名
+            Element titleElement = titleAndSingerElement.selectFirst("em.f-ff2");
+            if (titleElement != null) {
+                songPO.setTitle(titleElement.text());
+            }
+            // 副标题
+            Element subTitleElement = titleAndSingerElement.selectFirst("div.subtit.f-fs1.f-ff2");
+            if (subTitleElement != null) {
+                songPO.setSubTitle(subTitleElement.text());
+            }
+
+            // 歌手
+            Elements artistAlbumElements = titleAndSingerElement.select("p.des.s-fc4");
+            Element artistElement = artistAlbumElements.get(0);
+            Element albumElement = artistAlbumElements.get(1);
+
+            if (artistElement != null) {
+                Pattern artistPattern = Pattern.compile("^(/artist\\?id=)(\\d+)$");
+                Elements artists = artistElement.select("a[href]");
+                List<Long> artistIdList = new ArrayList<>();
+                List<String> artistNameList = new ArrayList<>();
+
+                if (artists != null && artists.size() > 0) {
+                    for (Element element : artists) {
+                        String artistUrl = element.attr("href");
+                        if (StringUtils.isNotBlank(artistUrl)) {
+                            Matcher matcher = artistPattern.matcher(artistUrl);
+                            if (matcher.find()) {
+                                Long artistId = Long.valueOf(matcher.group(2));
+                                String artistName = element.text();
+
+                                artistIdList.add(artistId);
+                                artistNameList.add(artistName);
+                            }
+                        }
+                    }
+
+                    if (CollectionUtils.isNotEmpty(artistIdList)) {
+                        songPO.setArtistId(StringUtils.join(artistIdList, ","));
+                    }
+                    if (CollectionUtils.isNotEmpty(artistNameList)) {
+                        songPO.setArtistName(StringUtils.join(artistNameList, ","));
+                    }
+                }
+            }
+
+            // 专辑
+            if (albumElement != null) {
+                Pattern albumPattern = Pattern.compile("^(/album\\?id=)(\\d+)$");
+                Element albumUrlElement = albumElement.selectFirst("a[href]");
+                String albumUrl = albumUrlElement.attr("href");
+                if (StringUtils.isNotBlank(albumUrl)) {
+                    Matcher matcher = albumPattern.matcher(albumUrl);
+                    if (matcher.find()) {
+                        Long albumId = Long.valueOf(matcher.group(2));
+                        String albumName = albumUrlElement.text();
+
+                        songPO.setAlbumId(albumId);
+                        songPO.setAlbumName(albumName);
+                    }
+                }
+            }
+
+            // 评论数
+        }
+
+        songPO.setCrawlingStatus(CrawlingStatusEnum.CRAWLERED);
+        songPOMapper.updateByExampleSelective(songPO, example);
     }
 }

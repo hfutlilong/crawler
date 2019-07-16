@@ -36,7 +36,7 @@ public class CrawlerConstant {
     /**
      * 歌单页url
      */
-    public static final String PLAY_LISTS_URL = "https://music.163.com/discover/playlist/?order=hot&cat={category}&limit={limit}&offset={offset}";
+    private static final String PLAY_LISTS_URL = "https://music.163.com/discover/playlist/?order=hot&cat={category}&limit={limit}&offset={offset}";
 
     /**
      * 歌单列表
@@ -53,7 +53,7 @@ public class CrawlerConstant {
     /**
      * 歌单页面
      */
-    public static final String PLAY_LIST_PAGE = "https://music.163.com/playlist?id={playListId}";
+    private static final String PLAY_LIST_PAGE = "https://music.163.com/playlist?id={playListId}";
 
     /**
      * 歌单页面id
@@ -62,5 +62,14 @@ public class CrawlerConstant {
      */
     public static String getPlayListPage(Long playListId) {
         return PLAY_LIST_PAGE.replace("{playListId}", String.valueOf(playListId));
+    }
+
+    /**
+     * 歌曲页面
+     */
+    private static String SONG_URL = "https://music.163.com/song?id={songId}";
+
+    public static String getSongUrl(Long songId) {
+        return SONG_URL.replace("{songId}", String.valueOf(songId));
     }
 }

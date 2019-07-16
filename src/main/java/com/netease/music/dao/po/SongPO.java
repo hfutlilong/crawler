@@ -13,7 +13,9 @@ public class SongPO implements Serializable {
 
     private String title;
 
-    private Long artistId;
+    private String subTitle;
+
+    private String artistId;
 
     private String artistName;
 
@@ -63,12 +65,20 @@ public class SongPO implements Serializable {
         this.title = title == null ? null : title.trim();
     }
 
-    public Long getArtistId() {
+    public String getSubTitle() {
+        return subTitle;
+    }
+
+    public void setSubTitle(String subTitle) {
+        this.subTitle = subTitle == null ? null : subTitle.trim();
+    }
+
+    public String getArtistId() {
         return artistId;
     }
 
-    public void setArtistId(Long artistId) {
-        this.artistId = artistId;
+    public void setArtistId(String artistId) {
+        this.artistId = artistId == null ? null : artistId.trim();
     }
 
     public String getArtistName() {

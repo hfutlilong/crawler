@@ -1,5 +1,7 @@
 package com.netease.music.service;
 
+import com.netease.music.dao.po.SongPO;
+
 public interface CrawlerService {
     /**
      * 自动爬取入口
@@ -22,7 +24,7 @@ public interface CrawlerService {
     /**
      * 爬取歌单
      */
-    void crawlingPlayList();
+    void crawlingPlayList() throws InterruptedException;
 
     /**
      * 爬取一个歌单
@@ -33,5 +35,11 @@ public interface CrawlerService {
     /**
      * 爬取所有歌曲信息
      */
-    void crawlingSongInfo();
+    void crawlingSongInfo() throws InterruptedException;
+
+    /**
+     * 爬取歌曲信息
+     * @param songPO
+     */
+    void doCrawlingSongInfo(SongPO songPO);
 }
