@@ -38,6 +38,18 @@ public class CrawlerController extends BaseController {
         return "success";
     }
 
+    @RequestMapping(value = "crawlingSongInfo", method = RequestMethod.GET)
+    @ResponseBody
+    public String crawlingSong() {
+        try {
+            crawlerService.crawlingSongInfo();
+        } catch (Exception e) {
+            LogConstant.BUS.error("crawlingSongInfo failed: {}", e.getMessage(), e);
+            return e.getMessage();
+        }
+        return "success";
+    }
+
     @RequestMapping("hello")
     @ResponseBody
     public String testHello() {

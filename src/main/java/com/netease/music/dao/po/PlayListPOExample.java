@@ -79,6 +79,8 @@ public class PlayListPOExample {
     protected abstract static class GeneratedCriteria {
         protected List<Criterion> crawlingStatusCriteria;
 
+        protected List<Criterion> commentCrawlingStatusCriteria;
+
         protected List<Criterion> allCriteria;
 
         protected List<Criterion> criteria;
@@ -87,6 +89,7 @@ public class PlayListPOExample {
             super();
             criteria = new ArrayList<Criterion>();
             crawlingStatusCriteria = new ArrayList<Criterion>();
+            commentCrawlingStatusCriteria = new ArrayList<Criterion>();
         }
 
         public List<Criterion> getCrawlingStatusCriteria() {
@@ -109,9 +112,30 @@ public class PlayListPOExample {
             allCriteria = null;
         }
 
+        public List<Criterion> getCommentCrawlingStatusCriteria() {
+            return commentCrawlingStatusCriteria;
+        }
+
+        protected void addCommentCrawlingStatusCriterion(String condition, Object value, String property) {
+            if (value == null) {
+                throw new RuntimeException("Value for " + property + " cannot be null");
+            }
+            commentCrawlingStatusCriteria.add(new Criterion(condition, value, "com.netease.music.dao.typehandler.CrawlingStatusEnumHandler"));
+            allCriteria = null;
+        }
+
+        protected void addCommentCrawlingStatusCriterion(String condition, CrawlingStatusEnum value1, CrawlingStatusEnum value2, String property) {
+            if (value1 == null || value2 == null) {
+                throw new RuntimeException("Between values for " + property + " cannot be null");
+            }
+            commentCrawlingStatusCriteria.add(new Criterion(condition, value1, value2, "com.netease.music.dao.typehandler.CrawlingStatusEnumHandler"));
+            allCriteria = null;
+        }
+
         public boolean isValid() {
             return criteria.size() > 0
-                || crawlingStatusCriteria.size() > 0;
+                || crawlingStatusCriteria.size() > 0
+                || commentCrawlingStatusCriteria.size() > 0;
         }
 
         public List<Criterion> getAllCriteria() {
@@ -119,6 +143,7 @@ public class PlayListPOExample {
                 allCriteria = new ArrayList<Criterion>();
                 allCriteria.addAll(criteria);
                 allCriteria.addAll(crawlingStatusCriteria);
+                allCriteria.addAll(commentCrawlingStatusCriteria);
             }
             return allCriteria;
         }
@@ -468,6 +493,66 @@ public class PlayListPOExample {
 
         public Criteria andCrawlingStatusNotBetween(CrawlingStatusEnum value1, CrawlingStatusEnum value2) {
             addCrawlingStatusCriterion("crawling_status not between", value1, value2, "crawlingStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentCrawlingStatusIsNull() {
+            addCriterion("comment_crawling_status is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentCrawlingStatusIsNotNull() {
+            addCriterion("comment_crawling_status is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentCrawlingStatusEqualTo(CrawlingStatusEnum value) {
+            addCommentCrawlingStatusCriterion("comment_crawling_status =", value, "commentCrawlingStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentCrawlingStatusNotEqualTo(CrawlingStatusEnum value) {
+            addCommentCrawlingStatusCriterion("comment_crawling_status <>", value, "commentCrawlingStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentCrawlingStatusGreaterThan(CrawlingStatusEnum value) {
+            addCommentCrawlingStatusCriterion("comment_crawling_status >", value, "commentCrawlingStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentCrawlingStatusGreaterThanOrEqualTo(CrawlingStatusEnum value) {
+            addCommentCrawlingStatusCriterion("comment_crawling_status >=", value, "commentCrawlingStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentCrawlingStatusLessThan(CrawlingStatusEnum value) {
+            addCommentCrawlingStatusCriterion("comment_crawling_status <", value, "commentCrawlingStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentCrawlingStatusLessThanOrEqualTo(CrawlingStatusEnum value) {
+            addCommentCrawlingStatusCriterion("comment_crawling_status <=", value, "commentCrawlingStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentCrawlingStatusIn(List<CrawlingStatusEnum> values) {
+            addCommentCrawlingStatusCriterion("comment_crawling_status in", values, "commentCrawlingStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentCrawlingStatusNotIn(List<CrawlingStatusEnum> values) {
+            addCommentCrawlingStatusCriterion("comment_crawling_status not in", values, "commentCrawlingStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentCrawlingStatusBetween(CrawlingStatusEnum value1, CrawlingStatusEnum value2) {
+            addCommentCrawlingStatusCriterion("comment_crawling_status between", value1, value2, "commentCrawlingStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentCrawlingStatusNotBetween(CrawlingStatusEnum value1, CrawlingStatusEnum value2) {
+            addCommentCrawlingStatusCriterion("comment_crawling_status not between", value1, value2, "commentCrawlingStatus");
             return (Criteria) this;
         }
 

@@ -29,6 +29,8 @@ public class SongPO implements Serializable {
 
     private CrawlingStatusEnum crawlingStatus;
 
+    private CrawlingStatusEnum commentCrawlingStatus;
+
     private Date dbUpdateTime;
 
     private static final long serialVersionUID = 1L;
@@ -127,6 +129,14 @@ public class SongPO implements Serializable {
 
     public void setCrawlingStatus(CrawlingStatusEnum crawlingStatus) {
         this.crawlingStatus = crawlingStatus;
+    }
+
+    public CrawlingStatusEnum getCommentCrawlingStatus() {
+        return commentCrawlingStatus;
+    }
+
+    public void setCommentCrawlingStatus(CrawlingStatusEnum commentCrawlingStatus) {
+        this.commentCrawlingStatus = commentCrawlingStatus;
     }
 
     public Date getDbUpdateTime() {

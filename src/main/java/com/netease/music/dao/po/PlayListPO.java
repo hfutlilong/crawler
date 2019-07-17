@@ -15,6 +15,8 @@ public class PlayListPO implements Serializable {
 
     private CrawlingStatusEnum crawlingStatus;
 
+    private CrawlingStatusEnum commentCrawlingStatus;
+
     private Integer playCount;
 
     private Integer favoritesCount;
@@ -73,6 +75,14 @@ public class PlayListPO implements Serializable {
 
     public void setCrawlingStatus(CrawlingStatusEnum crawlingStatus) {
         this.crawlingStatus = crawlingStatus;
+    }
+
+    public CrawlingStatusEnum getCommentCrawlingStatus() {
+        return commentCrawlingStatus;
+    }
+
+    public void setCommentCrawlingStatus(CrawlingStatusEnum commentCrawlingStatus) {
+        this.commentCrawlingStatus = commentCrawlingStatus;
     }
 
     public Integer getPlayCount() {

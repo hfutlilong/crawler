@@ -25,10 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -96,7 +93,11 @@ public class CrawlerServiceImpl implements CrawlerService {
      */
     public void initCrawling() throws InterruptedException {
         // 获取全部歌单类别
-        List<String> categoryNameList = getAllCategoryNames();
+//        List<String> categoryNameList = getAllCategoryNames();
+
+        // Mock数据
+        List<String> categoryNameList = Arrays.asList("全部");
+
         LogConstant.BUS.info("all categories: {}.", JSON.toJSONString(categoryNameList));
 
         if (CollectionUtils.isEmpty(categoryNameList)) {

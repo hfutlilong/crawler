@@ -14,6 +14,7 @@
     <result column="play_duration" property="playDuration" jdbcType="VARCHAR" />
     <result column="comment_count" property="commentCount" jdbcType="INTEGER" />
     <result column="crawling_status" property="crawlingStatus" jdbcType="TINYINT" typeHandler="com.netease.music.dao.typehandler.CrawlingStatusEnumHandler" />
+    <result column="comment_crawling_status" property="commentCrawlingStatus" jdbcType="TINYINT" typeHandler="com.netease.music.dao.typehandler.CrawlingStatusEnumHandler" />
     <result column="db_update_time" property="dbUpdateTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Example_Where_Clause" >
@@ -41,6 +42,25 @@
               </choose>
             </foreach>
             <foreach collection="criteria.crawlingStatusCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler} and #{criterion.secondValue,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.commentCrawlingStatusCriteria" item="criterion" >
               <choose >
                 <when test="criterion.noValue" >
                   and ${criterion.condition}
@@ -107,6 +127,25 @@
                 </when>
               </choose>
             </foreach>
+            <foreach collection="criteria.commentCrawlingStatusCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler} and #{criterion.secondValue,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
           </trim>
         </if>
       </foreach>
@@ -114,7 +153,7 @@
   </sql>
   <sql id="Base_Column_List" >
     id, resource_id, url, title, sub_title, artist_id, artist_name, album_id, album_name, 
-    play_duration, comment_count, crawling_status, db_update_time
+    play_duration, comment_count, crawling_status, comment_crawling_status, db_update_time
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.netease.music.dao.po.SongPOExample" >
     select
@@ -151,11 +190,13 @@
       sub_title, artist_id, artist_name, 
       album_id, album_name, play_duration, 
       comment_count, crawling_status, 
+      comment_crawling_status, 
       db_update_time)
     values (#{resourceId,jdbcType=BIGINT}, #{url,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
       #{subTitle,jdbcType=VARCHAR}, #{artistId,jdbcType=VARCHAR}, #{artistName,jdbcType=VARCHAR}, 
       #{albumId,jdbcType=BIGINT}, #{albumName,jdbcType=VARCHAR}, #{playDuration,jdbcType=VARCHAR}, 
       #{commentCount,jdbcType=INTEGER}, #{crawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler}, 
+      #{commentCrawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler}, 
       #{dbUpdateTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.netease.music.dao.po.SongPO" >
@@ -197,6 +238,9 @@
       <if test="crawlingStatus != null" >
         crawling_status,
       </if>
+      <if test="commentCrawlingStatus != null" >
+        comment_crawling_status,
+      </if>
       <if test="dbUpdateTime != null" >
         db_update_time,
       </if>
@@ -234,6 +278,9 @@
       </if>
       <if test="crawlingStatus != null" >
         #{crawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler},
+      </if>
+      <if test="commentCrawlingStatus != null" >
+        #{commentCrawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler},
       </if>
       <if test="dbUpdateTime != null" >
         #{dbUpdateTime,jdbcType=TIMESTAMP},
@@ -285,6 +332,9 @@
       <if test="record.crawlingStatus != null" >
         crawling_status = #{record.crawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler},
       </if>
+      <if test="record.commentCrawlingStatus != null" >
+        comment_crawling_status = #{record.commentCrawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler},
+      </if>
       <if test="record.dbUpdateTime != null" >
         db_update_time = #{record.dbUpdateTime,jdbcType=TIMESTAMP},
       </if>
@@ -307,6 +357,7 @@
       play_duration = #{record.playDuration,jdbcType=VARCHAR},
       comment_count = #{record.commentCount,jdbcType=INTEGER},
       crawling_status = #{record.crawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler},
+      comment_crawling_status = #{record.commentCrawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler},
       db_update_time = #{record.dbUpdateTime,jdbcType=TIMESTAMP}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -348,6 +399,9 @@
       <if test="crawlingStatus != null" >
         crawling_status = #{crawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler},
       </if>
+      <if test="commentCrawlingStatus != null" >
+        comment_crawling_status = #{commentCrawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler},
+      </if>
       <if test="dbUpdateTime != null" >
         db_update_time = #{dbUpdateTime,jdbcType=TIMESTAMP},
       </if>
@@ -367,6 +421,7 @@
       play_duration = #{playDuration,jdbcType=VARCHAR},
       comment_count = #{commentCount,jdbcType=INTEGER},
       crawling_status = #{crawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler},
+      comment_crawling_status = #{commentCrawlingStatus,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.CrawlingStatusEnumHandler},
       db_update_time = #{dbUpdateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
