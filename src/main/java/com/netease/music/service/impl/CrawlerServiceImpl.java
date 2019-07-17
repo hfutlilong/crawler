@@ -315,22 +315,22 @@ public class CrawlerServiceImpl implements CrawlerService {
                     Long userId = Long.valueOf(userIdString);
                     playListDetailBO.setCreateUserId(userId);
 
-//                    // 更新用户信息
-//                    userInfoLock.lock();
-//                    try {
-//                        UserInfoPOExample userInfoPOExample = new UserInfoPOExample();
-//                        userInfoPOExample.createCriteria().andUserIdEqualTo(userId);
-//                        int duplicateCount = userInfoPOMapper.countByExample(userInfoPOExample);
-//                        if (duplicateCount == 0) {
-//                            UserInfoPO userInfoPO = new UserInfoPO();
-//                            userInfoPO.setUserId(userId);
-//                            userInfoPOMapper.insertSelective(userInfoPO);
-//                        }
-//                    } catch (Exception e) {
-//                        LogConstant.BUS.error("insert user info failed, userId={}.", userId);
-//                    } finally {
-//                        userInfoLock.unlock();
-//                    }
+                    // 更新用户信息
+                    userInfoLock.lock();
+                    try {
+                        UserInfoPOExample userInfoPOExample = new UserInfoPOExample();
+                        userInfoPOExample.createCriteria().andUserIdEqualTo(userId);
+                        int duplicateCount = userInfoPOMapper.countByExample(userInfoPOExample);
+                        if (duplicateCount == 0) {
+                            UserInfoPO userInfoPO = new UserInfoPO();
+                            userInfoPO.setUserId(userId);
+                            userInfoPOMapper.insertSelective(userInfoPO);
+                        }
+                    } catch (Exception e) {
+                        LogConstant.BUS.error("insert user info failed, userId={}.", userId);
+                    } finally {
+                        userInfoLock.unlock();
+                    }
                 }
             }
             String userName = publisherElement.attr("title");
@@ -948,16 +948,11 @@ public class CrawlerServiceImpl implements CrawlerService {
         }
 
         Long userId = userInfoBO.getUserId();
-        UserInfoPOExample userInfoPOExample = new UserInfoPOExample();
-        userInfoPOExample.createCriteria().andUserIdEqualTo(userId);
-        int duplicateCount = userInfoPOMapper.countByExample(userInfoPOExample);
-        if (duplicateCount == 0) {
-            UserInfoPO userInfoPO = new UserInfoPO();
-            userInfoPO.setUserId(userId);
-            userInfoPO.setUserName(userInfoBO.getNickname());
-            userInfoPO.setAvatarurl(userInfoBO.getAvatarUrl());
-            userInfoPOMapper.insertOnDuplicateUpdate(userInfoPO);
-        }
+        UserInfoPO userInfoPO = new UserInfoPO();
+        userInfoPO.setUserId(userId);
+        userInfoPO.setUserName(userInfoBO.getNickname());
+        userInfoPO.setAvatarurl(userInfoBO.getAvatarUrl());
+        userInfoPOMapper.insertOnDuplicateUpdate(userInfoPO);
     }
 
     private void insertPlayListComment(CommentDetailBO commentDetailBO, PlayListPO playListPO) {
