@@ -67,6 +67,20 @@ public class CrawlerController extends BaseController {
         return "success";
     }
 
+    @RequestMapping(value = "crawlingSongComment", method = RequestMethod.GET)
+    @ResponseBody
+    public String crawlingSongComment(Long songId) {
+        new Thread(() -> {
+            try {
+                crawlerService.doCrawlingSongComment(songId);
+            } catch (Exception e) {
+                LogConstant.BUS.error("crawlingSongComment failed: {}", e.getMessage(), e);
+            }
+        }).start();
+
+        return "success";
+    }
+
     @RequestMapping("hello")
     @ResponseBody
     public String testHello() {

@@ -81,10 +81,20 @@ public class CrawlerConstant {
     /**
      * 歌单评论页面
      */
-    private static final String PLAY_LIST_COMMENT = "https://music.163.com/api/v1/resource/comments/A_PL_0_{playListId}?limit={limit}&offset={offset}";
+    private static final String PLAY_LIST_COMMENT_URL = "https://music.163.com/api/v1/resource/comments/A_PL_0_{playListId}?limit={limit}&offset={offset}";
 
-    public static String getPlayListComment(Long playListId, int limit, int offset) {
-        return PLAY_LIST_COMMENT.replace("{playListId}", String.valueOf(playListId))
+    public static String getPlayListCommentUrl(Long playListId, int limit, int offset) {
+        return PLAY_LIST_COMMENT_URL.replace("{playListId}", String.valueOf(playListId))
+                .replace("{limit}", String.valueOf(limit)).replace("{offset}", String.valueOf(offset));
+    }
+
+    /**
+     * 歌单评论页面
+     */
+    private static final String SONG_COMMENT_URL = "http://music.163.com/api/v1/resource/comments/R_SO_4_{songId}?limit={limit}&offset={offset}";
+
+    public static String getSongCommentUrl(Long songId, int limit, int offset) {
+        return SONG_COMMENT_URL.replace("{songId}", String.valueOf(songId))
                 .replace("{limit}", String.valueOf(limit)).replace("{offset}", String.valueOf(offset));
     }
 }

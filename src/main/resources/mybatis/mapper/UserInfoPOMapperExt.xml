@@ -31,6 +31,9 @@
             <if test="totalListen != null" >
                 total_listen,
             </if>
+            <if test="avatarurl != null" >
+                avatarUrl,
+            </if>
             <if test="followeeCount != null" >
                 followee_count,
             </if>
@@ -68,6 +71,9 @@
             </if>
             <if test="totalListen != null" >
                 #{totalListen,jdbcType=INTEGER},
+            </if>
+            <if test="avatarurl != null" >
+                #{avatarurl,jdbcType=VARCHAR},
             </if>
             <if test="followeeCount != null" >
                 #{followeeCount,jdbcType=INTEGER},
@@ -107,6 +113,9 @@
             </if>
             <if test="totalListen != null" >
                 total_listen = #{totalListen,jdbcType=INTEGER},
+            </if>
+            <if test="avatarurl != null" >
+                avatarUrl = #{avatarurl,jdbcType=VARCHAR},
             </if>
             <if test="followeeCount != null" >
                 followee_count = #{followeeCount,jdbcType=INTEGER},

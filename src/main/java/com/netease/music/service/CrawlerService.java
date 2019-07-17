@@ -57,5 +57,11 @@ public interface CrawlerService {
     /**
      * 爬取歌曲评论
      */
-    void crawlingSongComment();
+    void crawlingSongComment() throws InterruptedException;
+
+    /**
+     * 爬取一首歌的评论
+     * @param songId
+     */
+    void doCrawlingSongComment(Long songId);
 }

@@ -86,13 +86,14 @@ public class CrawlerServiceImpl implements CrawlerService {
         // CrawlerEventPublisher.publish(new InitPlayListFinishEvent());
         // 爬取歌单列表
         crawlingPlayList();
+        LogConstant.BUS.info("歌单爬完啦！！！ crawlingPlayList Done!!!");
+
         // 爬取歌曲信息
         crawlingSongInfo();
-
-        LogConstant.BUS.info("歌单爬完啦！！！  PlayList Crawling Done!!!");
+        LogConstant.BUS.info("歌曲信息爬完啦！！！ crawlingSongInfo Done!!!");
 
         // 爬取歌单评论
-
+        crawlingPlayListComment();
         // 爬取歌曲评论
     }
 
@@ -314,22 +315,22 @@ public class CrawlerServiceImpl implements CrawlerService {
                     Long userId = Long.valueOf(userIdString);
                     playListDetailBO.setCreateUserId(userId);
 
-                    // 更新用户信息
-                    userInfoLock.lock();
-                    try {
-                        UserInfoPOExample userInfoPOExample = new UserInfoPOExample();
-                        userInfoPOExample.createCriteria().andUserIdEqualTo(userId);
-                        int duplicateCount = userInfoPOMapper.countByExample(userInfoPOExample);
-                        if (duplicateCount == 0) {
-                            UserInfoPO userInfoPO = new UserInfoPO();
-                            userInfoPO.setUserId(userId);
-                            userInfoPOMapper.insertSelective(userInfoPO);
-                        }
-                    } catch (Exception e) {
-                        LogConstant.BUS.error("insert user info failed, userId={}.", userId);
-                    } finally {
-                        userInfoLock.unlock();
-                    }
+//                    // 更新用户信息
+//                    userInfoLock.lock();
+//                    try {
+//                        UserInfoPOExample userInfoPOExample = new UserInfoPOExample();
+//                        userInfoPOExample.createCriteria().andUserIdEqualTo(userId);
+//                        int duplicateCount = userInfoPOMapper.countByExample(userInfoPOExample);
+//                        if (duplicateCount == 0) {
+//                            UserInfoPO userInfoPO = new UserInfoPO();
+//                            userInfoPO.setUserId(userId);
+//                            userInfoPOMapper.insertSelective(userInfoPO);
+//                        }
+//                    } catch (Exception e) {
+//                        LogConstant.BUS.error("insert user info failed, userId={}.", userId);
+//                    } finally {
+//                        userInfoLock.unlock();
+//                    }
                 }
             }
             String userName = publisherElement.attr("title");
@@ -796,7 +797,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 
     @Override
     public void crawlingPlayListComment() throws InterruptedException {
-        // 找到未爬取的歌单id
+        // 找到未爬取评论的歌单id
         PlayListPOExample example = new PlayListPOExample();
         example.createCriteria().andCommentCrawlingStatusEqualTo(CrawlingStatusEnum.UN_CRAWLERED);
         example.setPageInfo(new PaginationInfo(1, CrawlerConstant.CRAWLING_COMMENT_BATCH_SIZE)); // 分批爬取
@@ -826,20 +827,24 @@ public class CrawlerServiceImpl implements CrawlerService {
             LogConstant.BUS.info("crawling a batch play list success.");
         }
 
-        LogConstant.BUS.info("crawling play list done.");
+        LogConstant.BUS.info("crawling play list comment done.");
     }
 
     @Override
     public void doCrawlingPlayListComment(Long playListId) {
+        PlayListPO playListPO = new PlayListPO();
+
         PlayListPOExample example = new PlayListPOExample();
         example.createCriteria().andResourceIdEqualTo(playListId);
         List<PlayListPO> playListPOList = playListPOMapper.selectByExample(example);
         if (CollectionUtils.isEmpty(playListPOList)) {
-            LogConstant.BUS.info("no play list for id:{}.", playListId);
-            return;
+            LogConstant.BUS.info("playlist not exist, playListId:{}.", playListId);
+            playListPO.setResourceId(playListId);
+        } else {
+            playListPO = playListPOList.get(0);
+            LogConstant.BUS.info("Query play list success: {}.", JSON.toJSONString(playListPO));
         }
-        PlayListPO playListPO = playListPOList.get(0);
-        LogConstant.BUS.info("Query play list success: {}.", JSON.toJSONString(playListPO));
+
         doCrawlingPlayListComment(playListPO);
     }
 
@@ -865,7 +870,8 @@ public class CrawlerServiceImpl implements CrawlerService {
 
         try {
             while (hasMore) {
-                CommentBO commentBO = queryCommentInfo(playListId, limit, offset);
+                String playListCommentUrl = CrawlerConstant.getPlayListCommentUrl(playListId, limit, offset); // 获取评论请求url
+                CommentBO commentBO = queryCommentInfo(playListCommentUrl, limit, offset);
                 if (commentBO == null) {
                     LogConstant.BUS.error("commentBO from parse result is null.");
                     break;
@@ -910,26 +916,24 @@ public class CrawlerServiceImpl implements CrawlerService {
     }
 
     /**
-     * 拉取评论信息
-     * 
-     * @param playListId
+     * 拉取歌单或歌曲的评论信息
+     * @param url
      * @param limit
      * @param offset
      * @return
      */
-    private CommentBO queryCommentInfo(Long playListId, Integer limit, Integer offset) {
-        String playListCommentUrl = CrawlerConstant.getPlayListComment(playListId, limit, offset); // 获取评论请求url
-        GetBuilder getBuilder = GetBuilder.create().setUrl(playListCommentUrl);
+    private CommentBO queryCommentInfo(String url, Integer limit, Integer offset) {
+        GetBuilder getBuilder = GetBuilder.create().setUrl(url);
         String result;
         try {
             result = ApacheHttpClientUtil.get(getBuilder);
         } catch (IOException e) {
-            LogConstant.BUS.error("get play list comment IOException, playListId={}.", playListId);
+            LogConstant.BUS.error("get comment IOException, url={}.", url);
             return null;
         }
         if (StringUtils.isBlank(result)) {
-            LogConstant.BUS.error("get play list comment by ApacheHttpClientUtil result blank, playListId={}.",
-                    playListId);
+            LogConstant.BUS.error("get comment by ApacheHttpClientUtil result blank, url={}.",
+                    url);
             return null;
         }
 
@@ -943,12 +947,17 @@ public class CrawlerServiceImpl implements CrawlerService {
             return;
         }
 
-        UserInfoPO userInfoPO = new UserInfoPO();
-        userInfoPO.setUserId(userInfoBO.getUserId());
-        userInfoPO.setUserName(userInfoBO.getNickname());
-        userInfoPO.setAvatarurl(userInfoBO.getAvatarUrl());
-
-        userInfoPOMapper.insertOnDuplicateUpdate(userInfoPO);
+        Long userId = userInfoBO.getUserId();
+        UserInfoPOExample userInfoPOExample = new UserInfoPOExample();
+        userInfoPOExample.createCriteria().andUserIdEqualTo(userId);
+        int duplicateCount = userInfoPOMapper.countByExample(userInfoPOExample);
+        if (duplicateCount == 0) {
+            UserInfoPO userInfoPO = new UserInfoPO();
+            userInfoPO.setUserId(userId);
+            userInfoPO.setUserName(userInfoBO.getNickname());
+            userInfoPO.setAvatarurl(userInfoBO.getAvatarUrl());
+            userInfoPOMapper.insertOnDuplicateUpdate(userInfoPO);
+        }
     }
 
     private void insertPlayListComment(CommentDetailBO commentDetailBO, PlayListPO playListPO) {
@@ -973,7 +982,143 @@ public class CrawlerServiceImpl implements CrawlerService {
     }
 
     @Override
-    public void crawlingSongComment() {
+    public void crawlingSongComment() throws InterruptedException {
+        // 找到未爬取评论的歌曲id
+        SongPOExample example = new SongPOExample();
+        example.createCriteria().andCommentCrawlingStatusEqualTo(CrawlingStatusEnum.UN_CRAWLERED);
+        example.setPageInfo(new PaginationInfo(1, CrawlerConstant.CRAWLING_COMMENT_BATCH_SIZE)); // 分批爬取
 
+        for (;;) {
+            List<SongPO> songPOList = songPOMapper.selectByExample(example);
+            LogConstant.BUS.info("fetch song  success, fetch count:{}.", songPOList.size());
+            if (CollectionUtils.isEmpty(songPOList)) {
+                break;
+            }
+
+            CountDownLatch countDownLatch = new CountDownLatch(songPOList.size());
+
+            for (SongPO songPO : songPOList) {
+                crawlerExecutor.execute(() -> {
+                    try {
+                        doCrawlingSongComment(songPO);
+                    } catch (Exception e) {
+                        LogConstant.BUS.error("execute crawlingSongComment failed, songPO={}.",
+                                JSON.toJSONString(songPO));
+                    } finally {
+                        countDownLatch.countDown();
+                    }
+                });
+            }
+            countDownLatch.await();
+            LogConstant.BUS.info("crawling a batch song success.");
+        }
+
+        LogConstant.BUS.info("crawling song comments done.");
+    }
+
+    @Override
+    public void doCrawlingSongComment(Long songId) {
+        SongPO songPO = new SongPO();
+
+        SongPOExample songPOExample = new SongPOExample();
+        songPOExample.createCriteria().andResourceIdEqualTo(songId);
+        List<SongPO> songPOList = songPOMapper.selectByExample(songPOExample);
+        if (CollectionUtils.isEmpty(songPOList)) {
+            LogConstant.BUS.info("song not exist, songId:{}.", songId);
+            songPO.setResourceId(songId);
+        } else {
+            songPO = songPOList.get(0);
+            LogConstant.BUS.info("Query song success: {}.", JSON.toJSONString(songPO));
+        }
+
+        doCrawlingSongComment(songPO);
+    }
+
+    private void doCrawlingSongComment(SongPO songPO) {
+        Long songId = songPO.getResourceId();
+        if (songId == null) {
+            LogConstant.BUS.error("doCrawlingSongComment failed, songId is null.");
+            return;
+        }
+
+        SongPOExample songPOExample = new SongPOExample();
+        songPOExample.createCriteria().andResourceIdEqualTo(songId);
+        SongPO songPONew = new SongPO();
+        songPONew.setResourceId(songId);
+        songPONew.setCommentCrawlingStatus(CrawlingStatusEnum.CRAWLING);
+        songPOMapper.updateByExampleSelective(songPONew, songPOExample);
+
+        int offset = 0;
+        int limit = CrawlerConstant.DEFAULT_COMMENT_PAGE_SIZE;
+        boolean hasMore = true; // 有没有更多评论
+        boolean firstQuery = true; // 是不是首次获取评论，首次的话要填充歌单表的评论数
+        Integer totalCommentCount = null;
+
+        try {
+            while (hasMore) {
+                String songCommentUrl = CrawlerConstant.getSongCommentUrl(songId, limit, offset); // 获取评论请求url
+                CommentBO commentBO = queryCommentInfo(songCommentUrl, limit, offset);
+                if (commentBO == null) {
+                    LogConstant.BUS.error("commentBO from parse result is null.");
+                    break;
+                }
+                hasMore = commentBO.getMore();
+                totalCommentCount = commentBO.getTotal();
+                if (firstQuery && totalCommentCount != null) { // 更新歌单的评论数
+                    SongPO songPOWithCommentCount = new SongPO();
+                    songPOWithCommentCount.setCommentCount(totalCommentCount);
+                    songPOMapper.updateByExampleSelective(songPOWithCommentCount, songPOExample);
+                    firstQuery = false;
+                }
+
+                List<CommentDetailBO> commentList = commentBO.getComments();
+                if (CollectionUtils.isNotEmpty(commentList)) {
+                    for (CommentDetailBO commentDetailBO : commentList) {
+                        if (commentDetailBO != null) {
+                            updateUserInfo(commentDetailBO.getUser()); // 更新用户信息表
+                            insertSongComment(commentDetailBO, songPO); // 插入评论表
+                        }
+                    }
+                }
+
+                LogConstant.BUS.info("crawling song comment success, offset={},limit={}, total={}.",  offset,limit,totalCommentCount);
+                offset += limit;
+                if (totalCommentCount == null || offset > totalCommentCount) {
+                    break;
+                }
+            }
+
+            LogConstant.BUS.info("crawling song {} comment success, total num: {}.", songId, totalCommentCount);
+
+            // 爬取成功
+            songPONew.setCommentCrawlingStatus(CrawlingStatusEnum.CRAWLERED);
+            songPOMapper.updateByExampleSelective(songPONew, songPOExample);
+        } catch (Exception e) {
+            LogConstant.BUS.error("crawling song {} comment failed:{}.", songId, e.getMessage(), e);
+            // 爬取失败
+            songPONew.setCommentCrawlingStatus(CrawlingStatusEnum.CRAWLING_FAILED);
+            songPOMapper.updateByExampleSelective(songPONew, songPOExample);
+        }
+    }
+
+    private void insertSongComment(CommentDetailBO commentDetailBO, SongPO songPO) {
+        if (commentDetailBO == null || commentDetailBO.getCommentId() == null) {
+            LogConstant.BUS.error(
+                    "insertSongComment failed, commentDetailBO or commentId is null, commentDetailBO={}.",
+                    FastJsonUtil.toJSONString(commentDetailBO));
+            return;
+        }
+
+        MusicCommentPO musicCommentPO = new MusicCommentPO();
+        musicCommentPO.setCommentId(commentDetailBO.getCommentId());
+        musicCommentPO.setResourceId(songPO.getResourceId());
+        musicCommentPO.setPageType(PageTypeEnum.SONG);
+        musicCommentPO.setTitle(songPO.getTitle());
+        musicCommentPO.setCommentTime(new Timestamp(commentDetailBO.getTime()));
+        musicCommentPO.setUserId(commentDetailBO.getUser().getUserId());
+        musicCommentPO.setLikeCount(commentDetailBO.getLikedCount());
+        musicCommentPO.setCommentContent(commentDetailBO.getContent());
+
+        musicCommentPOMapper.insertSelective(musicCommentPO);
     }
 }
