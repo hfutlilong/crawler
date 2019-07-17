@@ -95,6 +95,7 @@ public class CrawlerServiceImpl implements CrawlerService {
         // 爬取歌单评论
         crawlingPlayListComment();
         // 爬取歌曲评论
+        crawlingSongComment();
     }
 
     /**
