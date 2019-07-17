@@ -157,7 +157,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 
     /**
      * 初始化一个类别的歌单
-     * 
+     *
      * @param categoryName
      */
     @Override
@@ -227,7 +227,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 
     /**
      * 更新歌单分类名表
-     * 
+     *
      * @param categoryName
      * @param crawlingStatusEnum
      */
@@ -242,7 +242,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 
     /**
      * 获取一个页面的所有歌单
-     * 
+     *
      * @param url
      * @return
      * @throws Exception
@@ -333,7 +333,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 
     /**
      * 获取所有类别
-     * 
+     *
      * @return
      */
     private List<String> getAllCategoryNames() {
@@ -426,7 +426,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 
     /**
      * 爬取一个歌单
-     * 
+     *
      * @param playListPO
      */
     private void doCrawlingPlayList(PlayListPO playListPO) {
@@ -455,77 +455,102 @@ public class CrawlerServiceImpl implements CrawlerService {
                 return;
             }
 
+
             // 收藏数
-            Integer favoritesCount;
-            Element favElement = statisticElement.selectFirst("a[data-res-action=fav]");
-            if (favElement != null) {
-                String favCountStr = favElement.attr("data-count");
-                if (StringUtils.isNotBlank(favCountStr)) {
-                    favoritesCount = Integer.valueOf(favCountStr);
-                    playListPO.setFavoritesCount(favoritesCount);
+            Integer favoritesCount = 0;
+            try {
+                Element favElement = statisticElement.selectFirst("a[data-res-action=fav]");
+                if (favElement != null) {
+                    String favCountStr = favElement.attr("data-count");
+                    if (StringUtils.isNotBlank(favCountStr)) {
+                        favoritesCount = Integer.valueOf(favCountStr);
+                    }
                 }
+                playListPO.setFavoritesCount(favoritesCount);
+            } catch (Exception e) {
+                LogConstant.BUS.error("get favoritesCount failed, playListId={}.", playListId);
             }
 
             // 转发数
-            Integer forwardCount;
-            Element shareElement = statisticElement.selectFirst("a[data-res-action=share]");
-            if (favElement != null) {
-                String shareCountStr = shareElement.attr("data-count");
-                if (StringUtils.isNotBlank(shareCountStr)) {
-                    forwardCount = Integer.valueOf(shareCountStr);
-                    playListPO.setForwardCount(forwardCount);
+            Integer forwardCount = 0;
+            try {
+                Element shareElement = statisticElement.selectFirst("a[data-res-action=share]");
+                if (shareElement != null) {
+                    String shareCountStr = shareElement.attr("data-count");
+                    if (StringUtils.isNotBlank(shareCountStr)) {
+                        forwardCount = Integer.valueOf(shareCountStr);
+                    }
                 }
+                playListPO.setForwardCount(forwardCount);
+            } catch (Exception e) {
+                LogConstant.BUS.error("get forwardCount failed, playListId={}.", playListId);
             }
 
             // 评论数
-            Integer commentCount;
-            Element commentElement = doc.selectFirst("span#cnt_comment_count");
-            if (commentElement != null) {
-                String commentCountStr = commentElement.text();
-                if (StringUtils.isNotBlank(commentCountStr)) {
-                    commentCount = Integer.valueOf(commentCountStr);
-                    playListPO.setCommentCount(commentCount);
+            Integer commentCount = 0;
+            try {
+                Element commentElement = doc.selectFirst("span#cnt_comment_count");
+                if (commentElement != null) {
+                    String commentCountStr = commentElement.text();
+                    if (StringUtils.isNotBlank(commentCountStr)) {
+                        commentCount = Integer.valueOf(commentCountStr);
+                    }
                 }
+                playListPO.setCommentCount(commentCount);
+            } catch (Exception e) {
+                LogConstant.BUS.error("get commentCount failed, playListId={}.", playListId);
             }
 
             // 播放数
-            Integer playCount;
-            Element playCountElement = doc.selectFirst("strong#play-count");
-            if (playCountElement != null) {
-                String playCountStr = playCountElement.text();
-                if (StringUtils.isNotBlank(playCountStr)) {
-                    playCount = Integer.valueOf(playCountStr);
-                    playListPO.setPlayCount(playCount);
+            Integer playCount = 0;
+            try {
+                Element playCountElement = doc.selectFirst("strong#play-count.s-fc6");
+                if (playCountElement != null) {
+                    String playCountStr = playCountElement.text();
+                    if (StringUtils.isNotBlank(playCountStr)) {
+                        playCount = Integer.valueOf(playCountStr);
+                    }
                 }
+                playListPO.setPlayCount(playCount);
+            } catch (Exception e) {
+                LogConstant.BUS.error("get playCount failed, playListId={}.", playListId);
             }
 
             // 歌单创建时间
             Element createTimeElement = doc.selectFirst("span.time.s-fc4");
-            if (createTimeElement != null) {
-                String createTimeString = createTimeElement.text();
-                if (StringUtils.isNotBlank(createTimeString)) {
-                    Pattern p = Pattern.compile("(\\d{4}-\\d{2}-\\d{2}).*");
-                    Matcher m = p.matcher(createTimeString);
-                    if (m.find()) {
-                        String createTimeStr = m.group(1);
-                        if (StringUtils.isNotBlank(createTimeStr)) {
-                            Timestamp createTime = DateUtil.formatToTimestamp(createTimeStr,
-                                    DateUtil.DEFAULT_DATE_FORMAT);
-                            playListPO.setCreateTime(createTime);
+            try {
+                if (createTimeElement != null) {
+                    String createTimeString = createTimeElement.text();
+                    if (StringUtils.isNotBlank(createTimeString)) {
+                        Pattern p = Pattern.compile("(\\d{4}-\\d{2}-\\d{2}).*");
+                        Matcher m = p.matcher(createTimeString);
+                        if (m.find()) {
+                            String createTimeStr = m.group(1);
+                            if (StringUtils.isNotBlank(createTimeStr)) {
+                                Timestamp createTime = DateUtil.formatToTimestamp(createTimeStr,
+                                        DateUtil.DEFAULT_DATE_FORMAT);
+                                playListPO.setCreateTime(createTime);
+                            }
                         }
                     }
                 }
+            } catch (Exception e) {
+                LogConstant.BUS.error("get createTimeElement failed, playListId={}.", playListId);
             }
 
             // 歌曲数
-            Integer songCount;
-            Element songCountElement = doc.selectFirst("span#playlist-track-count");
-            if (songCountElement != null) {
-                String songCountString = songCountElement.text();
-                if (StringUtils.isNotBlank(songCountString)) {
-                    songCount = Integer.valueOf(songCountString);
-                    playListPO.setSongCount(songCount);
+            Integer songCount = 0;
+            try {
+                Element songCountElement = doc.selectFirst("span#playlist-track-count");
+                if (songCountElement != null) {
+                    String songCountString = songCountElement.text();
+                    if (StringUtils.isNotBlank(songCountString)) {
+                        songCount = Integer.valueOf(songCountString);
+                    }
                 }
+                playListPO.setSongCount(songCount);
+            } catch (Exception e) {
+                LogConstant.BUS.error("get songCount failed, playListId={}.", playListId);
             }
 
             // 获取所有歌曲
@@ -738,5 +763,55 @@ public class CrawlerServiceImpl implements CrawlerService {
 
         songPO.setCrawlingStatus(CrawlingStatusEnum.CRAWLERED);
         songPOMapper.updateByExampleSelective(songPO, example);
+    }
+
+    @Override
+    public void crawlingPlayListComment() throws InterruptedException {
+        // 找到未爬取的歌单id
+        PlayListPOExample example = new PlayListPOExample();
+        example.createCriteria().andCommentCrawlingStatusEqualTo(CrawlingStatusEnum.UN_CRAWLERED);
+        example.setPageInfo(new PaginationInfo(1, CrawlerConstant.CRAWLING_COMMENT_BATCH_SIZE)); // 分批爬取
+
+        for (;;) {
+            List<PlayListPO> playListPOList = playListPOMapper.selectByExample(example);
+            LogConstant.BUS.info("fetch play list success, fetch count:{}.", playListPOList.size());
+            if (CollectionUtils.isEmpty(playListPOList)) {
+                break;
+            }
+
+            CountDownLatch countDownLatch = new CountDownLatch(playListPOList.size());
+
+            for (PlayListPO playListPO : playListPOList) {
+                crawlerExecutor.execute(() -> {
+                    try {
+                        doCrawlingPlayListComment(playListPO);
+                    } catch (Exception e) {
+                        LogConstant.BUS.error("execute crawlingPlayListComment failed, playListPO={}.",
+                                JSON.toJSONString(playListPO));
+                    } finally {
+                        countDownLatch.countDown();
+                    }
+                });
+            }
+            countDownLatch.await();
+            LogConstant.BUS.info("crawling a batch play list success.");
+        }
+
+        LogConstant.BUS.info("crawling play list done.");
+    }
+
+    private void doCrawlingPlayListComment(PlayListPO playListPO) {
+        Long playListId = playListPO.getResourceId();
+        PlayListPOExample example = new PlayListPOExample();
+        example.createCriteria().andResourceIdEqualTo(playListId);
+        PlayListPO playListPONew = new PlayListPO();
+        playListPONew.setResourceId(playListId);
+        playListPONew.setCommentCrawlingStatus(CrawlingStatusEnum.CRAWLING);
+        playListPOMapper.updateByExampleSelective(playListPONew, example);
+    }
+
+    @Override
+    public void crawlingSongComment() {
+
     }
 }

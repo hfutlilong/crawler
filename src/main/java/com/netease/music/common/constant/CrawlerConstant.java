@@ -34,6 +34,11 @@ public class CrawlerConstant {
     public static final Integer CRAWLING_SONG_INFO_BATCH_SIZE = 2000;
 
     /**
+     * 分批爬取评论信息
+     */
+    public static final Integer CRAWLING_COMMENT_BATCH_SIZE = 2000;
+
+    /**
      * 歌单页url
      */
     private static final String PLAY_LISTS_URL = "https://music.163.com/discover/playlist/?order=hot&cat={category}&limit={limit}&offset={offset}";
@@ -67,9 +72,18 @@ public class CrawlerConstant {
     /**
      * 歌曲页面
      */
-    private static String SONG_URL = "https://music.163.com/song?id={songId}";
+    private static final String SONG_URL = "https://music.163.com/song?id={songId}";
 
     public static String getSongUrl(Long songId) {
         return SONG_URL.replace("{songId}", String.valueOf(songId));
+    }
+
+    /**
+     * 歌单评论页面
+     */
+    private static final String PLAY_LIST_COMMENT = "https://music.163.com/api/v1/resource/comments/A_PL_0_{playListId}?limit=20&offset=0";
+
+    public static String getPlayListComment(Long playListId) {
+        return PLAY_LIST_COMMENT.replace("{playListId}", String.valueOf(playListId));
     }
 }

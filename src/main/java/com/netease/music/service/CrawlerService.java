@@ -42,4 +42,14 @@ public interface CrawlerService {
      * @param songPO
      */
     void doCrawlingSongInfo(SongPO songPO);
+
+    /**
+     * 爬取歌单评论
+     */
+    void crawlingPlayListComment() throws InterruptedException;
+
+    /**
+     * 爬取歌曲评论
+     */
+    void crawlingSongComment();
 }
