@@ -620,6 +620,12 @@ public class CrawlerServiceImpl implements CrawlerService {
                     } catch (Exception e) {
                         LogConstant.BUS.error("execute doCrawlingPlayList failed, songPO={}.",
                                 JSON.toJSONString(songPO));
+                        SongPO songPONew = new SongPO();
+                        songPONew.setResourceId(songPO.getResourceId());
+                        songPONew.setCrawlingStatus(CrawlingStatusEnum.CRAWLING_FAILED);
+                        SongPOExample example = new SongPOExample();
+                        example.createCriteria().andResourceIdEqualTo(songPO.getResourceId());
+                        songPOMapper.updateByExampleSelective(songPO, example);
                     } finally {
                         countDownLatch.countDown();
                     }
