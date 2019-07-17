@@ -1,6 +1,8 @@
 package com.netease.music.dao.mapper;
 
 
-public interface UserInfoPOMapperExt extends UserInfoPOMapper {
+import com.netease.music.dao.po.UserInfoPO;
 
+public interface UserInfoPOMapperExt extends UserInfoPOMapper {
+    int insertOnDuplicateUpdate(UserInfoPO userInfoPO);
 }

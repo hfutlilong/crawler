@@ -39,14 +39,20 @@ public interface CrawlerService {
 
     /**
      * 爬取歌曲信息
-     * @param songPO
+     * @param songId
      */
-    void doCrawlingSongInfo(SongPO songPO);
+    void doCrawlingSongInfo(Long songId);
 
     /**
      * 爬取歌单评论
      */
     void crawlingPlayListComment() throws InterruptedException;
+
+    /**
+     * 爬取指定歌单评论
+     * @param playListId
+     */
+    void doCrawlingPlayListComment(Long playListId);
 
     /**
      * 爬取歌曲评论

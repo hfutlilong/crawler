@@ -19,14 +19,12 @@ public class CrawlerConstant {
     /**
      * 每页评论数
      */
-    public static final int DEFAULT_COMMENT_PAGE_SIZE = 20;
-
+    public static final int DEFAULT_COMMENT_PAGE_SIZE = 100;
 
     /**
      * 分批爬取歌单页，每批爬多少个歌单
      */
     public static final Integer CRAWLING_PLAY_LIST_BATCH_SIZE = 2000;
-
 
     /**
      * 分批爬取歌曲信息，每批爬取多少歌曲
@@ -45,6 +43,7 @@ public class CrawlerConstant {
 
     /**
      * 歌单列表
+     * 
      * @param category
      * @param limit
      * @param offset
@@ -62,6 +61,7 @@ public class CrawlerConstant {
 
     /**
      * 歌单页面id
+     * 
      * @param playListId
      * @return
      */
@@ -81,9 +81,10 @@ public class CrawlerConstant {
     /**
      * 歌单评论页面
      */
-    private static final String PLAY_LIST_COMMENT = "https://music.163.com/api/v1/resource/comments/A_PL_0_{playListId}?limit=20&offset=0";
+    private static final String PLAY_LIST_COMMENT = "https://music.163.com/api/v1/resource/comments/A_PL_0_{playListId}?limit={limit}&offset={offset}";
 
-    public static String getPlayListComment(Long playListId) {
-        return PLAY_LIST_COMMENT.replace("{playListId}", String.valueOf(playListId));
+    public static String getPlayListComment(Long playListId, int limit, int offset) {
+        return PLAY_LIST_COMMENT.replace("{playListId}", String.valueOf(playListId))
+                .replace("{limit}", String.valueOf(limit)).replace("{offset}", String.valueOf(offset));
     }
 }

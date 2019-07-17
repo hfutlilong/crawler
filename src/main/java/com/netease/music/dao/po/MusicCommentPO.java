@@ -7,11 +7,11 @@ import java.util.Date;
 public class MusicCommentPO implements Serializable {
     private Long id;
 
+    private Long commentId;
+
     private Long resourceId;
 
     private PageTypeEnum pageType;
-
-    private String url;
 
     private String title;
 
@@ -23,7 +23,7 @@ public class MusicCommentPO implements Serializable {
 
     private Date dbUpdateTime;
 
-    private String content;
+    private String commentContent;
 
     private static final long serialVersionUID = 1L;
 
@@ -33,6 +33,14 @@ public class MusicCommentPO implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getCommentId() {
+        return commentId;
+    }
+
+    public void setCommentId(Long commentId) {
+        this.commentId = commentId;
     }
 
     public Long getResourceId() {
@@ -49,14 +57,6 @@ public class MusicCommentPO implements Serializable {
 
     public void setPageType(PageTypeEnum pageType) {
         this.pageType = pageType;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url == null ? null : url.trim();
     }
 
     public String getTitle() {
@@ -99,11 +99,11 @@ public class MusicCommentPO implements Serializable {
         this.dbUpdateTime = dbUpdateTime;
     }
 
-    public String getContent() {
-        return content;
+    public String getCommentContent() {
+        return commentContent;
     }
 
-    public void setContent(String content) {
-        this.content = content == null ? null : content.trim();
+    public void setCommentContent(String commentContent) {
+        this.commentContent = commentContent == null ? null : commentContent.trim();
     }
 }

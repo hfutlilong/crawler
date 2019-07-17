@@ -211,6 +211,66 @@ public class MusicCommentPOExample {
             return (Criteria) this;
         }
 
+        public Criteria andCommentIdIsNull() {
+            addCriterion("comment_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentIdIsNotNull() {
+            addCriterion("comment_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentIdEqualTo(Long value) {
+            addCriterion("comment_id =", value, "commentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentIdNotEqualTo(Long value) {
+            addCriterion("comment_id <>", value, "commentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentIdGreaterThan(Long value) {
+            addCriterion("comment_id >", value, "commentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentIdGreaterThanOrEqualTo(Long value) {
+            addCriterion("comment_id >=", value, "commentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentIdLessThan(Long value) {
+            addCriterion("comment_id <", value, "commentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentIdLessThanOrEqualTo(Long value) {
+            addCriterion("comment_id <=", value, "commentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentIdIn(List<Long> values) {
+            addCriterion("comment_id in", values, "commentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentIdNotIn(List<Long> values) {
+            addCriterion("comment_id not in", values, "commentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentIdBetween(Long value1, Long value2) {
+            addCriterion("comment_id between", value1, value2, "commentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentIdNotBetween(Long value1, Long value2) {
+            addCriterion("comment_id not between", value1, value2, "commentId");
+            return (Criteria) this;
+        }
+
         public Criteria andResourceIdIsNull() {
             addCriterion("resource_id is null");
             return (Criteria) this;
@@ -328,76 +388,6 @@ public class MusicCommentPOExample {
 
         public Criteria andPageTypeNotBetween(PageTypeEnum value1, PageTypeEnum value2) {
             addPageTypeCriterion("page_type not between", value1, value2, "pageType");
-            return (Criteria) this;
-        }
-
-        public Criteria andUrlIsNull() {
-            addCriterion("url is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andUrlIsNotNull() {
-            addCriterion("url is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andUrlEqualTo(String value) {
-            addCriterion("url =", value, "url");
-            return (Criteria) this;
-        }
-
-        public Criteria andUrlNotEqualTo(String value) {
-            addCriterion("url <>", value, "url");
-            return (Criteria) this;
-        }
-
-        public Criteria andUrlGreaterThan(String value) {
-            addCriterion("url >", value, "url");
-            return (Criteria) this;
-        }
-
-        public Criteria andUrlGreaterThanOrEqualTo(String value) {
-            addCriterion("url >=", value, "url");
-            return (Criteria) this;
-        }
-
-        public Criteria andUrlLessThan(String value) {
-            addCriterion("url <", value, "url");
-            return (Criteria) this;
-        }
-
-        public Criteria andUrlLessThanOrEqualTo(String value) {
-            addCriterion("url <=", value, "url");
-            return (Criteria) this;
-        }
-
-        public Criteria andUrlLike(String value) {
-            addCriterion("url like", value, "url");
-            return (Criteria) this;
-        }
-
-        public Criteria andUrlNotLike(String value) {
-            addCriterion("url not like", value, "url");
-            return (Criteria) this;
-        }
-
-        public Criteria andUrlIn(List<String> values) {
-            addCriterion("url in", values, "url");
-            return (Criteria) this;
-        }
-
-        public Criteria andUrlNotIn(List<String> values) {
-            addCriterion("url not in", values, "url");
-            return (Criteria) this;
-        }
-
-        public Criteria andUrlBetween(String value1, String value2) {
-            addCriterion("url between", value1, value2, "url");
-            return (Criteria) this;
-        }
-
-        public Criteria andUrlNotBetween(String value1, String value2) {
-            addCriterion("url not between", value1, value2, "url");
             return (Criteria) this;
         }
 

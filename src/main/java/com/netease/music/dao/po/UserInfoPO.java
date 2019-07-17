@@ -23,6 +23,8 @@ public class UserInfoPO implements Serializable {
 
     private Integer totalListen;
 
+    private String avatarurl;
+
     private Integer followeeCount;
 
     private Integer followerCount;
@@ -103,6 +105,14 @@ public class UserInfoPO implements Serializable {
 
     public void setTotalListen(Integer totalListen) {
         this.totalListen = totalListen;
+    }
+
+    public String getAvatarurl() {
+        return avatarurl;
+    }
+
+    public void setAvatarurl(String avatarurl) {
+        this.avatarurl = avatarurl == null ? null : avatarurl.trim();
     }
 
     public Integer getFolloweeCount() {

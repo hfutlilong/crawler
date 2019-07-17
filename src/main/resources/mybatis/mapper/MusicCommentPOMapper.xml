@@ -3,9 +3,9 @@
 <mapper namespace="com.netease.music.dao.mapper.MusicCommentPOMapper" >
   <resultMap id="BaseResultMap" type="com.netease.music.dao.po.MusicCommentPO" >
     <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="comment_id" property="commentId" jdbcType="BIGINT" />
     <result column="resource_id" property="resourceId" jdbcType="BIGINT" />
     <result column="page_type" property="pageType" jdbcType="TINYINT" typeHandler="com.netease.music.dao.typehandler.PageTypeEnumHandler" />
-    <result column="url" property="url" jdbcType="VARCHAR" />
     <result column="title" property="title" jdbcType="VARCHAR" />
     <result column="comment_time" property="commentTime" jdbcType="TIMESTAMP" />
     <result column="user_id" property="userId" jdbcType="BIGINT" />
@@ -13,7 +13,7 @@
     <result column="db_update_time" property="dbUpdateTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <resultMap id="ResultMapWithBLOBs" type="com.netease.music.dao.po.MusicCommentPO" extends="BaseResultMap" >
-    <result column="content" property="content" jdbcType="LONGVARCHAR" />
+    <result column="comment_content" property="commentContent" jdbcType="LONGVARCHAR" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -112,10 +112,11 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, resource_id, page_type, url, title, comment_time, user_id, like_count, db_update_time
+    id, comment_id, resource_id, page_type, title, comment_time, user_id, like_count, 
+    db_update_time
   </sql>
   <sql id="Blob_Column_List" >
-    content
+    comment_content
   </sql>
   <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.netease.music.dao.po.MusicCommentPOExample" >
     select
@@ -166,14 +167,14 @@
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into music_comment (resource_id, page_type, 
-      url, title, comment_time, 
-      user_id, like_count, db_update_time, 
-      content)
-    values (#{resourceId,jdbcType=BIGINT}, #{pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler}, 
-      #{url,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{commentTime,jdbcType=TIMESTAMP}, 
-      #{userId,jdbcType=BIGINT}, #{likeCount,jdbcType=INTEGER}, #{dbUpdateTime,jdbcType=TIMESTAMP}, 
-      #{content,jdbcType=LONGVARCHAR})
+    insert into music_comment (comment_id, resource_id, page_type, 
+      title, comment_time, user_id, 
+      like_count, db_update_time, comment_content
+      )
+    values (#{commentId,jdbcType=BIGINT}, #{resourceId,jdbcType=BIGINT}, #{pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler}, 
+      #{title,jdbcType=VARCHAR}, #{commentTime,jdbcType=TIMESTAMP}, #{userId,jdbcType=BIGINT}, 
+      #{likeCount,jdbcType=INTEGER}, #{dbUpdateTime,jdbcType=TIMESTAMP}, #{commentContent,jdbcType=LONGVARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.netease.music.dao.po.MusicCommentPO" >
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
@@ -181,14 +182,14 @@
     </selectKey>
     insert into music_comment
     <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="commentId != null" >
+        comment_id,
+      </if>
       <if test="resourceId != null" >
         resource_id,
       </if>
       <if test="pageType != null" >
         page_type,
-      </if>
-      <if test="url != null" >
-        url,
       </if>
       <if test="title != null" >
         title,
@@ -205,19 +206,19 @@
       <if test="dbUpdateTime != null" >
         db_update_time,
       </if>
-      <if test="content != null" >
-        content,
+      <if test="commentContent != null" >
+        comment_content,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="commentId != null" >
+        #{commentId,jdbcType=BIGINT},
+      </if>
       <if test="resourceId != null" >
         #{resourceId,jdbcType=BIGINT},
       </if>
       <if test="pageType != null" >
         #{pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
-      </if>
-      <if test="url != null" >
-        #{url,jdbcType=VARCHAR},
       </if>
       <if test="title != null" >
         #{title,jdbcType=VARCHAR},
@@ -234,8 +235,8 @@
       <if test="dbUpdateTime != null" >
         #{dbUpdateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="content != null" >
-        #{content,jdbcType=LONGVARCHAR},
+      <if test="commentContent != null" >
+        #{commentContent,jdbcType=LONGVARCHAR},
       </if>
     </trim>
   </insert>
@@ -251,14 +252,14 @@
       <if test="record.id != null" >
         id = #{record.id,jdbcType=BIGINT},
       </if>
+      <if test="record.commentId != null" >
+        comment_id = #{record.commentId,jdbcType=BIGINT},
+      </if>
       <if test="record.resourceId != null" >
         resource_id = #{record.resourceId,jdbcType=BIGINT},
       </if>
       <if test="record.pageType != null" >
         page_type = #{record.pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
-      </if>
-      <if test="record.url != null" >
-        url = #{record.url,jdbcType=VARCHAR},
       </if>
       <if test="record.title != null" >
         title = #{record.title,jdbcType=VARCHAR},
@@ -275,8 +276,8 @@
       <if test="record.dbUpdateTime != null" >
         db_update_time = #{record.dbUpdateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.content != null" >
-        content = #{record.content,jdbcType=LONGVARCHAR},
+      <if test="record.commentContent != null" >
+        comment_content = #{record.commentContent,jdbcType=LONGVARCHAR},
       </if>
     </set>
     <if test="_parameter != null" >
@@ -286,15 +287,15 @@
   <update id="updateByExampleWithBLOBs" parameterType="map" >
     update music_comment
     set id = #{record.id,jdbcType=BIGINT},
+      comment_id = #{record.commentId,jdbcType=BIGINT},
       resource_id = #{record.resourceId,jdbcType=BIGINT},
       page_type = #{record.pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
-      url = #{record.url,jdbcType=VARCHAR},
       title = #{record.title,jdbcType=VARCHAR},
       comment_time = #{record.commentTime,jdbcType=TIMESTAMP},
       user_id = #{record.userId,jdbcType=BIGINT},
       like_count = #{record.likeCount,jdbcType=INTEGER},
       db_update_time = #{record.dbUpdateTime,jdbcType=TIMESTAMP},
-      content = #{record.content,jdbcType=LONGVARCHAR}
+      comment_content = #{record.commentContent,jdbcType=LONGVARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -302,9 +303,9 @@
   <update id="updateByExample" parameterType="map" >
     update music_comment
     set id = #{record.id,jdbcType=BIGINT},
+      comment_id = #{record.commentId,jdbcType=BIGINT},
       resource_id = #{record.resourceId,jdbcType=BIGINT},
       page_type = #{record.pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
-      url = #{record.url,jdbcType=VARCHAR},
       title = #{record.title,jdbcType=VARCHAR},
       comment_time = #{record.commentTime,jdbcType=TIMESTAMP},
       user_id = #{record.userId,jdbcType=BIGINT},
@@ -317,14 +318,14 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.netease.music.dao.po.MusicCommentPO" >
     update music_comment
     <set >
+      <if test="commentId != null" >
+        comment_id = #{commentId,jdbcType=BIGINT},
+      </if>
       <if test="resourceId != null" >
         resource_id = #{resourceId,jdbcType=BIGINT},
       </if>
       <if test="pageType != null" >
         page_type = #{pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
-      </if>
-      <if test="url != null" >
-        url = #{url,jdbcType=VARCHAR},
       </if>
       <if test="title != null" >
         title = #{title,jdbcType=VARCHAR},
@@ -341,30 +342,30 @@
       <if test="dbUpdateTime != null" >
         db_update_time = #{dbUpdateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="content != null" >
-        content = #{content,jdbcType=LONGVARCHAR},
+      <if test="commentContent != null" >
+        comment_content = #{commentContent,jdbcType=LONGVARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.netease.music.dao.po.MusicCommentPO" >
     update music_comment
-    set resource_id = #{resourceId,jdbcType=BIGINT},
+    set comment_id = #{commentId,jdbcType=BIGINT},
+      resource_id = #{resourceId,jdbcType=BIGINT},
       page_type = #{pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
-      url = #{url,jdbcType=VARCHAR},
       title = #{title,jdbcType=VARCHAR},
       comment_time = #{commentTime,jdbcType=TIMESTAMP},
       user_id = #{userId,jdbcType=BIGINT},
       like_count = #{likeCount,jdbcType=INTEGER},
       db_update_time = #{dbUpdateTime,jdbcType=TIMESTAMP},
-      content = #{content,jdbcType=LONGVARCHAR}
+      comment_content = #{commentContent,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.netease.music.dao.po.MusicCommentPO" >
     update music_comment
-    set resource_id = #{resourceId,jdbcType=BIGINT},
+    set comment_id = #{commentId,jdbcType=BIGINT},
+      resource_id = #{resourceId,jdbcType=BIGINT},
       page_type = #{pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
-      url = #{url,jdbcType=VARCHAR},
       title = #{title,jdbcType=VARCHAR},
       comment_time = #{commentTime,jdbcType=TIMESTAMP},
       user_id = #{userId,jdbcType=BIGINT},

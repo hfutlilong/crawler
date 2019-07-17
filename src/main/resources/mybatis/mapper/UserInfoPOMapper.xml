@@ -11,6 +11,7 @@
     <result column="area" property="area" jdbcType="VARCHAR" />
     <result column="personal_description" property="personalDescription" jdbcType="VARCHAR" />
     <result column="total_listen" property="totalListen" jdbcType="INTEGER" />
+    <result column="avatarUrl" property="avatarurl" jdbcType="VARCHAR" />
     <result column="followee_count" property="followeeCount" jdbcType="INTEGER" />
     <result column="follower_count" property="followerCount" jdbcType="INTEGER" />
     <result column="vip_level" property="vipLevel" jdbcType="TINYINT" />
@@ -114,7 +115,7 @@
   </sql>
   <sql id="Base_Column_List" >
     id, user_id, user_name, sex, age, age_description, area, personal_description, total_listen, 
-    followee_count, follower_count, vip_level, db_update_time
+    avatarUrl, followee_count, follower_count, vip_level, db_update_time
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.netease.music.dao.po.UserInfoPOExample" >
     select
@@ -149,14 +150,14 @@
     </selectKey>
     insert into user_info (user_id, user_name, sex, 
       age, age_description, area, 
-      personal_description, total_listen, followee_count, 
-      follower_count, vip_level, db_update_time
-      )
+      personal_description, total_listen, avatarUrl, 
+      followee_count, follower_count, vip_level, 
+      db_update_time)
     values (#{userId,jdbcType=BIGINT}, #{userName,jdbcType=VARCHAR}, #{sex,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.SexEnumHandler}, 
       #{age,jdbcType=TINYINT}, #{ageDescription,jdbcType=VARCHAR}, #{area,jdbcType=VARCHAR}, 
-      #{personalDescription,jdbcType=VARCHAR}, #{totalListen,jdbcType=INTEGER}, #{followeeCount,jdbcType=INTEGER}, 
-      #{followerCount,jdbcType=INTEGER}, #{vipLevel,jdbcType=TINYINT}, #{dbUpdateTime,jdbcType=TIMESTAMP}
-      )
+      #{personalDescription,jdbcType=VARCHAR}, #{totalListen,jdbcType=INTEGER}, #{avatarurl,jdbcType=VARCHAR}, 
+      #{followeeCount,jdbcType=INTEGER}, #{followerCount,jdbcType=INTEGER}, #{vipLevel,jdbcType=TINYINT}, 
+      #{dbUpdateTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.netease.music.dao.po.UserInfoPO" >
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
@@ -187,6 +188,9 @@
       </if>
       <if test="totalListen != null" >
         total_listen,
+      </if>
+      <if test="avatarurl != null" >
+        avatarUrl,
       </if>
       <if test="followeeCount != null" >
         followee_count,
@@ -225,6 +229,9 @@
       </if>
       <if test="totalListen != null" >
         #{totalListen,jdbcType=INTEGER},
+      </if>
+      <if test="avatarurl != null" >
+        #{avatarurl,jdbcType=VARCHAR},
       </if>
       <if test="followeeCount != null" >
         #{followeeCount,jdbcType=INTEGER},
@@ -276,6 +283,9 @@
       <if test="record.totalListen != null" >
         total_listen = #{record.totalListen,jdbcType=INTEGER},
       </if>
+      <if test="record.avatarurl != null" >
+        avatarUrl = #{record.avatarurl,jdbcType=VARCHAR},
+      </if>
       <if test="record.followeeCount != null" >
         followee_count = #{record.followeeCount,jdbcType=INTEGER},
       </if>
@@ -304,6 +314,7 @@
       area = #{record.area,jdbcType=VARCHAR},
       personal_description = #{record.personalDescription,jdbcType=VARCHAR},
       total_listen = #{record.totalListen,jdbcType=INTEGER},
+      avatarUrl = #{record.avatarurl,jdbcType=VARCHAR},
       followee_count = #{record.followeeCount,jdbcType=INTEGER},
       follower_count = #{record.followerCount,jdbcType=INTEGER},
       vip_level = #{record.vipLevel,jdbcType=TINYINT},
@@ -339,6 +350,9 @@
       <if test="totalListen != null" >
         total_listen = #{totalListen,jdbcType=INTEGER},
       </if>
+      <if test="avatarurl != null" >
+        avatarUrl = #{avatarurl,jdbcType=VARCHAR},
+      </if>
       <if test="followeeCount != null" >
         followee_count = #{followeeCount,jdbcType=INTEGER},
       </if>
@@ -364,6 +378,7 @@
       area = #{area,jdbcType=VARCHAR},
       personal_description = #{personalDescription,jdbcType=VARCHAR},
       total_listen = #{totalListen,jdbcType=INTEGER},
+      avatarUrl = #{avatarurl,jdbcType=VARCHAR},
       followee_count = #{followeeCount,jdbcType=INTEGER},
       follower_count = #{followerCount,jdbcType=INTEGER},
       vip_level = #{vipLevel,jdbcType=TINYINT},
