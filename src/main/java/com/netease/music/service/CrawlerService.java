@@ -1,6 +1,7 @@
 package com.netease.music.service;
 
 import com.netease.music.dao.po.SongPO;
+import com.netease.music.entity.bo.ProxyBO;
 
 public interface CrawlerService {
     /**
@@ -64,4 +65,10 @@ public interface CrawlerService {
      * @param songId
      */
     void doCrawlingSongComment(Long songId);
+
+    /**
+     * 获取一个可用的ip代理
+     * @return
+     */
+    ProxyBO getAvailableProxy();
 }

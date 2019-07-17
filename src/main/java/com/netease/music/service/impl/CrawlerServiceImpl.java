@@ -3,18 +3,16 @@ package com.netease.music.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.netease.kaola.cs.utils.DateUtil;
+import com.netease.kaola.cs.utils.IpUtil;
 import com.netease.kaola.cs.utils.fastjson.FastJsonUtil;
 import com.netease.kaola.cs.utils.httpclient.ApacheHttpClientUtil;
 import com.netease.kaola.cs.utils.httpclient.builder.GetBuilder;
 import com.netease.kaola.cs.utils.pagination.PaginationInfo;
 import com.netease.music.dao.mapper.*;
 import com.netease.music.dao.po.*;
-import com.netease.music.entity.bo.CommentBO;
-import com.netease.music.entity.bo.CommentDetailBO;
-import com.netease.music.entity.bo.PlayListDetailBO;
+import com.netease.music.entity.bo.*;
 import com.netease.music.common.constant.CrawlerConstant;
 import com.netease.music.common.log.LogConstant;
-import com.netease.music.entity.bo.UserInfoBO;
 import com.netease.music.entity.enums.CrawlingStatusEnum;
 import com.netease.music.entity.enums.PageTypeEnum;
 import com.netease.music.service.CrawlerService;
@@ -30,6 +28,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.*;
@@ -59,6 +58,9 @@ public class CrawlerServiceImpl implements CrawlerService {
     @Autowired
     private MusicCommentPOMapperExt musicCommentPOMapper;
 
+    @Autowired
+    private ProxyPOMapperExt proxyPOMapper;
+
     private Lock playListCategoryLock = new ReentrantLock();
 
     private Lock playListLock = new ReentrantLock();
@@ -74,6 +76,15 @@ public class CrawlerServiceImpl implements CrawlerService {
                 @Override
                 public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
                     LogConstant.BUS.error("crawlerPlayListExecutor reject execute.");
+                }
+            });
+
+    private static final ThreadPoolExecutor cleanProxyExecutor = new ThreadPoolExecutor(2, 4, 30, TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>(50000), new ThreadFactoryBuilder().setNameFormat("cleanProxyExecutor-%d").build(),
+            new RejectedExecutionHandler() {
+                @Override
+                public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+                    LogConstant.BUS.error("cleanProxyExecutor reject execute.");
                 }
             });
 
@@ -259,8 +270,8 @@ public class CrawlerServiceImpl implements CrawlerService {
      * @return
      * @throws Exception
      */
-    private List<PlayListDetailBO> getPlayListOnePage(String url) throws Exception {
-        Document doc = Jsoup.connect(url).get();
+    private List<PlayListDetailBO> getPlayListOnePage(String url) {
+        Document doc = getDocByProxy(url);
         if (doc == null) {
             LogConstant.BUS.info("doc is null, url={}.", url);
             return null;
@@ -352,12 +363,7 @@ public class CrawlerServiceImpl implements CrawlerService {
         List<String> categoryNameList = new ArrayList<>();
 
         String startUrl = CrawlerConstant.START_URL;
-        Document doc = null;
-        try {
-            doc = Jsoup.connect(startUrl).get();
-        } catch (IOException e) {
-            LogConstant.BUS.error("cannot read url:{}.", startUrl, e);
-        }
+        Document doc = getDocByProxy(startUrl);
 
         if (doc == null) {
             LogConstant.BUS.info("document of url {} is null.", startUrl);
@@ -460,7 +466,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 
         // 获取歌单信息，获取歌单里面的歌曲，初始化歌曲表的id、名字、爬取状态，插入表单-歌曲关系
         try {
-            Document doc = Jsoup.connect(CrawlerConstant.getPlayListPage(playListId)).get();
+            Document doc = getDocByProxy(CrawlerConstant.getPlayListPage(playListId));
             if (doc == null) {
                 LogConstant.BUS.error("doc not exists, playListId={}.", playListId);
                 return;
@@ -712,12 +718,7 @@ public class CrawlerServiceImpl implements CrawlerService {
         songPOMapper.updateByExampleSelective(songPO, example);
 
         String songUrl = CrawlerConstant.getSongUrl(songId);
-        Document doc = null;
-        try {
-            doc = Jsoup.connect(songUrl).get();
-        } catch (IOException e) {
-            LogConstant.BUS.error("get songId {} failed, Jsoup connnect {} IOException.", songId, songUrl);
-        }
+        Document doc = getDocByProxy(songUrl);
 
         if (doc == null) {
             LogConstant.BUS.error("doc of url {} is null.", songUrl);
@@ -896,14 +897,16 @@ public class CrawlerServiceImpl implements CrawlerService {
                     }
                 }
 
-                LogConstant.BUS.info("crawling play list comment success, offset={},limit={}, total={}.",  offset,limit,totalCommentCount);
+                LogConstant.BUS.info("crawling play list comment success, offset={},limit={}, total={}.", offset, limit,
+                        totalCommentCount);
                 offset += limit;
                 if (totalCommentCount == null || offset > totalCommentCount) {
                     break;
                 }
             }
 
-            LogConstant.BUS.info("crawling play list {} comment success, total num: {}.", playListId, totalCommentCount);
+            LogConstant.BUS.info("crawling play list {} comment success, total num: {}.", playListId,
+                    totalCommentCount);
 
             // 爬取成功
             playListPONew.setCommentCrawlingStatus(CrawlingStatusEnum.CRAWLERED);
@@ -918,6 +921,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 
     /**
      * 拉取歌单或歌曲的评论信息
+     * 
      * @param url
      * @param limit
      * @param offset
@@ -933,8 +937,7 @@ public class CrawlerServiceImpl implements CrawlerService {
             return null;
         }
         if (StringUtils.isBlank(result)) {
-            LogConstant.BUS.error("get comment by ApacheHttpClientUtil result blank, url={}.",
-                    url);
+            LogConstant.BUS.error("get comment by ApacheHttpClientUtil result blank, url={}.", url);
             return null;
         }
 
@@ -1077,7 +1080,8 @@ public class CrawlerServiceImpl implements CrawlerService {
                     }
                 }
 
-                LogConstant.BUS.info("crawling song comment success, offset={},limit={}, total={}.",  offset,limit,totalCommentCount);
+                LogConstant.BUS.info("crawling song comment success, offset={},limit={}, total={}.", offset, limit,
+                        totalCommentCount);
                 offset += limit;
                 if (totalCommentCount == null || offset > totalCommentCount) {
                     break;
@@ -1099,8 +1103,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 
     private void insertSongComment(CommentDetailBO commentDetailBO, SongPO songPO) {
         if (commentDetailBO == null || commentDetailBO.getCommentId() == null) {
-            LogConstant.BUS.error(
-                    "insertSongComment failed, commentDetailBO or commentId is null, commentDetailBO={}.",
+            LogConstant.BUS.error("insertSongComment failed, commentDetailBO or commentId is null, commentDetailBO={}.",
                     FastJsonUtil.toJSONString(commentDetailBO));
             return;
         }
@@ -1116,5 +1119,160 @@ public class CrawlerServiceImpl implements CrawlerService {
         musicCommentPO.setCommentContent(commentDetailBO.getContent());
 
         musicCommentPOMapper.insertSelective(musicCommentPO);
+    }
+
+    @Override
+    public ProxyBO getAvailableProxy() {
+        // 查数据库
+        ProxyPOExample proxyPOExample = new ProxyPOExample();
+        List<ProxyPO> proxyPOList = proxyPOMapper.selectByExample(proxyPOExample);
+        if (CollectionUtils.isEmpty(proxyPOList)) {
+            return null;
+        }
+
+        for (int i = 0; i < 10; i++) {
+            ProxyPO proxyPO = proxyPOList.get(new Random().nextInt(proxyPOList.size()));
+            if (proxyPO == null) {
+                return null;
+            }
+
+            String ip = IpUtil.int2Ip(proxyPO.getIp());
+            int port = proxyPO.getPort();
+
+            if (checkProxyPass(ip, port)) {
+                ProxyBO proxyBO = new ProxyBO();
+                proxyBO.setIp(ip);
+                proxyBO.setPort(port);
+                return proxyBO;
+            }
+        }
+
+        // 尝试10次都没成功，直接放弃
+        return null;
+    }
+
+    /**
+     * 从免费网站爬取代理ip
+     */
+    @PostConstruct
+    private void crawlingProxyIpSchedule() {
+        ScheduledExecutorService schedule = Executors.newSingleThreadScheduledExecutor();
+        schedule.scheduleWithFixedDelay(() -> {
+            cleanProxy();
+            saveProxy();
+        }, 0, 1, TimeUnit.HOURS);
+    }
+
+    private void saveProxy() {
+        for (int i = 1; i <= 2000; i++) {
+            String url = CrawlerConstant.getProxyWebsiteAddr(i);
+            try {
+                Document doc = Jsoup.connect(url).get();
+                if (doc == null) {
+                    LogConstant.BUS.info("doc of url {} is null.", url);
+                    continue;
+                }
+                Elements ipElements = doc.selectFirst("table.fl-table").selectFirst("tbody").select("tr");
+                if (ipElements == null) {
+                    LogConstant.BUS.info("ipElements of url {} is null.", url);
+                    continue;
+                }
+
+                for (Element ipElement : ipElements) {
+                    Elements ipDetailElements = ipElement.select("td");
+                    if (ipDetailElements == null) {
+                        continue;
+                    }
+                    String ipPort = ipDetailElements.get(0).text();
+                    if (StringUtils.isNotBlank(ipPort)) {
+                        String[] ipSplitArr = ipPort.split(":");
+                        if (ipSplitArr.length == 2) {
+                            String ip = ipSplitArr[0];
+                            int port = Integer.valueOf(ipSplitArr[1]);
+                            if (checkProxyPass(ip, port)) {
+                                ProxyPO proxyPO = new ProxyPO();
+                                proxyPO.setIp(IpUtil.ip2Int(ip));
+                                proxyPO.setPort(port);
+                                proxyPO.setIpString(ip);
+                                String location = ipDetailElements.get(3).text();
+                                proxyPO.setLocationInfo(location);
+                                proxyPOMapper.insertOnDuplicateUpdate(proxyPO);
+                            }
+                        }
+                    }
+                }
+
+                LogConstant.BUS.info("crawling url {} success.", url);
+            } catch (Exception e) {
+                LogConstant.BUS.info("crawling url {} failed.", url, e);
+            }
+        }
+        LogConstant.BUS.info("save proxy end with success.");
+    }
+
+    private void cleanProxy() {
+        ProxyPOExample proxyPOExample = new ProxyPOExample();
+        List<ProxyPO> proxyPOList = proxyPOMapper.selectByExample(proxyPOExample);
+
+        for (ProxyPO proxyPO : proxyPOList) {
+            cleanProxyExecutor.execute(() -> {
+                Integer ipInt = proxyPO.getIp();
+                String ip = proxyPO.getIpString();
+                Integer port = proxyPO.getPort();
+                if (!checkProxyPass(ip, port)) {
+                    ProxyPOExample delProxyPOExample = new ProxyPOExample();
+                    delProxyPOExample.createCriteria().andIpEqualTo(ipInt).andPortEqualTo(port);
+                    proxyPOMapper.deleteByExample(delProxyPOExample);
+                }
+            });
+        }
+    }
+
+    private boolean checkProxyPass(String ip, int port) {
+        try {
+            Document baiduDoc = Jsoup.connect("https://www.baidu.com").userAgent(getUserAgentRandom()).proxy(ip, port)
+                    .timeout(3000).get();
+            if (baiduDoc == null) {
+                return false;
+            }
+            Elements inputElements = baiduDoc.select("input#su.bg.s_btn");
+            if (inputElements == null) {
+                return false;
+            }
+
+            Document doc = Jsoup.connect("https://music.163.com/discover/playlist").userAgent(getUserAgentRandom())
+                    .proxy(ip, port).timeout(5000).get();
+            if (doc == null) {
+                return false;
+            }
+            Elements playListElements = doc.select("ul#m-pl-container");
+            if (playListElements == null) {
+                return false;
+            }
+
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private String getUserAgentRandom() {
+        List<String> userAgentList = CrawlerConstant.USER_AGENT_LIST;
+        return userAgentList.get(new Random().nextInt(userAgentList.size()));
+    }
+
+    private Document getDocByProxy(String url) {
+        ProxyBO proxyBO = getAvailableProxy();
+        if (proxyBO == null) {
+            LogConstant.BUS.error("No available proxy...");
+            return null;
+        }
+
+        try {
+            return Jsoup.connect(url).userAgent(getUserAgentRandom()).proxy(proxyBO.getIp(), proxyBO.getPort()).get();
+        } catch (IOException e) {
+            LogConstant.BUS.error("connect url {} failed with IOException.", url);
+            return null;
+        }
     }
 }
