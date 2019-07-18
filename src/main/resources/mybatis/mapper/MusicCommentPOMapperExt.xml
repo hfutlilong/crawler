@@ -1,4 +1,98 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.netease.music.dao.mapper.MusicCommentPOMapperExt" >
+    <insert id="insertOnDuplicateUpdate" parameterType="com.netease.music.dao.po.MusicCommentPO" >
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into music_comment
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="commentId != null" >
+                comment_id,
+            </if>
+            <if test="resourceId != null" >
+                resource_id,
+            </if>
+            <if test="pageType != null" >
+                page_type,
+            </if>
+            <if test="title != null" >
+                title,
+            </if>
+            <if test="commentTime != null" >
+                comment_time,
+            </if>
+            <if test="userId != null" >
+                user_id,
+            </if>
+            <if test="likeCount != null" >
+                like_count,
+            </if>
+            <if test="dbUpdateTime != null" >
+                db_update_time,
+            </if>
+            <if test="commentContent != null" >
+                comment_content,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="commentId != null" >
+                #{commentId,jdbcType=BIGINT},
+            </if>
+            <if test="resourceId != null" >
+                #{resourceId,jdbcType=BIGINT},
+            </if>
+            <if test="pageType != null" >
+                #{pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
+            </if>
+            <if test="title != null" >
+                #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="commentTime != null" >
+                #{commentTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="userId != null" >
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="likeCount != null" >
+                #{likeCount,jdbcType=INTEGER},
+            </if>
+            <if test="dbUpdateTime != null" >
+                #{dbUpdateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="commentContent != null" >
+                #{commentContent,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+        ON DUPLICATE KEY UPDATE
+        <trim suffixOverrides="," >
+            <if test="commentId != null" >
+                comment_id = #{commentId,jdbcType=BIGINT},
+            </if>
+            <if test="resourceId != null" >
+                resource_id = #{resourceId,jdbcType=BIGINT},
+            </if>
+            <if test="pageType != null" >
+                page_type = #{pageType,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.PageTypeEnumHandler},
+            </if>
+            <if test="title != null" >
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="commentTime != null" >
+                comment_time = #{commentTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="userId != null" >
+                user_id = #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="likeCount != null" >
+                like_count = #{likeCount,jdbcType=INTEGER},
+            </if>
+            <if test="dbUpdateTime != null" >
+                db_update_time = #{dbUpdateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="commentContent != null" >
+                comment_content = #{commentContent,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
 </mapper>
