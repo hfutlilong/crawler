@@ -577,10 +577,9 @@ public class ProxyIpServiceImpl implements ProxyIpService {
         httpProxyPOExample.createCriteria().andHttpProxyEqualTo(BooleanIntEnum.TRUE);
         int httpProxyCount = proxyPOMapper.countByExample(httpProxyPOExample);
         if (httpProxyCount > 0) {
-
             httpProxyLock.lock();
             try {
-                httpProxyCondition.notifyAll();
+                httpProxyCondition.signalAll();
             } catch (Exception e) {
                 LogConstant.BUS.error("httpProxyCondition.notifyAll failed:", e);
             } finally {
@@ -594,7 +593,7 @@ public class ProxyIpServiceImpl implements ProxyIpService {
         if (httpsProxyCount > 0) {
             httpsProxyLock.lock();
             try {
-                httpsProxyCondition.notifyAll();
+                httpsProxyCondition.signalAll();
             } catch (Exception e) {
                 LogConstant.BUS.error("httpsProxyCondition.notifyAll failed:", e);
             } finally {
