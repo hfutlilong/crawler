@@ -957,7 +957,7 @@ public class CrawlerServiceImpl implements CrawlerService {
         musicCommentPO.setLikeCount(commentDetailBO.getLikedCount());
         musicCommentPO.setCommentContent(commentDetailBO.getContent());
 
-        musicCommentPOMapper.insertSelective(musicCommentPO);
+        musicCommentPOMapper.insertOnDuplicateUpdate(musicCommentPO);
     }
 
     @Override
@@ -1099,7 +1099,7 @@ public class CrawlerServiceImpl implements CrawlerService {
         musicCommentPO.setLikeCount(commentDetailBO.getLikedCount());
         musicCommentPO.setCommentContent(commentDetailBO.getContent());
 
-        musicCommentPOMapper.insertSelective(musicCommentPO);
+        musicCommentPOMapper.insertOnDuplicateUpdate(musicCommentPO);
     }
 
 
