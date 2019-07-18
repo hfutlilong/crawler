@@ -20,6 +20,8 @@ public interface ProxyIpService {
      */
     ProxyBO getAvailableHttpProxy() throws InterruptedException;
 
+    Document getDoc(String url) throws InterruptedException;
+
     Document getDocByHttpsProxy(String url) throws InterruptedException;
 
     String getJsonResponseByHttpProxy(String url) throws InterruptedException;
@@ -29,4 +31,6 @@ public interface ProxyIpService {
      * @param proxyIps
      */
     void updateProxyIp(String proxyIps);
+
+    void addProxyIp();
 }

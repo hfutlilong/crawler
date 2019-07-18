@@ -118,4 +118,11 @@ public class CrawlerController extends BaseController {
         proxyIpService.updateProxyIp(proxyIps);
         return "send success!";
     }
+
+    @RequestMapping("addProxyIp")
+    @ResponseBody
+    public String addProxyIp() {
+        proxyIpService.addProxyIp();
+        return "send success!";
+    }
 }

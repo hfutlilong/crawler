@@ -102,6 +102,27 @@ public class ProxyIpServiceImpl implements ProxyIpService {
         LogConstant.BUS.info("end clean unavailable proxy in db.");
     }
 
+    @Override
+    @Async
+    public void addProxyIp() {
+        LogConstant.BUS.info("start addProxyIp...");
+        ScheduledExecutorService schedule = Executors.newSingleThreadScheduledExecutor();
+        try {
+            schedule.scheduleWithFixedDelay(() -> {
+                try {
+                    cleanProxy();
+                    saveProxyFromXici();
+                } catch (Exception e) {
+                    LogConstant.BUS.error("saveProxyFromXici failed");
+                }
+            }, 0, 1, TimeUnit.HOURS);
+
+        } catch (Exception e) {
+            LogConstant.BUS.error("addProxyIp failed.", e);
+        }
+        LogConstant.BUS.info("end addProxyIp");
+    }
+
     /**
      * 西拉免费代理IP http://www.xiladaili.com/gaoni/
      */
@@ -320,6 +341,83 @@ public class ProxyIpServiceImpl implements ProxyIpService {
         }
     }
 
+    /**
+     * 国内高匿代理IP https://www.xicidaili.com/nn/1
+     */
+    private void saveProxyFromXici() throws InterruptedException {
+        for (int i = 1; i <= 10; i++) {
+            String url = CrawlerConstant.getProxyWebsiteXici(i);
+            try {
+                Document doc = getDoc(url);
+                if (doc == null) {
+                    LogConstant.BUS.info("doc of url {} is null.", url);
+                    Thread.sleep(60000);
+                    continue;
+                }
+                Elements ipElements = doc.selectFirst("table#ip_list").selectFirst("tbody").select("tr");
+                if (ipElements == null) {
+                    LogConstant.BUS.info("ipElements of url {} is null.", url);
+                    continue;
+                }
+
+                for (Element ipElement : ipElements) {
+                    try {
+                        Elements ipDetailElements = ipElement.select("td");
+                        if (ipDetailElements == null) {
+                            continue;
+                        }
+
+                        String ip = ipDetailElements.get(1).text();
+                        if (StringUtils.isBlank(ip) || !ip.matches("\\d+\\.\\d+\\.\\d+\\.\\d+")) {
+                            continue;
+                        }
+
+                        int port = Integer.valueOf(ipDetailElements.get(2).text());
+
+                        String location = null;
+                        Element locationElement = ipDetailElements.get(3).selectFirst("a");
+                        if (locationElement != null) {
+                            location = locationElement.text();
+                        }
+
+                        String proxyType = ipDetailElements.get(5).text();
+
+                        boolean checkPass = false;
+                        if (proxyType.trim().toLowerCase().equals("http")) {
+                            checkPass = checkProxyHttpPass(ip, port);
+                        } else if (proxyType.trim().toLowerCase().equals("https")) {
+                            checkPass = checkProxyHttpsPass(ip, port);
+                        }
+                        if (checkPass) {
+                            ProxyPO proxyPO = new ProxyPO();
+                            proxyPO.setIp(IpUtil.ip2Int(ip));
+                            proxyPO.setPort(port);
+                            proxyPO.setIpString(ip);
+                            proxyPO.setLocationInfo(location);
+                            if (proxyType.trim().toLowerCase().equals("http")) {
+                                proxyPO.setHttpProxy(BooleanIntEnum.TRUE);
+                            } else if (proxyType.trim().toLowerCase().equals("https")) {
+                                proxyPO.setHttpsProxy(BooleanIntEnum.TRUE);
+                            }
+                            proxyPOMapper.insertOnDuplicateUpdate(proxyPO);
+                        }
+
+                    } catch (Exception e) {
+                        LogConstant.BUS.error("crawling url {} failed.", url, e);
+                    }
+                }
+
+                LogConstant.BUS.info("crawling url {} success.", url);
+            } catch (Exception e) {
+                LogConstant.BUS.error("crawling url {} failed.", url, e);
+                Thread.sleep(30000);
+            }
+
+            Thread.sleep(15000);
+        }
+        LogConstant.BUS.info("save proxy from \"https://www.xicidaili.com\" end with success.");
+    }
+
     @Override
     public ProxyBO getAvailableHttpsProxy() throws InterruptedException {
         ProxyBO proxyBO;
@@ -459,6 +557,16 @@ public class ProxyIpServiceImpl implements ProxyIpService {
     private String getUserAgentRandom() {
         List<String> userAgentList = CrawlerConstant.USER_AGENT_LIST;
         return userAgentList.get(new Random().nextInt(userAgentList.size()));
+    }
+
+    @Override
+    public Document getDoc(String url) {
+        try {
+            return Jsoup.connect(url).get();
+        } catch (IOException e) {
+            LogConstant.BUS.error("getDoc connect url {} failed with IOException.", url);
+            return null;
+        }
     }
 
     @Override
