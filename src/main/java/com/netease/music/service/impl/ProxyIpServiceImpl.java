@@ -19,6 +19,7 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import sun.rmi.runtime.Log;
 
 import java.io.IOException;
 import java.util.*;
@@ -47,14 +48,14 @@ public class ProxyIpServiceImpl implements ProxyIpService {
 
     private Condition httpsProxyCondition = httpsProxyLock.newCondition();
 
-//    private static final ThreadPoolExecutor cleanProxyExecutor = new ThreadPoolExecutor(2, 4, 30, TimeUnit.SECONDS,
-//            new LinkedBlockingQueue<>(50000), new ThreadFactoryBuilder().setNameFormat("cleanProxyExecutor-%d").build(),
-//            new RejectedExecutionHandler() {
-//                @Override
-//                public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-//                    LogConstant.BUS.error("cleanProxyExecutor reject execute.");
-//                }
-//            });
+    // private static final ThreadPoolExecutor cleanProxyExecutor = new ThreadPoolExecutor(2, 4, 30, TimeUnit.SECONDS,
+    // new LinkedBlockingQueue<>(50000), new ThreadFactoryBuilder().setNameFormat("cleanProxyExecutor-%d").build(),
+    // new RejectedExecutionHandler() {
+    // @Override
+    // public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+    // LogConstant.BUS.error("cleanProxyExecutor reject execute.");
+    // }
+    // });
 
     private void cleanProxy() {
         ProxyPOExample proxyPOExample = new ProxyPOExample();
@@ -65,26 +66,26 @@ public class ProxyIpServiceImpl implements ProxyIpService {
         }
 
         for (ProxyPO proxyPO : proxyPOList) {
-//            cleanProxyExecutor.execute(() -> {
-                Integer ipInt = proxyPO.getIp();
-                String ip = proxyPO.getIpString();
-                Integer port = proxyPO.getPort();
+            // cleanProxyExecutor.execute(() -> {
+            Integer ipInt = proxyPO.getIp();
+            String ip = proxyPO.getIpString();
+            Integer port = proxyPO.getPort();
 
-                ProxyPOExample proxyPOExampleNew = new ProxyPOExample();
-                proxyPOExampleNew.createCriteria().andIpEqualTo(ipInt).andPortEqualTo(port);
+            ProxyPOExample proxyPOExampleNew = new ProxyPOExample();
+            proxyPOExampleNew.createCriteria().andIpEqualTo(ipInt).andPortEqualTo(port);
 
-                if (BooleanIntEnum.TRUE == proxyPO.getHttpsProxy() && !checkProxyHttpsPass(ip, port)) {
-                    proxyPO.setHttpsProxy(BooleanIntEnum.FALSE);
-                }
+            if (BooleanIntEnum.TRUE == proxyPO.getHttpsProxy() && !checkProxyHttpsPass(ip, port)) {
+                proxyPO.setHttpsProxy(BooleanIntEnum.FALSE);
+            }
 
-                if (BooleanIntEnum.TRUE == proxyPO.getHttpProxy() && !checkProxyHttpPass(ip, port)) {
-                    proxyPO.setHttpProxy(BooleanIntEnum.FALSE);
-                }
+            if (BooleanIntEnum.TRUE == proxyPO.getHttpProxy() && !checkProxyHttpPass(ip, port)) {
+                proxyPO.setHttpProxy(BooleanIntEnum.FALSE);
+            }
 
-                if (BooleanIntEnum.FALSE == proxyPO.getHttpProxy() && BooleanIntEnum.FALSE == proxyPO.getHttpsProxy()) {
-                    proxyPOMapper.deleteByExample(proxyPOExampleNew);
-                }
-//            });
+            if (BooleanIntEnum.FALSE == proxyPO.getHttpProxy() && BooleanIntEnum.FALSE == proxyPO.getHttpsProxy()) {
+                proxyPOMapper.deleteByExample(proxyPOExampleNew);
+            }
+            // });
         }
     }
 
@@ -333,7 +334,6 @@ public class ProxyIpServiceImpl implements ProxyIpService {
         return proxyBO;
     }
 
-
     public ProxyBO getAvailableHttpsProxyOnce() {
         // 查数据库
         ProxyPOExample proxyPOExample = new ProxyPOExample();
@@ -512,51 +512,93 @@ public class ProxyIpServiceImpl implements ProxyIpService {
             LogConstant.BUS.error("proxyIps is blank.");
             return;
         }
-        String[] proxyIpArr = proxyIps.split("\n|\n|\r\n");
-        if (proxyIpArr.length == 0) {
-            LogConstant.BUS.error("proxyIps.split empty, proxyIps={}.", proxyIps);
-            return;
+
+        try {
+            String[] proxyIpArr = proxyIps.split("\n|\n|\r\n");
+            if (proxyIpArr.length == 0) {
+                LogConstant.BUS.error("proxyIps.split empty, proxyIps={}.", proxyIps);
+                return;
+            }
+
+            // "183.146.213.198:80\t高匿\thttps\t中国 浙江 金华"
+            Pattern p = Pattern.compile("^(\\d+\\.\\d+\\.\\d+\\.\\d+):(\\d+).*(https?)(.*)$");
+
+            for (String proxyIp : proxyIpArr) {
+                if (StringUtils.isBlank(proxyIp)) {
+                    continue;
+                }
+
+                String ip = null;
+                int port = 80;
+                String type = null;
+                String location = null;
+
+                Matcher m = p.matcher(proxyIp);
+                if (m.find()) {
+                    ip = m.group(1);
+                    port = Integer.valueOf(m.group(2));
+                    type = m.group(3);
+                    location = m.group(4);
+                }
+
+                ProxyPO proxyPO = new ProxyPO();
+                proxyPO.setIp(StringUtils.isNotBlank(ip) ? IpUtil.ip2Int(ip) : null);
+                proxyPO.setPort(port);
+                proxyPO.setIpString(ip);
+                proxyPO.setLocationInfo(location);
+                if (StringUtils.isNotBlank(type) && type.toLowerCase().equals("http")) {
+                    if (checkProxyHttpPass(ip, port)) {
+                        proxyPO.setHttpProxy(BooleanIntEnum.TRUE);
+                    }
+                }
+                if (StringUtils.isNotBlank(type) && type.toLowerCase().equals("https")) {
+                    if (checkProxyHttpsPass(ip, port)) {
+                        proxyPO.setHttpsProxy(BooleanIntEnum.TRUE);
+                    }
+                }
+
+                if (BooleanIntEnum.TRUE == proxyPO.getHttpProxy() || BooleanIntEnum.TRUE == proxyPO.getHttpsProxy()) {
+                    proxyPOMapper.insertOnDuplicateUpdate(proxyPO);
+                }
+            }
+        } catch (Exception e) {
+            LogConstant.BUS.error("updateProxyIp failed, proxyIps={}.", proxyIps, e);
         }
 
-        // "183.146.213.198:80\t高匿\thttps\t中国   浙江   金华"
-        Pattern p = Pattern.compile("^(\\d+\\.\\d+\\.\\d+\\.\\d+):(\\d+).*(https?)(.*)$");
+        notifyAllCondition();
+    }
 
-        for (String proxyIp : proxyIpArr) {
-            if (StringUtils.isBlank(proxyIp)) {
-                continue;
+    /**
+     * 唤醒等待队列中的线程
+     */
+    private void notifyAllCondition() {
+        // 通知等待的线程
+        ProxyPOExample httpProxyPOExample = new ProxyPOExample();
+        httpProxyPOExample.createCriteria().andHttpProxyEqualTo(BooleanIntEnum.TRUE);
+        int httpProxyCount = proxyPOMapper.countByExample(httpProxyPOExample);
+        if (httpProxyCount > 0) {
+
+            httpProxyLock.lock();
+            try {
+                httpProxyCondition.notifyAll();
+            } catch (Exception e) {
+                LogConstant.BUS.error("httpProxyCondition.notifyAll failed:", e);
+            } finally {
+                httpProxyLock.unlock();
             }
+        }
 
-            String ip = null;
-            int port = 80;
-            String type = null;
-            String location = null;
-
-            Matcher m = p.matcher(proxyIp);
-            if (m.find()) {
-                ip = m.group(1);
-                port = Integer.valueOf(m.group(2));
-                type = m.group(3);
-                location = m.group(4);
-            }
-
-            ProxyPO proxyPO = new ProxyPO();
-            proxyPO.setIp(StringUtils.isNotBlank(ip) ? IpUtil.ip2Int(ip) : null);
-            proxyPO.setPort(port);
-            proxyPO.setIpString(ip);
-            proxyPO.setLocationInfo(location);
-            if (StringUtils.isNotBlank(type) && type.toLowerCase().equals("http")) {
-                if (checkProxyHttpPass(ip, port)) {
-                    proxyPO.setHttpProxy(BooleanIntEnum.TRUE);
-                }
-            }
-            if (StringUtils.isNotBlank(type) && type.toLowerCase().equals("https")) {
-                if (checkProxyHttpsPass(ip, port)) {
-                    proxyPO.setHttpsProxy(BooleanIntEnum.TRUE);
-                }
-            }
-
-            if (BooleanIntEnum.TRUE == proxyPO.getHttpProxy() || BooleanIntEnum.TRUE == proxyPO.getHttpsProxy()) {
-                proxyPOMapper.insertOnDuplicateUpdate(proxyPO);
+        ProxyPOExample httpsProxyPOExample = new ProxyPOExample();
+        httpProxyPOExample.createCriteria().andHttpsProxyEqualTo(BooleanIntEnum.TRUE);
+        int httpsProxyCount = proxyPOMapper.countByExample(httpsProxyPOExample);
+        if (httpsProxyCount > 0) {
+            httpsProxyLock.lock();
+            try {
+                httpsProxyCondition.notifyAll();
+            } catch (Exception e) {
+                LogConstant.BUS.error("httpsProxyCondition.notifyAll failed:", e);
+            } finally {
+                httpsProxyLock.unlock();
             }
         }
     }
