@@ -42,7 +42,7 @@ public interface CrawlerService {
      * 爬取歌曲信息
      * @param songId
      */
-    void doCrawlingSongInfo(Long songId);
+    void doCrawlingSongInfo(Long songId) throws InterruptedException;
 
     /**
      * 爬取歌单评论
@@ -66,9 +66,5 @@ public interface CrawlerService {
      */
     void doCrawlingSongComment(Long songId);
 
-    /**
-     * 获取一个可用的ip代理
-     * @return
-     */
-    ProxyBO getAvailableProxy();
+
 }

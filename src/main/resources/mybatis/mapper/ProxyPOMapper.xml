@@ -6,6 +6,8 @@
     <result column="ip" property="ip" jdbcType="INTEGER" />
     <result column="port" property="port" jdbcType="INTEGER" />
     <result column="ip_string" property="ipString" jdbcType="VARCHAR" />
+    <result column="http_proxy" property="httpProxy" jdbcType="TINYINT" typeHandler="com.netease.music.dao.typehandler.BooleanIntEnumHandler" />
+    <result column="https_proxy" property="httpsProxy" jdbcType="TINYINT" typeHandler="com.netease.music.dao.typehandler.BooleanIntEnumHandler" />
     <result column="location_info" property="locationInfo" jdbcType="VARCHAR" />
     <result column="db_update_time" property="dbUpdateTime" jdbcType="TIMESTAMP" />
   </resultMap>
@@ -29,6 +31,44 @@
                   and ${criterion.condition}
                   <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
                     #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.httpProxyCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler} and #{criterion.secondValue,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.httpsProxyCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler} and #{criterion.secondValue,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler}
                   </foreach>
                 </when>
               </choose>
@@ -62,13 +102,51 @@
                 </when>
               </choose>
             </foreach>
+            <foreach collection="criteria.httpProxyCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler} and #{criterion.secondValue,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.httpsProxyCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler} and #{criterion.secondValue,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
           </trim>
         </if>
       </foreach>
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, ip, port, ip_string, location_info, db_update_time
+    id, ip, port, ip_string, http_proxy, https_proxy, location_info, db_update_time
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.netease.music.dao.po.ProxyPOExample" >
     select
@@ -108,8 +186,12 @@
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into proxy (ip, port, ip_string, 
+      http_proxy, 
+      https_proxy, 
       location_info, db_update_time)
     values (#{ip,jdbcType=INTEGER}, #{port,jdbcType=INTEGER}, #{ipString,jdbcType=VARCHAR}, 
+      #{httpProxy,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler}, 
+      #{httpsProxy,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler}, 
       #{locationInfo,jdbcType=VARCHAR}, #{dbUpdateTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.netease.music.dao.po.ProxyPO" >
@@ -127,6 +209,12 @@
       <if test="ipString != null" >
         ip_string,
       </if>
+      <if test="httpProxy != null" >
+        http_proxy,
+      </if>
+      <if test="httpsProxy != null" >
+        https_proxy,
+      </if>
       <if test="locationInfo != null" >
         location_info,
       </if>
@@ -143,6 +231,12 @@
       </if>
       <if test="ipString != null" >
         #{ipString,jdbcType=VARCHAR},
+      </if>
+      <if test="httpProxy != null" >
+        #{httpProxy,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler},
+      </if>
+      <if test="httpsProxy != null" >
+        #{httpsProxy,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler},
       </if>
       <if test="locationInfo != null" >
         #{locationInfo,jdbcType=VARCHAR},
@@ -173,6 +267,12 @@
       <if test="record.ipString != null" >
         ip_string = #{record.ipString,jdbcType=VARCHAR},
       </if>
+      <if test="record.httpProxy != null" >
+        http_proxy = #{record.httpProxy,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler},
+      </if>
+      <if test="record.httpsProxy != null" >
+        https_proxy = #{record.httpsProxy,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler},
+      </if>
       <if test="record.locationInfo != null" >
         location_info = #{record.locationInfo,jdbcType=VARCHAR},
       </if>
@@ -190,6 +290,8 @@
       ip = #{record.ip,jdbcType=INTEGER},
       port = #{record.port,jdbcType=INTEGER},
       ip_string = #{record.ipString,jdbcType=VARCHAR},
+      http_proxy = #{record.httpProxy,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler},
+      https_proxy = #{record.httpsProxy,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler},
       location_info = #{record.locationInfo,jdbcType=VARCHAR},
       db_update_time = #{record.dbUpdateTime,jdbcType=TIMESTAMP}
     <if test="_parameter != null" >
@@ -208,6 +310,12 @@
       <if test="ipString != null" >
         ip_string = #{ipString,jdbcType=VARCHAR},
       </if>
+      <if test="httpProxy != null" >
+        http_proxy = #{httpProxy,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler},
+      </if>
+      <if test="httpsProxy != null" >
+        https_proxy = #{httpsProxy,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler},
+      </if>
       <if test="locationInfo != null" >
         location_info = #{locationInfo,jdbcType=VARCHAR},
       </if>
@@ -222,6 +330,8 @@
     set ip = #{ip,jdbcType=INTEGER},
       port = #{port,jdbcType=INTEGER},
       ip_string = #{ipString,jdbcType=VARCHAR},
+      http_proxy = #{httpProxy,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler},
+      https_proxy = #{httpsProxy,jdbcType=TINYINT,typeHandler=com.netease.music.dao.typehandler.BooleanIntEnumHandler},
       location_info = #{locationInfo,jdbcType=VARCHAR},
       db_update_time = #{dbUpdateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}

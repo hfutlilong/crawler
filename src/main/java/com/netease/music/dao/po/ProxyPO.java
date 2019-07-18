@@ -1,5 +1,6 @@
 package com.netease.music.dao.po;
 
+import com.netease.music.entity.enums.BooleanIntEnum;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -11,6 +12,10 @@ public class ProxyPO implements Serializable {
     private Integer port;
 
     private String ipString;
+
+    private BooleanIntEnum httpProxy;
+
+    private BooleanIntEnum httpsProxy;
 
     private String locationInfo;
 
@@ -48,6 +53,22 @@ public class ProxyPO implements Serializable {
 
     public void setIpString(String ipString) {
         this.ipString = ipString == null ? null : ipString.trim();
+    }
+
+    public BooleanIntEnum getHttpProxy() {
+        return httpProxy;
+    }
+
+    public void setHttpProxy(BooleanIntEnum httpProxy) {
+        this.httpProxy = httpProxy;
+    }
+
+    public BooleanIntEnum getHttpsProxy() {
+        return httpsProxy;
+    }
+
+    public void setHttpsProxy(BooleanIntEnum httpsProxy) {
+        this.httpsProxy = httpsProxy;
     }
 
     public String getLocationInfo() {

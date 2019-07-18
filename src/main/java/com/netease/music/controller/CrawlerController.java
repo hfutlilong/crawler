@@ -2,6 +2,7 @@ package com.netease.music.controller;
 
 import com.netease.music.common.log.LogConstant;
 import com.netease.music.service.CrawlerService;
+import com.netease.music.service.ProxyIpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class CrawlerController extends BaseController {
     @Autowired
     private CrawlerService crawlerService;
+
+    @Autowired
+    private ProxyIpService proxyIpService;
 
     @RequestMapping(value = "autoCrawling", method = RequestMethod.GET)
     @ResponseBody
@@ -80,6 +84,18 @@ public class CrawlerController extends BaseController {
 
         return "success";
     }
+
+//    @RequestMapping(value = "refreshProxyIpSchedule", method = RequestMethod.GET)
+//    @ResponseBody
+//    public String refreshProxyIpSchedule() {
+//        try {
+//            proxyIpService.refreshProxyIpSchedule();
+//            return "success";
+//        } catch (Exception e) {
+//            LogConstant.BUS.error("crawlingSongComment failed: {}", e.getMessage(), e);
+//            return "fail";
+//        }
+//    }
 
     @RequestMapping("hello")
     @ResponseBody

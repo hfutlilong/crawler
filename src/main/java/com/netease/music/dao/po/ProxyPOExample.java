@@ -1,6 +1,7 @@
 package com.netease.music.dao.po;
 
 import com.netease.kaola.cs.utils.pagination.PaginationInfo;
+import com.netease.music.entity.enums.BooleanIntEnum;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -76,19 +77,75 @@ public class ProxyPOExample {
     }
 
     protected abstract static class GeneratedCriteria {
+        protected List<Criterion> httpProxyCriteria;
+
+        protected List<Criterion> httpsProxyCriteria;
+
+        protected List<Criterion> allCriteria;
+
         protected List<Criterion> criteria;
 
         protected GeneratedCriteria() {
             super();
             criteria = new ArrayList<Criterion>();
+            httpProxyCriteria = new ArrayList<Criterion>();
+            httpsProxyCriteria = new ArrayList<Criterion>();
+        }
+
+        public List<Criterion> getHttpProxyCriteria() {
+            return httpProxyCriteria;
+        }
+
+        protected void addHttpProxyCriterion(String condition, Object value, String property) {
+            if (value == null) {
+                throw new RuntimeException("Value for " + property + " cannot be null");
+            }
+            httpProxyCriteria.add(new Criterion(condition, value, "com.netease.music.dao.typehandler.BooleanIntEnumHandler"));
+            allCriteria = null;
+        }
+
+        protected void addHttpProxyCriterion(String condition, BooleanIntEnum value1, BooleanIntEnum value2, String property) {
+            if (value1 == null || value2 == null) {
+                throw new RuntimeException("Between values for " + property + " cannot be null");
+            }
+            httpProxyCriteria.add(new Criterion(condition, value1, value2, "com.netease.music.dao.typehandler.BooleanIntEnumHandler"));
+            allCriteria = null;
+        }
+
+        public List<Criterion> getHttpsProxyCriteria() {
+            return httpsProxyCriteria;
+        }
+
+        protected void addHttpsProxyCriterion(String condition, Object value, String property) {
+            if (value == null) {
+                throw new RuntimeException("Value for " + property + " cannot be null");
+            }
+            httpsProxyCriteria.add(new Criterion(condition, value, "com.netease.music.dao.typehandler.BooleanIntEnumHandler"));
+            allCriteria = null;
+        }
+
+        protected void addHttpsProxyCriterion(String condition, BooleanIntEnum value1, BooleanIntEnum value2, String property) {
+            if (value1 == null || value2 == null) {
+                throw new RuntimeException("Between values for " + property + " cannot be null");
+            }
+            httpsProxyCriteria.add(new Criterion(condition, value1, value2, "com.netease.music.dao.typehandler.BooleanIntEnumHandler"));
+            allCriteria = null;
         }
 
         public boolean isValid() {
-            return criteria.size() > 0;
+            return criteria.size() > 0
+                || httpProxyCriteria.size() > 0
+                || httpsProxyCriteria.size() > 0;
         }
 
         public List<Criterion> getAllCriteria() {
-            return criteria;
+            if (allCriteria == null) {
+                allCriteria = new ArrayList<Criterion>();
+                allCriteria.addAll(criteria);
+                allCriteria.addAll(httpProxyCriteria);
+                allCriteria.addAll(httpsProxyCriteria);
+            }
+            return allCriteria;
         }
 
         public List<Criterion> getCriteria() {
@@ -100,6 +157,7 @@ public class ProxyPOExample {
                 throw new RuntimeException("Value for condition cannot be null");
             }
             criteria.add(new Criterion(condition));
+            allCriteria = null;
         }
 
         protected void addCriterion(String condition, Object value, String property) {
@@ -107,6 +165,7 @@ public class ProxyPOExample {
                 throw new RuntimeException("Value for " + property + " cannot be null");
             }
             criteria.add(new Criterion(condition, value));
+            allCriteria = null;
         }
 
         protected void addCriterion(String condition, Object value1, Object value2, String property) {
@@ -114,6 +173,7 @@ public class ProxyPOExample {
                 throw new RuntimeException("Between values for " + property + " cannot be null");
             }
             criteria.add(new Criterion(condition, value1, value2));
+            allCriteria = null;
         }
 
         public Criteria andIdIsNull() {
@@ -363,6 +423,126 @@ public class ProxyPOExample {
 
         public Criteria andIpStringNotBetween(String value1, String value2) {
             addCriterion("ip_string not between", value1, value2, "ipString");
+            return (Criteria) this;
+        }
+
+        public Criteria andHttpProxyIsNull() {
+            addCriterion("http_proxy is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andHttpProxyIsNotNull() {
+            addCriterion("http_proxy is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andHttpProxyEqualTo(BooleanIntEnum value) {
+            addHttpProxyCriterion("http_proxy =", value, "httpProxy");
+            return (Criteria) this;
+        }
+
+        public Criteria andHttpProxyNotEqualTo(BooleanIntEnum value) {
+            addHttpProxyCriterion("http_proxy <>", value, "httpProxy");
+            return (Criteria) this;
+        }
+
+        public Criteria andHttpProxyGreaterThan(BooleanIntEnum value) {
+            addHttpProxyCriterion("http_proxy >", value, "httpProxy");
+            return (Criteria) this;
+        }
+
+        public Criteria andHttpProxyGreaterThanOrEqualTo(BooleanIntEnum value) {
+            addHttpProxyCriterion("http_proxy >=", value, "httpProxy");
+            return (Criteria) this;
+        }
+
+        public Criteria andHttpProxyLessThan(BooleanIntEnum value) {
+            addHttpProxyCriterion("http_proxy <", value, "httpProxy");
+            return (Criteria) this;
+        }
+
+        public Criteria andHttpProxyLessThanOrEqualTo(BooleanIntEnum value) {
+            addHttpProxyCriterion("http_proxy <=", value, "httpProxy");
+            return (Criteria) this;
+        }
+
+        public Criteria andHttpProxyIn(List<BooleanIntEnum> values) {
+            addHttpProxyCriterion("http_proxy in", values, "httpProxy");
+            return (Criteria) this;
+        }
+
+        public Criteria andHttpProxyNotIn(List<BooleanIntEnum> values) {
+            addHttpProxyCriterion("http_proxy not in", values, "httpProxy");
+            return (Criteria) this;
+        }
+
+        public Criteria andHttpProxyBetween(BooleanIntEnum value1, BooleanIntEnum value2) {
+            addHttpProxyCriterion("http_proxy between", value1, value2, "httpProxy");
+            return (Criteria) this;
+        }
+
+        public Criteria andHttpProxyNotBetween(BooleanIntEnum value1, BooleanIntEnum value2) {
+            addHttpProxyCriterion("http_proxy not between", value1, value2, "httpProxy");
+            return (Criteria) this;
+        }
+
+        public Criteria andHttpsProxyIsNull() {
+            addCriterion("https_proxy is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andHttpsProxyIsNotNull() {
+            addCriterion("https_proxy is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andHttpsProxyEqualTo(BooleanIntEnum value) {
+            addHttpsProxyCriterion("https_proxy =", value, "httpsProxy");
+            return (Criteria) this;
+        }
+
+        public Criteria andHttpsProxyNotEqualTo(BooleanIntEnum value) {
+            addHttpsProxyCriterion("https_proxy <>", value, "httpsProxy");
+            return (Criteria) this;
+        }
+
+        public Criteria andHttpsProxyGreaterThan(BooleanIntEnum value) {
+            addHttpsProxyCriterion("https_proxy >", value, "httpsProxy");
+            return (Criteria) this;
+        }
+
+        public Criteria andHttpsProxyGreaterThanOrEqualTo(BooleanIntEnum value) {
+            addHttpsProxyCriterion("https_proxy >=", value, "httpsProxy");
+            return (Criteria) this;
+        }
+
+        public Criteria andHttpsProxyLessThan(BooleanIntEnum value) {
+            addHttpsProxyCriterion("https_proxy <", value, "httpsProxy");
+            return (Criteria) this;
+        }
+
+        public Criteria andHttpsProxyLessThanOrEqualTo(BooleanIntEnum value) {
+            addHttpsProxyCriterion("https_proxy <=", value, "httpsProxy");
+            return (Criteria) this;
+        }
+
+        public Criteria andHttpsProxyIn(List<BooleanIntEnum> values) {
+            addHttpsProxyCriterion("https_proxy in", values, "httpsProxy");
+            return (Criteria) this;
+        }
+
+        public Criteria andHttpsProxyNotIn(List<BooleanIntEnum> values) {
+            addHttpsProxyCriterion("https_proxy not in", values, "httpsProxy");
+            return (Criteria) this;
+        }
+
+        public Criteria andHttpsProxyBetween(BooleanIntEnum value1, BooleanIntEnum value2) {
+            addHttpsProxyCriterion("https_proxy between", value1, value2, "httpsProxy");
+            return (Criteria) this;
+        }
+
+        public Criteria andHttpsProxyNotBetween(BooleanIntEnum value1, BooleanIntEnum value2) {
+            addHttpsProxyCriterion("https_proxy not between", value1, value2, "httpsProxy");
             return (Criteria) this;
         }
 

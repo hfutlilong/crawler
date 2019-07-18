@@ -85,7 +85,7 @@ public class CrawlerConstant {
     /**
      * 歌单评论页面
      */
-    private static final String PLAY_LIST_COMMENT_URL = "https://music.163.com/api/v1/resource/comments/A_PL_0_{playListId}?limit={limit}&offset={offset}";
+    private static final String PLAY_LIST_COMMENT_URL = "http://music.163.com/api/v1/resource/comments/A_PL_0_{playListId}?limit={limit}&offset={offset}";
 
     public static String getPlayListCommentUrl(Long playListId, int limit, int offset) {
         return PLAY_LIST_COMMENT_URL.replace("{playListId}", String.valueOf(playListId))
@@ -103,13 +103,24 @@ public class CrawlerConstant {
     }
 
     /**
-     * 代理ip网站
+     * 西拉免费代理IP
      */
-    private static String PROXY_WEBSITE_ADDR = "http://www.xiladaili.com/gaoni/{pageNo}/";
+    private static final String PROXY_WEBSITE_XILA = "http://www.xiladaili.com/gaoni/{pageNo}/";
 
-    public static String getProxyWebsiteAddr(int pageNo) {
-        return PROXY_WEBSITE_ADDR.replace("{pageNo}", String.valueOf(pageNo));
+    public static String getProxyWebsiteXila(int pageNo) {
+        return PROXY_WEBSITE_XILA.replace("{pageNo}", String.valueOf(pageNo));
     }
+
+    public static final String PROXY_WEBSITE_GOUBANJIA = "http://www.goubanjia.com/";
+    /**
+     * 快代理
+     */
+    private static String PROXY_WEBSITE_KUAI = "https://www.kuaidaili.com/free/inha/{pageNo}/";
+
+    public static String getProxyWebsiteKuai(int pageNo) {
+        return PROXY_WEBSITE_KUAI.replace("{pageNo}", String.valueOf(pageNo));
+    }
+
 
     public static final List<String> USER_AGENT_LIST = Arrays.asList("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; AcooBrowser; .NET CLR 1.1.4322; .NET CLR 2.0.50727)",
             "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; Acoo Browser; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 3.0.04506)",

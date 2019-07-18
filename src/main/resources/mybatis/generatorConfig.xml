@@ -4,10 +4,10 @@
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 <generatorConfiguration>
     <!-- JDBC Driver 笔记本位置-->
-    <classPathEntry location="C:/Program Files/apache-maven-repo/mysql/mysql-connector-java/5.1.40/mysql-connector-java-5.1.40.jar"/>
+<!--    <classPathEntry location="C:/Program Files/apache-maven-repo/mysql/mysql-connector-java/5.1.40/mysql-connector-java-5.1.40.jar"/>-->
 
     <!-- JDBC Driver 台式机位置-->
-<!--    <classPathEntry location="D:/maven/repo/mysql/mysql-connector-java/5.1.40/mysql-connector-java-5.1.40.jar"/>-->
+    <classPathEntry location="D:/maven/repo/mysql/mysql-connector-java/5.1.40/mysql-connector-java-5.1.40.jar"/>
 
     <!-- 网易云音乐 -->
     <context id="netease_music" targetRuntime="MyBatis3">
@@ -93,6 +93,12 @@
         </table>
         <table tableName="proxy" domainObjectName="ProxyPO" enableDeleteByExample="true">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+            <columnOverride column="http_proxy" property="httpProxy" jdbcType="TINYINT"
+                            javaType="com.netease.music.entity.enums.BooleanIntEnum"
+                            typeHandler="com.netease.music.dao.typehandler.BooleanIntEnumHandler"/>
+            <columnOverride column="https_proxy" property="httpsProxy" jdbcType="TINYINT"
+                            javaType="com.netease.music.entity.enums.BooleanIntEnum"
+                            typeHandler="com.netease.music.dao.typehandler.BooleanIntEnumHandler"/>
         </table>
 
     </context>
