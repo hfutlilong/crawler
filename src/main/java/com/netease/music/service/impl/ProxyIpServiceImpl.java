@@ -580,6 +580,7 @@ public class ProxyIpServiceImpl implements ProxyIpService {
             httpProxyLock.lock();
             try {
                 httpProxyCondition.signalAll();
+                LogConstant.BUS.info("httpProxyCondition.signalAll success.");
             } catch (Exception e) {
                 LogConstant.BUS.error("httpProxyCondition.notifyAll failed:", e);
             } finally {
@@ -594,8 +595,9 @@ public class ProxyIpServiceImpl implements ProxyIpService {
             httpsProxyLock.lock();
             try {
                 httpsProxyCondition.signalAll();
+                LogConstant.BUS.info("httpsProxyCondition.signalAll success.");
             } catch (Exception e) {
-                LogConstant.BUS.error("httpsProxyCondition.notifyAll failed:", e);
+                LogConstant.BUS.error("httpsProxyCondition.signalAll failed:", e);
             } finally {
                 httpsProxyLock.unlock();
             }
