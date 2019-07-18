@@ -863,8 +863,9 @@ public class CrawlerServiceImpl implements CrawlerService {
                 String playListCommentUrl = CrawlerConstant.getPlayListCommentUrl(playListId, limit, offset); // 获取评论请求url
                 CommentBO commentBO = queryCommentInfo(playListCommentUrl);
                 if (commentBO == null) {
-                    LogConstant.BUS.error("commentBO from parse result is null.");
-                    break;
+                    LogConstant.BUS.error("commentBO from parse result is null, will continue..");
+                    Thread.sleep(3000);
+                    continue;
                 }
                 hasMore = commentBO.getMore();
                 totalCommentCount = commentBO.getTotal();
@@ -1037,8 +1038,9 @@ public class CrawlerServiceImpl implements CrawlerService {
                 String songCommentUrl = CrawlerConstant.getSongCommentUrl(songId, limit, offset); // 获取评论请求url
                 CommentBO commentBO = queryCommentInfo(songCommentUrl);
                 if (commentBO == null) {
-                    LogConstant.BUS.error("commentBO from parse result is null.");
-                    break;
+                    LogConstant.BUS.error("commentBO from parse result is null, will continue.");
+                    Thread.sleep(3000);
+                    continue;
                 }
                 hasMore = commentBO.getMore();
                 totalCommentCount = commentBO.getTotal();

@@ -58,6 +58,7 @@ public class ProxyIpServiceImpl implements ProxyIpService {
     // });
 
     private void cleanProxy() {
+        LogConstant.BUS.info("start clean proxy...");
         ProxyPOExample proxyPOExample = new ProxyPOExample();
         List<ProxyPO> proxyPOList = proxyPOMapper.selectByExample(proxyPOExample);
         if (CollectionUtils.isEmpty(proxyPOList)) {
@@ -87,6 +88,7 @@ public class ProxyIpServiceImpl implements ProxyIpService {
             }
             // });
         }
+        LogConstant.BUS.info("end clean proxy.");
     }
 
     /**
@@ -325,6 +327,7 @@ public class ProxyIpServiceImpl implements ProxyIpService {
         try {
             while ((proxyBO = getAvailableHttpsProxyOnce()) == null) {
                 LogConstant.BUS.info("no available https proxy, wait for db update.");
+                cleanProxy(); // 清理下不可用的代理
                 httpsProxyCondition.await();
             }
         } finally {
@@ -371,6 +374,7 @@ public class ProxyIpServiceImpl implements ProxyIpService {
         try {
             while ((proxyBO = getAvailableHttpProxyOnce()) == null) {
                 LogConstant.BUS.info("no available http proxy, wait for db update.");
+                cleanProxy(); // 清理下不可用的代理
                 httpProxyCondition.await();
             }
         } finally {
