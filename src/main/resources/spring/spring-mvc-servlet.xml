@@ -43,9 +43,9 @@
         </property>
     </bean>
     <!-- spring mvc 能够访问静态内容 begin -->
-    <mvc:resources location="/js/" mapping="/js/**" />
-    <mvc:resources location="/css/" mapping="/css/**" />
-    <mvc:resources location="/imgs/" mapping="/imgs/**" />
+<!--    <mvc:resources location="/js/" mapping="/js/**" />-->
+<!--    <mvc:resources location="/css/" mapping="/css/**" />-->
+    <mvc:resources location="/images/" mapping="/images/**" />
     <mvc:resources location="/html/" mapping="/html/**" />
     <!-- spring mvc 能够访问静态内容 end -->
 
