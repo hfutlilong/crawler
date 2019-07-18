@@ -413,7 +413,7 @@ public class ProxyIpServiceImpl implements ProxyIpService {
                 Thread.sleep(30000);
             }
 
-            Thread.sleep(15000);
+            Thread.sleep(30000);
         }
         LogConstant.BUS.info("save proxy from \"https://www.xicidaili.com\" end with success.");
     }
