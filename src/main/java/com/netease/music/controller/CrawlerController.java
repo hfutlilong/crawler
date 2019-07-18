@@ -107,8 +107,15 @@ public class CrawlerController extends BaseController {
         return "66666666666";
     }
 
-    @RequestMapping(value = "hello", method = RequestMethod.GET)
-    public String hello() {
-        return "hello";
+    @RequestMapping("inputProxyIp")
+    public String inputProxyIp() {
+        return "inputProxyIp";
+    }
+
+    @RequestMapping("updateProxyIp")
+    @ResponseBody
+    public String updateProxyIp(String proxyIps) {
+        System.out.println(proxyIps);
+        return "2333";
     }
 }
