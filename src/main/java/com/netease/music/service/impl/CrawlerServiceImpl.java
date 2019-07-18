@@ -74,8 +74,6 @@ public class CrawlerServiceImpl implements CrawlerService {
                 }
             });
 
-
-
     @Override
     @Async
     public void autoCrawling() throws InterruptedException {
@@ -860,37 +858,41 @@ public class CrawlerServiceImpl implements CrawlerService {
 
         try {
             while (hasMore) {
-                String playListCommentUrl = CrawlerConstant.getPlayListCommentUrl(playListId, limit, offset); // 获取评论请求url
-                CommentBO commentBO = queryCommentInfo(playListCommentUrl);
-                if (commentBO == null) {
-                    LogConstant.BUS.error("commentBO from parse result is null, will continue..");
-                    Thread.sleep(3000);
-                    continue;
-                }
-                hasMore = commentBO.getMore();
-                totalCommentCount = commentBO.getTotal();
-                if (firstQuery && totalCommentCount != null) { // 更新歌单的评论数
-                    PlayListPO playListPOWithCommentCount = new PlayListPO();
-                    playListPOWithCommentCount.setCommentCount(totalCommentCount);
-                    playListPOMapper.updateByExampleSelective(playListPOWithCommentCount, playListPOExample);
-                    firstQuery = false;
-                }
+                try {
+                    String playListCommentUrl = CrawlerConstant.getPlayListCommentUrl(playListId, limit, offset); // 获取评论请求url
+                    CommentBO commentBO = queryCommentInfo(playListCommentUrl);
+                    if (commentBO == null) {
+                        LogConstant.BUS.error("commentBO from parse result is null, will continue..");
+                        Thread.sleep(3000);
+                        continue;
+                    }
+                    hasMore = commentBO.getMore();
+                    totalCommentCount = commentBO.getTotal();
+                    if (firstQuery && totalCommentCount != null) { // 更新歌单的评论数
+                        PlayListPO playListPOWithCommentCount = new PlayListPO();
+                        playListPOWithCommentCount.setCommentCount(totalCommentCount);
+                        playListPOMapper.updateByExampleSelective(playListPOWithCommentCount, playListPOExample);
+                        firstQuery = false;
+                    }
 
-                List<CommentDetailBO> commentList = commentBO.getComments();
-                if (CollectionUtils.isNotEmpty(commentList)) {
-                    for (CommentDetailBO commentDetailBO : commentList) {
-                        if (commentDetailBO != null) {
-                            updateUserInfo(commentDetailBO.getUser()); // 更新用户信息表
-                            insertPlayListComment(commentDetailBO, playListPO); // 插入评论表
+                    List<CommentDetailBO> commentList = commentBO.getComments();
+                    if (CollectionUtils.isNotEmpty(commentList)) {
+                        for (CommentDetailBO commentDetailBO : commentList) {
+                            if (commentDetailBO != null) {
+                                updateUserInfo(commentDetailBO.getUser()); // 更新用户信息表
+                                insertPlayListComment(commentDetailBO, playListPO); // 插入评论表
+                            }
                         }
                     }
-                }
 
-                LogConstant.BUS.info("crawling play list comment success, offset={},limit={}, total={}.", offset, limit,
-                        totalCommentCount);
-                offset += limit;
-                if (totalCommentCount == null || offset > totalCommentCount) {
-                    break;
+                    LogConstant.BUS.info("crawling play list comment success, offset={},limit={}, total={}.", offset,
+                            limit, totalCommentCount);
+                    offset += limit;
+                    if (totalCommentCount == null || offset > totalCommentCount) {
+                        break;
+                    }
+                } catch (Exception e) {
+                    LogConstant.BUS.error("crawling play list comment failed, offset={},limit={}.", offset, limit);
                 }
             }
 
@@ -1035,37 +1037,42 @@ public class CrawlerServiceImpl implements CrawlerService {
 
         try {
             while (hasMore) {
-                String songCommentUrl = CrawlerConstant.getSongCommentUrl(songId, limit, offset); // 获取评论请求url
-                CommentBO commentBO = queryCommentInfo(songCommentUrl);
-                if (commentBO == null) {
-                    LogConstant.BUS.error("commentBO from parse result is null, will continue.");
-                    Thread.sleep(3000);
-                    continue;
-                }
-                hasMore = commentBO.getMore();
-                totalCommentCount = commentBO.getTotal();
-                if (firstQuery && totalCommentCount != null) { // 更新歌单的评论数
-                    SongPO songPOWithCommentCount = new SongPO();
-                    songPOWithCommentCount.setCommentCount(totalCommentCount);
-                    songPOMapper.updateByExampleSelective(songPOWithCommentCount, songPOExample);
-                    firstQuery = false;
-                }
+                try {
+                    String songCommentUrl = CrawlerConstant.getSongCommentUrl(songId, limit, offset); // 获取评论请求url
+                    CommentBO commentBO = queryCommentInfo(songCommentUrl);
+                    if (commentBO == null) {
+                        LogConstant.BUS.error("commentBO from parse result is null, will continue.");
+                        Thread.sleep(3000);
+                        continue;
+                    }
+                    hasMore = commentBO.getMore();
+                    totalCommentCount = commentBO.getTotal();
+                    if (firstQuery && totalCommentCount != null) { // 更新歌单的评论数
+                        SongPO songPOWithCommentCount = new SongPO();
+                        songPOWithCommentCount.setCommentCount(totalCommentCount);
+                        songPOMapper.updateByExampleSelective(songPOWithCommentCount, songPOExample);
+                        firstQuery = false;
+                    }
 
-                List<CommentDetailBO> commentList = commentBO.getComments();
-                if (CollectionUtils.isNotEmpty(commentList)) {
-                    for (CommentDetailBO commentDetailBO : commentList) {
-                        if (commentDetailBO != null) {
-                            updateUserInfo(commentDetailBO.getUser()); // 更新用户信息表
-                            insertSongComment(commentDetailBO, songPO); // 插入评论表
+                    List<CommentDetailBO> commentList = commentBO.getComments();
+                    if (CollectionUtils.isNotEmpty(commentList)) {
+                        for (CommentDetailBO commentDetailBO : commentList) {
+                            if (commentDetailBO != null) {
+                                updateUserInfo(commentDetailBO.getUser()); // 更新用户信息表
+                                insertSongComment(commentDetailBO, songPO); // 插入评论表
+                            }
                         }
                     }
-                }
 
-                LogConstant.BUS.info("crawling song comment success, offset={},limit={}, total={}.", offset, limit,
-                        totalCommentCount);
-                offset += limit;
-                if (totalCommentCount == null || offset > totalCommentCount) {
-                    break;
+                    LogConstant.BUS.info("crawling song comment success, offset={},limit={}, total={}.", offset, limit,
+                            totalCommentCount);
+                    offset += limit;
+                    if (totalCommentCount == null || offset > totalCommentCount) {
+                        break;
+                    }
+
+                } catch (Exception e) {
+                    LogConstant.BUS.error("doCrawlingSongComment failed, offset={},limit={}", offset, limit);
                 }
             }
 
@@ -1101,6 +1108,5 @@ public class CrawlerServiceImpl implements CrawlerService {
 
         musicCommentPOMapper.insertOnDuplicateUpdate(musicCommentPO);
     }
-
 
 }
