@@ -85,17 +85,17 @@ public class CrawlerController extends BaseController {
         return "success";
     }
 
-//    @RequestMapping(value = "refreshProxyIpSchedule", method = RequestMethod.GET)
-//    @ResponseBody
-//    public String refreshProxyIpSchedule() {
-//        try {
-//            proxyIpService.refreshProxyIpSchedule();
-//            return "success";
-//        } catch (Exception e) {
-//            LogConstant.BUS.error("crawlingSongComment failed: {}", e.getMessage(), e);
-//            return "fail";
-//        }
-//    }
+    @RequestMapping(value = "refreshProxyIp", method = RequestMethod.GET)
+    @ResponseBody
+    public String refreshProxyIp() {
+        try {
+            proxyIpService.refreshProxyIp();
+            return "success";
+        } catch (Exception e) {
+            LogConstant.BUS.error("refreshProxyIp failed: {}", e.getMessage(), e);
+            return "fail";
+        }
+    }
 
     @RequestMapping("test")
     @ResponseBody
@@ -115,7 +115,7 @@ public class CrawlerController extends BaseController {
     @RequestMapping("updateProxyIp")
     @ResponseBody
     public String updateProxyIp(String proxyIps) {
-        System.out.println(proxyIps);
-        return "2333";
+        proxyIpService.updateProxyIp(proxyIps);
+        return "send success!";
     }
 }

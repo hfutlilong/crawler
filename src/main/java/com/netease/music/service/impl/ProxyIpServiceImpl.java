@@ -17,6 +17,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -25,6 +26,8 @@ import java.util.concurrent.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @Description 上网代理
@@ -44,14 +47,14 @@ public class ProxyIpServiceImpl implements ProxyIpService {
 
     private Condition httpsProxyCondition = httpsProxyLock.newCondition();
 
-    private static final ThreadPoolExecutor cleanProxyExecutor = new ThreadPoolExecutor(2, 4, 30, TimeUnit.SECONDS,
-            new LinkedBlockingQueue<>(50000), new ThreadFactoryBuilder().setNameFormat("cleanProxyExecutor-%d").build(),
-            new RejectedExecutionHandler() {
-                @Override
-                public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-                    LogConstant.BUS.error("cleanProxyExecutor reject execute.");
-                }
-            });
+//    private static final ThreadPoolExecutor cleanProxyExecutor = new ThreadPoolExecutor(2, 4, 30, TimeUnit.SECONDS,
+//            new LinkedBlockingQueue<>(50000), new ThreadFactoryBuilder().setNameFormat("cleanProxyExecutor-%d").build(),
+//            new RejectedExecutionHandler() {
+//                @Override
+//                public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+//                    LogConstant.BUS.error("cleanProxyExecutor reject execute.");
+//                }
+//            });
 
     private void cleanProxy() {
         ProxyPOExample proxyPOExample = new ProxyPOExample();
@@ -62,7 +65,7 @@ public class ProxyIpServiceImpl implements ProxyIpService {
         }
 
         for (ProxyPO proxyPO : proxyPOList) {
-            cleanProxyExecutor.execute(() -> {
+//            cleanProxyExecutor.execute(() -> {
                 Integer ipInt = proxyPO.getIp();
                 String ip = proxyPO.getIpString();
                 Integer port = proxyPO.getPort();
@@ -81,7 +84,7 @@ public class ProxyIpServiceImpl implements ProxyIpService {
                 if (BooleanIntEnum.FALSE == proxyPO.getHttpProxy() && BooleanIntEnum.FALSE == proxyPO.getHttpsProxy()) {
                     proxyPOMapper.deleteByExample(proxyPOExampleNew);
                 }
-            });
+//            });
         }
     }
 
@@ -89,26 +92,11 @@ public class ProxyIpServiceImpl implements ProxyIpService {
      * 从免费网站爬取代理ip
      */
     @Override
-    public void refreshProxyIpSchedule() {
-        ScheduledExecutorService schedule = Executors.newScheduledThreadPool(2);
-        schedule.scheduleWithFixedDelay(() -> {
-            LogConstant.BUS.info("start clean unavailable proxy in db...");
-            cleanProxy();
-            LogConstant.BUS.info("end clean unavailable proxy in db.");
-
-        }, 0, 10, TimeUnit.MINUTES);
-
-        schedule.scheduleWithFixedDelay(() -> {
-            LogConstant.BUS.info("start saveProxy...");
-            try {
-                // saveProxyFromXila();
-                // saveProxyFromKuai();
-                saveProxyFromGoubanjia();
-            } catch (Exception e) {
-                LogConstant.BUS.error("schedule saveProxyFromXila failed:", e);
-            }
-            LogConstant.BUS.info("end saveProxy.");
-        }, 0, 1, TimeUnit.HOURS);
+    @Async
+    public void refreshProxyIp() {
+        LogConstant.BUS.info("start clean unavailable proxy in db...");
+        cleanProxy();
+        LogConstant.BUS.info("end clean unavailable proxy in db.");
     }
 
     /**
@@ -517,4 +505,59 @@ public class ProxyIpServiceImpl implements ProxyIpService {
         }
     }
 
+    @Override
+    @Async
+    public void updateProxyIp(String proxyIps) {
+        if (StringUtils.isBlank(proxyIps)) {
+            LogConstant.BUS.error("proxyIps is blank.");
+            return;
+        }
+        String[] proxyIpArr = proxyIps.split("\n|\n|\r\n");
+        if (proxyIpArr.length == 0) {
+            LogConstant.BUS.error("proxyIps.split empty, proxyIps={}.", proxyIps);
+            return;
+        }
+
+        // "183.146.213.198:80\t高匿\thttps\t中国   浙江   金华"
+        Pattern p = Pattern.compile("^(\\d+\\.\\d+\\.\\d+\\.\\d+):(\\d+).*(https?)(.*)$");
+
+        for (String proxyIp : proxyIpArr) {
+            if (StringUtils.isBlank(proxyIp)) {
+                continue;
+            }
+
+            String ip = null;
+            int port = 80;
+            String type = null;
+            String location = null;
+
+            Matcher m = p.matcher(proxyIp);
+            if (m.find()) {
+                ip = m.group(1);
+                port = Integer.valueOf(m.group(2));
+                type = m.group(3);
+                location = m.group(4);
+            }
+
+            ProxyPO proxyPO = new ProxyPO();
+            proxyPO.setIp(StringUtils.isNotBlank(ip) ? IpUtil.ip2Int(ip) : null);
+            proxyPO.setPort(port);
+            proxyPO.setIpString(ip);
+            proxyPO.setLocationInfo(location);
+            if (StringUtils.isNotBlank(type) && type.toLowerCase().equals("http")) {
+                if (checkProxyHttpPass(ip, port)) {
+                    proxyPO.setHttpProxy(BooleanIntEnum.TRUE);
+                }
+            }
+            if (StringUtils.isNotBlank(type) && type.toLowerCase().equals("https")) {
+                if (checkProxyHttpsPass(ip, port)) {
+                    proxyPO.setHttpsProxy(BooleanIntEnum.TRUE);
+                }
+            }
+
+            if (BooleanIntEnum.TRUE == proxyPO.getHttpProxy() || BooleanIntEnum.TRUE == proxyPO.getHttpsProxy()) {
+                proxyPOMapper.insertOnDuplicateUpdate(proxyPO);
+            }
+        }
+    }
 }

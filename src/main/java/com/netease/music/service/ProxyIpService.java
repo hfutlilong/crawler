@@ -7,7 +7,7 @@ public interface ProxyIpService {
     /**
      * 定时更新代理
      */
-    void refreshProxyIpSchedule();
+    void refreshProxyIp();
     /**
      * 获取一个可用的https代理
      * @return
@@ -23,4 +23,10 @@ public interface ProxyIpService {
     Document getDocByHttpsProxy(String url) throws InterruptedException;
 
     String getJsonResponseByHttpProxy(String url) throws InterruptedException;
+
+    /**
+     * 更新代理ip
+     * @param proxyIps
+     */
+    void updateProxyIp(String proxyIps);
 }
