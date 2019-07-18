@@ -97,13 +97,18 @@ public class CrawlerController extends BaseController {
 //        }
 //    }
 
-    @RequestMapping("hello")
+    @RequestMapping("test")
     @ResponseBody
-    public String testHello() {
+    public String test() {
         LogConstant.BUS.debug("DEBUG LOG TEST 测试");
         LogConstant.BUS.info("INFO LOG TEST 测试");
         LogConstant.BUS.error("ERROR LOG TEST 测试");
 
         return "66666666666";
+    }
+
+    @RequestMapping(value = "hello", method = RequestMethod.GET)
+    public String hello() {
+        return "hello";
     }
 }
