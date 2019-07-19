@@ -5,8 +5,10 @@ import com.netease.kaola.cs.utils.IpUtil;
 import com.netease.music.common.constant.CrawlerConstant;
 import com.netease.music.common.log.LogConstant;
 import com.netease.music.dao.mapper.ProxyPOMapperExt;
+import com.netease.music.dao.mapper.UserAgentPOMapperExt;
 import com.netease.music.dao.po.ProxyPO;
 import com.netease.music.dao.po.ProxyPOExample;
+import com.netease.music.dao.po.UserAgentPO;
 import com.netease.music.entity.bo.ProxyBO;
 import com.netease.music.entity.enums.BooleanIntEnum;
 import com.netease.music.service.ProxyIpService;
@@ -39,6 +41,9 @@ import java.util.regex.Pattern;
 public class ProxyIpServiceImpl implements ProxyIpService {
     @Autowired
     private ProxyPOMapperExt proxyPOMapper;
+
+    @Autowired
+    private UserAgentPOMapperExt userAgentPOMapper;
 
     private Lock httpProxyLock = new ReentrantLock();
 
@@ -555,8 +560,10 @@ public class ProxyIpServiceImpl implements ProxyIpService {
     }
 
     private String getUserAgentRandom() {
-        List<String> userAgentList = CrawlerConstant.USER_AGENT_LIST;
-        return userAgentList.get(new Random().nextInt(userAgentList.size()));
+//        List<String> userAgentList = CrawlerConstant.USER_AGENT_LIST;
+//        return userAgentList.get(new Random().nextInt(userAgentList.size()));
+        UserAgentPO userAgentPO = userAgentPOMapper.selectRandom();
+        return userAgentPO == null ? null : userAgentPO.getUserAgent();
     }
 
     @Override
