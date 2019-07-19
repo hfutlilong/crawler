@@ -661,11 +661,31 @@ public class ProxyIpServiceImpl implements ProxyIpService {
                 if (StringUtils.isNotBlank(type) && type.toLowerCase().equals("http")) {
                     if (checkProxyHttpPass(ip, port)) {
                         proxyPO.setHttpProxy(BooleanIntEnum.TRUE);
+
+                        httpProxyLock.lock();
+                        try {
+                            httpProxyCondition.signalAll();
+                            LogConstant.BUS.info("httpProxyCondition.signalAll success.");
+                        } catch (Exception e) {
+                            LogConstant.BUS.error("httpProxyCondition.notifyAll failed:", e);
+                        } finally {
+                            httpProxyLock.unlock();
+                        }
                     }
                 }
                 if (StringUtils.isNotBlank(type) && type.toLowerCase().equals("https")) {
                     if (checkProxyHttpsPass(ip, port)) {
                         proxyPO.setHttpsProxy(BooleanIntEnum.TRUE);
+
+                        httpsProxyLock.lock();
+                        try {
+                            httpsProxyCondition.signalAll();
+                            LogConstant.BUS.info("httpsProxyCondition.signalAll success.");
+                        } catch (Exception e) {
+                            LogConstant.BUS.error("httpsProxyCondition.signalAll failed:", e);
+                        } finally {
+                            httpsProxyLock.unlock();
+                        }
                     }
                 }
 
