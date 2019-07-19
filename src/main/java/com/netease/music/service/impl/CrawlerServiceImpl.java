@@ -90,7 +90,7 @@ public class CrawlerServiceImpl implements CrawlerService {
         // LogConstant.BUS.info("歌曲信息爬完啦！！！ crawlingSongInfo Done!!!");
 
         // 爬取歌单评论
-        crawlingPlayListComment();
+//        crawlingPlayListComment();
         // 爬取歌曲评论
         crawlingSongComment();
     }
@@ -876,6 +876,10 @@ public class CrawlerServiceImpl implements CrawlerService {
             String playListCommentUrl = CrawlerConstant.getPlayListCommentUrl(playListId, limit, offset); // 获取评论请求url
             CommentBO commentBO = queryCommentInfo(playListCommentUrl);
             if (commentBO == null) {
+                if (offset >= 5000) {
+                    break;
+                }
+
                 LogConstant.BUS.error("playListId={}, commentBO from parse result is null, will continue..",
                         playListId);
                 Thread.sleep(3000);
@@ -1094,6 +1098,9 @@ public class CrawlerServiceImpl implements CrawlerService {
             String songCommentUrl = CrawlerConstant.getSongCommentUrl(songId, limit, offset); // 获取评论请求url
             CommentBO commentBO = queryCommentInfo(songCommentUrl);
             if (commentBO == null) {
+                if (offset >= 5000) {
+                    break;
+                }
                 LogConstant.BUS.error("songId={}, commentBO from parse result is null, will continue.", songId);
                 Thread.sleep(3000);
                 continue;
