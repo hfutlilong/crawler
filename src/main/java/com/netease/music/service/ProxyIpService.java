@@ -30,7 +30,7 @@ public interface ProxyIpService {
      * 更新代理ip
      * @param proxyIps
      */
-    void updateProxyIp(String proxyIps);
+    void updateProxyManually(String proxyIps);
 
     void addProxyIp();
 }

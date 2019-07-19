@@ -2,7 +2,6 @@ package com.netease.music.controller;
 
 import com.netease.music.common.log.LogConstant;
 import com.netease.music.service.CrawlerService;
-import com.netease.music.service.ProxyIpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,9 +13,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class CrawlerController extends BaseController {
     @Autowired
     private CrawlerService crawlerService;
-
-    @Autowired
-    private ProxyIpService proxyIpService;
 
     @RequestMapping(value = "autoCrawling", method = RequestMethod.GET)
     @ResponseBody
@@ -85,18 +81,6 @@ public class CrawlerController extends BaseController {
         return "success";
     }
 
-    @RequestMapping(value = "refreshProxyIp", method = RequestMethod.GET)
-    @ResponseBody
-    public String refreshProxyIp() {
-        try {
-            proxyIpService.refreshProxyIp();
-            return "success";
-        } catch (Exception e) {
-            LogConstant.BUS.error("refreshProxyIp failed: {}", e.getMessage(), e);
-            return "fail";
-        }
-    }
-
     @RequestMapping("test")
     @ResponseBody
     public String test() {
@@ -105,24 +89,5 @@ public class CrawlerController extends BaseController {
         LogConstant.BUS.error("ERROR LOG TEST 测试");
 
         return "66666666666";
-    }
-
-    @RequestMapping("inputProxyIp")
-    public String inputProxyIp() {
-        return "inputProxyIp";
-    }
-
-    @RequestMapping("updateProxyIp")
-    @ResponseBody
-    public String updateProxyIp(String proxyIps) {
-        proxyIpService.updateProxyIp(proxyIps);
-        return "send success!";
-    }
-
-    @RequestMapping("addProxyIp")
-    @ResponseBody
-    public String addProxyIp() {
-        proxyIpService.addProxyIp();
-        return "send success!";
     }
 }

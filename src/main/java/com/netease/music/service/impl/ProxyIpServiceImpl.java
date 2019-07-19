@@ -619,39 +619,47 @@ public class ProxyIpServiceImpl implements ProxyIpService {
 
     @Override
     @Async
-    public void updateProxyIp(String proxyIps) {
+    public void updateProxyManually(String proxyIps) {
+        LogConstant.BUS.info("start updateProxyManually ...");
+
         if (StringUtils.isBlank(proxyIps)) {
             LogConstant.BUS.error("proxyIps is blank.");
             return;
         }
 
         try {
-            String[] proxyIpArr = proxyIps.split("\n|\n|\r\n");
+            String[] proxyIpArr = proxyIps.split("\n|\r|\r\n");
             if (proxyIpArr.length == 0) {
                 LogConstant.BUS.error("proxyIps.split empty, proxyIps={}.", proxyIps);
                 return;
             }
-
-            // "183.146.213.198:80\t高匿\thttps\t中国 浙江 金华"
-            Pattern p = Pattern.compile("^(\\d+\\.\\d+\\.\\d+\\.\\d+):(\\d+).*(https?)(.*)$");
 
             for (String proxyIp : proxyIpArr) {
                 if (StringUtils.isBlank(proxyIp)) {
                     continue;
                 }
 
-                String ip = null;
-                int port = 80;
-                String type = null;
-                String location = null;
-
-                Matcher m = p.matcher(proxyIp);
-                if (m.find()) {
-                    ip = m.group(1);
-                    port = Integer.valueOf(m.group(2));
-                    type = m.group(3);
-                    location = m.group(4);
+                String[] ipInfoArr = proxyIp.split("\t");
+                if (ipInfoArr.length < 4) {
+                    LogConstant.BUS.info("proxyIp {} format illegal.", proxyIp);
+                    continue;
                 }
+
+                String ip = null;
+                int port = 8080;
+                String ipPortStr = ipInfoArr[0];
+                if (StringUtils.isBlank(ipPortStr)) {
+                    continue;
+                }
+
+                String[] ipPortArr = ipPortStr.split(":");
+                if (ipPortArr.length == 2) {
+                    ip = ipPortArr[0];
+                    port = Integer.valueOf(ipPortArr[1]);
+                }
+
+                String type = ipInfoArr[2];
+                String location = ipInfoArr[3];
 
                 ProxyPO proxyPO = new ProxyPO();
                 proxyPO.setIp(StringUtils.isNotBlank(ip) ? IpUtil.ip2Int(ip) : null);
@@ -665,9 +673,9 @@ public class ProxyIpServiceImpl implements ProxyIpService {
                         httpProxyLock.lock();
                         try {
                             httpProxyCondition.signalAll();
-                            LogConstant.BUS.info("httpProxyCondition.signalAll success.");
+                            LogConstant.BUS.info("proxy {} is available, httpProxyCondition.signalAll.", ipPortStr);
                         } catch (Exception e) {
-                            LogConstant.BUS.error("httpProxyCondition.notifyAll failed:", e);
+                            LogConstant.BUS.error("proxy {} is available, httpProxyCondition.notifyAll failed:", ipPortStr, e);
                         } finally {
                             httpProxyLock.unlock();
                         }
@@ -680,9 +688,9 @@ public class ProxyIpServiceImpl implements ProxyIpService {
                         httpsProxyLock.lock();
                         try {
                             httpsProxyCondition.signalAll();
-                            LogConstant.BUS.info("httpsProxyCondition.signalAll success.");
+                            LogConstant.BUS.info("proxy {} is available, httpsProxyCondition.signalAll.", ipPortStr);
                         } catch (Exception e) {
-                            LogConstant.BUS.error("httpsProxyCondition.signalAll failed:", e);
+                            LogConstant.BUS.error("proxy {} is available, httpsProxyCondition.signalAll failed:", ipPortStr, e);
                         } finally {
                             httpsProxyLock.unlock();
                         }
@@ -698,6 +706,8 @@ public class ProxyIpServiceImpl implements ProxyIpService {
         }
 
         notifyAllCondition();
+
+        LogConstant.BUS.info("end updateProxyManually");
     }
 
     /**

@@ -10,11 +10,11 @@
 <body>
 <h1>输入代理ip地址：</h1>
 
-<form action="updateProxyIp.do" method="post">
+<form action="updateProxyManually.do" method="post">
     <table>
         <tr>
 <%--            <td>代理ip地址：</td>--%>
-            <td><textarea id="proxyIps" name="proxyIps" rows="30" cols="80" autofocus placeholder="输入ip地址"></textarea></td>
+            <td><textarea id="proxyIps" name="proxyIps" rows="30" cols="120" autofocus placeholder="输入ip地址"></textarea></td>
         </tr>
 
         <tr>
