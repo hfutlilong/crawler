@@ -851,8 +851,7 @@ public class CrawlerServiceImpl implements CrawlerService {
         playListPOMapper.updateByExampleSelective(playListPONew, playListPOExample);
 
         try {
-            crawlingPlayListHotComment(playListId, playListPO, playListPOExample);
-            crawlingPlayListLatestComment(playListId, playListPO, playListPOExample);
+            crawlingPlayListComment(playListId, playListPO, playListPOExample);
         } catch (Exception e) {
             LogConstant.BUS.error("crawling play list {} comment failed:{}.", playListId, e.getMessage(), e);
             // 爬取失败
@@ -861,93 +860,81 @@ public class CrawlerServiceImpl implements CrawlerService {
         }
     }
 
-    private void crawlingPlayListHotComment(Long playListId, PlayListPO playListPO,
-            PlayListPOExample playListPOExample) {
+    private void crawlingPlayListComment(Long playListId, PlayListPO playListPO, PlayListPOExample playListPOExample) throws InterruptedException {
         int offset = 0;
         int limit = CrawlerConstant.DEFAULT_COMMENT_PAGE_SIZE;
-        boolean hasMore = true; // 有没有更多评论
-
-        while (hasMore) {
-            try {
-                String playListCommentUrl = CrawlerConstant.getPlayListCommentUrl(playListId, limit, offset); // 获取评论请求url
-                CommentBO commentBO = queryCommentInfo(playListCommentUrl);
-                if (commentBO == null) {
-                    LogConstant.BUS.error("commentBO from parse result is null, will continue..");
-                    Thread.sleep(3000);
-                    continue;
-                }
-                hasMore = commentBO.getMoreHot();
-                List<CommentDetailBO> commentList = commentBO.getHotComments();
-                if (CollectionUtils.isNotEmpty(commentList)) {
-                    for (CommentDetailBO commentDetailBO : commentList) {
-                        if (commentDetailBO != null) {
-                            updateUserInfo(commentDetailBO.getUser()); // 更新用户信息表
-                            insertPlayListComment(commentDetailBO, playListPO); // 插入评论表
-                        }
-                    }
-                }
-
-                LogConstant.BUS.info("crawling play list hot comment success, offset={},limit={}.", offset,
-                        limit);
-                offset += limit;
-            } catch (Exception e) {
-                LogConstant.BUS.error("crawling play list hot comment failed, offset={},limit={}.", offset, limit);
-            }
-        }
-
-        LogConstant.BUS.info("crawling play list {} hot comment success.", playListId);
-    }
-
-    private void crawlingPlayListLatestComment(Long playListId, PlayListPO playListPO,
-            PlayListPOExample playListPOExample) {
-        int offset = 0;
-        int limit = CrawlerConstant.DEFAULT_COMMENT_PAGE_SIZE;
-        boolean hasMore = true; // 有没有更多评论
         boolean firstQuery = true; // 是不是首次获取评论，首次的话要填充歌单表的评论数
         Integer totalCommentCount = null;
 
-        // try {
-        while (hasMore) {
-            try {
-                String playListCommentUrl = CrawlerConstant.getPlayListCommentUrl(playListId, limit, offset); // 获取评论请求url
-                CommentBO commentBO = queryCommentInfo(playListCommentUrl);
-                if (commentBO == null) {
-                    LogConstant.BUS.error("commentBO from parse result is null, will continue..");
-                    Thread.sleep(3000);
-                    continue;
-                }
-                hasMore = commentBO.getMore();
-                totalCommentCount = commentBO.getTotal();
-                if (firstQuery && totalCommentCount != null) { // 更新歌单的评论数
-                    PlayListPO playListPOWithCommentCount = new PlayListPO();
-                    playListPOWithCommentCount.setCommentCount(totalCommentCount);
-                    playListPOMapper.updateByExampleSelective(playListPOWithCommentCount, playListPOExample);
-                    firstQuery = false;
-                }
+        boolean hasMore = true; // 有没有更多评论
+        boolean hasMoreHot = true;
 
-                List<CommentDetailBO> commentList = commentBO.getComments();
-                if (CollectionUtils.isNotEmpty(commentList)) {
-                    for (CommentDetailBO commentDetailBO : commentList) {
-                        if (commentDetailBO != null) {
-                            updateUserInfo(commentDetailBO.getUser()); // 更新用户信息表
-                            insertPlayListComment(commentDetailBO, playListPO); // 插入评论表
+        while (hasMore || hasMoreHot) {
+            String playListCommentUrl = CrawlerConstant.getPlayListCommentUrl(playListId, limit, offset); // 获取评论请求url
+            CommentBO commentBO = queryCommentInfo(playListCommentUrl);
+            if (commentBO == null) {
+                LogConstant.BUS.error("commentBO from parse result is null, will continue..");
+                Thread.sleep(3000);
+                continue;
+            }
+
+            if (hasMore) {
+                try {
+                    hasMore = commentBO.getMore();
+                    totalCommentCount = commentBO.getTotal();
+                    if (firstQuery && totalCommentCount != null) { // 更新歌单的评论数
+                        PlayListPO playListPOWithCommentCount = new PlayListPO();
+                        playListPOWithCommentCount.setCommentCount(totalCommentCount);
+                        playListPOMapper.updateByExampleSelective(playListPOWithCommentCount, playListPOExample);
+                        firstQuery = false;
+                    }
+
+                    List<CommentDetailBO> commentList = commentBO.getComments();
+                    if (CollectionUtils.isNotEmpty(commentList)) {
+                        for (CommentDetailBO commentDetailBO : commentList) {
+                            if (commentDetailBO != null) {
+                                updateUserInfo(commentDetailBO.getUser()); // 更新用户信息表
+                                insertPlayListComment(commentDetailBO, playListPO); // 插入评论表
+                            }
                         }
                     }
-                }
 
-                LogConstant.BUS.info("crawling play list latest comment success, offset={},limit={}, total={}.", offset,
-                        limit, totalCommentCount);
-                offset += limit;
-                if (totalCommentCount == null || offset > totalCommentCount) {
-                    break;
+                    LogConstant.BUS.info("crawling play list latest comment success, offset={},limit={}, total={}.",
+                            offset, limit, totalCommentCount);
+                    offset += limit;
+                    if (totalCommentCount == null || offset > totalCommentCount) {
+                        break;
+                    }
+                } catch (Exception e) {
+                    LogConstant.BUS.error("crawling play list latest comment failed, offset={},limit={}.", offset,
+                            limit);
                 }
-            } catch (Exception e) {
-                LogConstant.BUS.error("crawling play list latest comment failed, offset={},limit={}.", offset, limit);
+            }
+
+            if (hasMoreHot) {
+                try {
+                    hasMoreHot = commentBO.getMoreHot();
+                    List<CommentDetailBO> commentList = commentBO.getHotComments();
+                    if (CollectionUtils.isNotEmpty(commentList)) {
+                        for (CommentDetailBO commentDetailBO : commentList) {
+                            if (commentDetailBO != null) {
+                                updateUserInfo(commentDetailBO.getUser()); // 更新用户信息表
+                                insertPlayListComment(commentDetailBO, playListPO); // 插入评论表
+                            }
+                        }
+                    }
+
+                    LogConstant.BUS.info("crawling play list hot comment success, offset={},limit={},total={}.", offset,
+                            limit, totalCommentCount);
+                    offset += limit;
+                } catch (Exception e) {
+                    LogConstant.BUS.error("crawling play list hot comment failed, offset={},limit={},total={}.", offset,
+                            limit, totalCommentCount);
+                }
             }
         }
 
-        LogConstant.BUS.info("crawling play list {} latest comment success, total num: {}.", playListId,
-                totalCommentCount);
+        LogConstant.BUS.info("crawling play list {} hot comment success, total:{}.", playListId, totalCommentCount);
     }
 
     /**
@@ -1070,8 +1057,7 @@ public class CrawlerServiceImpl implements CrawlerService {
         songPOMapper.updateByExampleSelective(songPONew, songPOExample);
 
         try {
-            crawlingHotSongComment(songId, songPO);
-            crawlingLatestSongComment(songId, songPO, songPOExample);
+            crawlingSongComment(songId, songPO, songPOExample);
 
             // 爬取成功
             songPONew.setCommentCrawlingStatus(CrawlingStatusEnum.CRAWLERED);
@@ -1085,88 +1071,80 @@ public class CrawlerServiceImpl implements CrawlerService {
 
     }
 
-    private void crawlingHotSongComment(Long songId, SongPO songPO) {
+    private void crawlingSongComment(Long songId, SongPO songPO, SongPOExample songPOExample) throws InterruptedException {
         int offset = 0;
         int limit = CrawlerConstant.DEFAULT_COMMENT_PAGE_SIZE;
-        boolean hasMore = true; // 有没有更多评论
-        while (hasMore) {
-            try {
-                String songCommentUrl = CrawlerConstant.getSongCommentUrl(songId, limit, offset); // 获取评论请求url
-                CommentBO commentBO = queryCommentInfo(songCommentUrl);
-                if (commentBO == null) {
-                    LogConstant.BUS.error("commentBO from parse result is null, will continue.");
-                    Thread.sleep(3000);
-                    continue;
-                }
-                hasMore = commentBO.getMoreHot();
 
-                List<CommentDetailBO> commentList = commentBO.getHotComments();
-                if (CollectionUtils.isNotEmpty(commentList)) {
-                    for (CommentDetailBO commentDetailBO : commentList) {
-                        if (commentDetailBO != null) {
-                            updateUserInfo(commentDetailBO.getUser()); // 更新用户信息表
-                            insertSongComment(commentDetailBO, songPO); // 插入评论表
-                        }
-                    }
-                }
-
-                LogConstant.BUS.info("crawling hot song comment success, offset={},limit={}.", offset, limit);
-                offset += limit;
-
-            } catch (Exception e) {
-                LogConstant.BUS.error("doCrawlingSongComment hot failed, offset={},limit={}", offset, limit);
-            }
-        }
-
-        LogConstant.BUS.info("crawling song {} hot comment success.", songId);
-
-    }
-
-    private void crawlingLatestSongComment(Long songId, SongPO songPO, SongPOExample songPOExample) {
-        int offset = 0;
-        int limit = CrawlerConstant.DEFAULT_COMMENT_PAGE_SIZE;
-        boolean hasMore = true; // 有没有更多评论
         boolean firstQuery = true; // 是不是首次获取评论，首次的话要填充歌单表的评论数
         Integer totalCommentCount = null;
 
-        // try {
-        while (hasMore) {
-            try {
-                String songCommentUrl = CrawlerConstant.getSongCommentUrl(songId, limit, offset); // 获取评论请求url
-                CommentBO commentBO = queryCommentInfo(songCommentUrl);
-                if (commentBO == null) {
-                    LogConstant.BUS.error("commentBO from parse result is null, will continue.");
-                    Thread.sleep(3000);
-                    continue;
-                }
-                hasMore = commentBO.getMore();
-                totalCommentCount = commentBO.getTotal();
-                if (firstQuery && totalCommentCount != null) { // 更新歌单的评论数
-                    SongPO songPOWithCommentCount = new SongPO();
-                    songPOWithCommentCount.setCommentCount(totalCommentCount);
-                    songPOMapper.updateByExampleSelective(songPOWithCommentCount, songPOExample);
-                    firstQuery = false;
-                }
+        boolean hasMore = true; // 有没有更多评论
+        boolean hasMoreHot = true;
 
-                List<CommentDetailBO> commentList = commentBO.getComments();
-                if (CollectionUtils.isNotEmpty(commentList)) {
-                    for (CommentDetailBO commentDetailBO : commentList) {
-                        if (commentDetailBO != null) {
-                            updateUserInfo(commentDetailBO.getUser()); // 更新用户信息表
-                            insertSongComment(commentDetailBO, songPO); // 插入评论表
+        // try {
+        while (hasMore || hasMoreHot) {
+            String songCommentUrl = CrawlerConstant.getSongCommentUrl(songId, limit, offset); // 获取评论请求url
+            CommentBO commentBO = queryCommentInfo(songCommentUrl);
+            if (commentBO == null) {
+                LogConstant.BUS.error("commentBO from parse result is null, will continue.");
+                Thread.sleep(3000);
+                continue;
+            }
+
+            if (hasMore) {
+                try {
+                    hasMore = commentBO.getMore();
+                    totalCommentCount = commentBO.getTotal();
+                    if (firstQuery && totalCommentCount != null) { // 更新歌单的评论数
+                        SongPO songPOWithCommentCount = new SongPO();
+                        songPOWithCommentCount.setCommentCount(totalCommentCount);
+                        songPOMapper.updateByExampleSelective(songPOWithCommentCount, songPOExample);
+                        firstQuery = false;
+                    }
+
+                    List<CommentDetailBO> commentList = commentBO.getComments();
+                    if (CollectionUtils.isNotEmpty(commentList)) {
+                        for (CommentDetailBO commentDetailBO : commentList) {
+                            if (commentDetailBO != null) {
+                                updateUserInfo(commentDetailBO.getUser()); // 更新用户信息表
+                                insertSongComment(commentDetailBO, songPO); // 插入评论表
+                            }
                         }
                     }
-                }
 
-                LogConstant.BUS.info("crawling latest song comment success, offset={},limit={}, total={}.", offset, limit,
-                        totalCommentCount);
-                offset += limit;
-                if (totalCommentCount == null || offset > totalCommentCount) {
-                    break;
-                }
+                    LogConstant.BUS.info("crawling latest song comment success, offset={},limit={}, total={}.", offset,
+                            limit, totalCommentCount);
+                    offset += limit;
+                    if (totalCommentCount == null || offset > totalCommentCount) {
+                        break;
+                    }
 
-            } catch (Exception e) {
-                LogConstant.BUS.error("doCrawlingSongComment latest failed, offset={},limit={}", offset, limit);
+                } catch (Exception e) {
+                    LogConstant.BUS.error(
+                            "doCrawlingSongComment latest failed, offset={},limit={},totalCommentCount={}.", offset,
+                            limit, totalCommentCount);
+                }
+            }
+
+            if (hasMoreHot) {
+                try {
+                    hasMoreHot = commentBO.getMoreHot();
+                    List<CommentDetailBO> commentList = commentBO.getHotComments();
+                    if (CollectionUtils.isNotEmpty(commentList)) {
+                        for (CommentDetailBO commentDetailBO : commentList) {
+                            if (commentDetailBO != null) {
+                                updateUserInfo(commentDetailBO.getUser()); // 更新用户信息表
+                                insertSongComment(commentDetailBO, songPO); // 插入评论表
+                            }
+                        }
+                    }
+
+                    LogConstant.BUS.info("crawling hot song comment success, offset={},limit={}.", offset, limit);
+                    offset += limit;
+
+                } catch (Exception e) {
+                    LogConstant.BUS.error("doCrawlingSongComment hot failed, offset={},limit={}", offset, limit);
+                }
             }
         }
 
