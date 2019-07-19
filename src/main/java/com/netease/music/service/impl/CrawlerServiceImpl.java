@@ -78,16 +78,16 @@ public class CrawlerServiceImpl implements CrawlerService {
     @Async
     public void autoCrawling() throws InterruptedException {
         // 初始化歌单
-        initCrawling();
+        // initCrawling();
         // // 发送初始化完成事件
         // CrawlerEventPublisher.publish(new InitPlayListFinishEvent());
         // 爬取歌单列表
-        crawlingPlayList();
-        LogConstant.BUS.info("歌单爬完啦！！！ crawlingPlayList Done!!!");
+        // crawlingPlayList();
+        // LogConstant.BUS.info("歌单爬完啦！！！ crawlingPlayList Done!!!");
 
         // 爬取歌曲信息
-        crawlingSongInfo();
-        LogConstant.BUS.info("歌曲信息爬完啦！！！ crawlingSongInfo Done!!!");
+        // crawlingSongInfo();
+        // LogConstant.BUS.info("歌曲信息爬完啦！！！ crawlingSongInfo Done!!!");
 
         // 爬取歌单评论
         crawlingPlayListComment();
@@ -852,6 +852,8 @@ public class CrawlerServiceImpl implements CrawlerService {
 
         try {
             crawlingPlayListComment(playListId, playListPO, playListPOExample);
+            playListPONew.setCommentCrawlingStatus(CrawlingStatusEnum.CRAWLERED);
+            playListPOMapper.updateByExampleSelective(playListPONew, playListPOExample);
         } catch (Exception e) {
             LogConstant.BUS.error("crawling play list {} comment failed:{}.", playListId, e.getMessage(), e);
             // 爬取失败
@@ -860,7 +862,8 @@ public class CrawlerServiceImpl implements CrawlerService {
         }
     }
 
-    private void crawlingPlayListComment(Long playListId, PlayListPO playListPO, PlayListPOExample playListPOExample) throws InterruptedException {
+    private void crawlingPlayListComment(Long playListId, PlayListPO playListPO, PlayListPOExample playListPOExample)
+            throws InterruptedException {
         int offset = 0;
         int limit = CrawlerConstant.DEFAULT_COMMENT_PAGE_SIZE;
         boolean firstQuery = true; // 是不是首次获取评论，首次的话要填充歌单表的评论数
@@ -873,7 +876,8 @@ public class CrawlerServiceImpl implements CrawlerService {
             String playListCommentUrl = CrawlerConstant.getPlayListCommentUrl(playListId, limit, offset); // 获取评论请求url
             CommentBO commentBO = queryCommentInfo(playListCommentUrl);
             if (commentBO == null) {
-                LogConstant.BUS.error("commentBO from parse result is null, will continue..");
+                LogConstant.BUS.error("playListId={}, commentBO from parse result is null, will continue..",
+                        playListId);
                 Thread.sleep(3000);
                 continue;
             }
@@ -899,15 +903,16 @@ public class CrawlerServiceImpl implements CrawlerService {
                         }
                     }
 
-                    LogConstant.BUS.info("crawling play list latest comment success, offset={},limit={}, total={}.",
-                            offset, limit, totalCommentCount);
+                    LogConstant.BUS.info(
+                            "crawling play list latest comment success,playListId={},offset={},limit={}, total={}.",
+                            playListId, offset, limit, totalCommentCount);
                     offset += limit;
                     if (totalCommentCount == null || offset > totalCommentCount) {
                         break;
                     }
                 } catch (Exception e) {
-                    LogConstant.BUS.error("crawling play list latest comment failed, offset={},limit={}.", offset,
-                            limit);
+                    LogConstant.BUS.error("crawling play list latest comment failed,playListId={},offset={},limit={}.",
+                            playListId, offset, limit);
                 }
             }
 
@@ -924,12 +929,14 @@ public class CrawlerServiceImpl implements CrawlerService {
                         }
                     }
 
-                    LogConstant.BUS.info("crawling play list hot comment success, offset={},limit={},total={}.", offset,
-                            limit, totalCommentCount);
+                    LogConstant.BUS.info(
+                            "crawling play list hot comment success, playListId={},offset={},limit={},total={}.",
+                            playListId, offset, limit, totalCommentCount);
                     offset += limit;
                 } catch (Exception e) {
-                    LogConstant.BUS.error("crawling play list hot comment failed, offset={},limit={},total={}.", offset,
-                            limit, totalCommentCount);
+                    LogConstant.BUS.error(
+                            "crawling play list hot comment failed, playListId={},offset={},limit={},total={}.",
+                            playListId, offset, limit, totalCommentCount);
                 }
             }
         }
@@ -1071,7 +1078,8 @@ public class CrawlerServiceImpl implements CrawlerService {
 
     }
 
-    private void crawlingSongComment(Long songId, SongPO songPO, SongPOExample songPOExample) throws InterruptedException {
+    private void crawlingSongComment(Long songId, SongPO songPO, SongPOExample songPOExample)
+            throws InterruptedException {
         int offset = 0;
         int limit = CrawlerConstant.DEFAULT_COMMENT_PAGE_SIZE;
 
@@ -1086,7 +1094,7 @@ public class CrawlerServiceImpl implements CrawlerService {
             String songCommentUrl = CrawlerConstant.getSongCommentUrl(songId, limit, offset); // 获取评论请求url
             CommentBO commentBO = queryCommentInfo(songCommentUrl);
             if (commentBO == null) {
-                LogConstant.BUS.error("commentBO from parse result is null, will continue.");
+                LogConstant.BUS.error("songId={}, commentBO from parse result is null, will continue.", songId);
                 Thread.sleep(3000);
                 continue;
             }
@@ -1112,8 +1120,9 @@ public class CrawlerServiceImpl implements CrawlerService {
                         }
                     }
 
-                    LogConstant.BUS.info("crawling latest song comment success, offset={},limit={}, total={}.", offset,
-                            limit, totalCommentCount);
+                    LogConstant.BUS.info(
+                            "crawling latest song comment success, songId={}, offset={},limit={}, total={}.", songId,
+                            offset, limit, totalCommentCount);
                     offset += limit;
                     if (totalCommentCount == null || offset > totalCommentCount) {
                         break;
@@ -1121,8 +1130,8 @@ public class CrawlerServiceImpl implements CrawlerService {
 
                 } catch (Exception e) {
                     LogConstant.BUS.error(
-                            "doCrawlingSongComment latest failed, offset={},limit={},totalCommentCount={}.", offset,
-                            limit, totalCommentCount);
+                            "doCrawlingSongComment latest failed,songId={}, offset={},limit={},totalCommentCount={}.",
+                            songId, offset, limit, totalCommentCount);
                 }
             }
 
@@ -1139,11 +1148,13 @@ public class CrawlerServiceImpl implements CrawlerService {
                         }
                     }
 
-                    LogConstant.BUS.info("crawling hot song comment success, offset={},limit={}.", offset, limit);
+                    LogConstant.BUS.info("crawling hot song comment success, songId={},offset={},limit={}.", songId,
+                            offset, limit);
                     offset += limit;
 
                 } catch (Exception e) {
-                    LogConstant.BUS.error("doCrawlingSongComment hot failed, offset={},limit={}", offset, limit);
+                    LogConstant.BUS.error("doCrawlingSongComment hot failed, songId={},offset={},limit={}", songId,
+                            offset, limit);
                 }
             }
         }
