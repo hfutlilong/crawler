@@ -4,6 +4,7 @@ import com.hankcs.hanlp.HanLP;
 import com.hankcs.hanlp.seg.common.Term;
 import com.hankcs.hanlp.suggest.Suggester;
 import com.hankcs.hanlp.tokenizer.NLPTokenizer;
+import com.hankcs.hanlp.tokenizer.NotionalTokenizer;
 import com.netease.music.service.NLPService;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,11 @@ public class NLPServiceImpl implements NLPService {
         System.out.println("标准分词：");
         System.out.println(HanLP.segment("你好，欢迎使用HanLP！"));
         System.out.println("\n");
+
+        System.out.println("去除停用词：");
+        System.out.println(NotionalTokenizer.segment("你好，欢迎使用HanLP！"));
+        System.out.println("\n");
+
 
         List<Term> termList = NLPTokenizer.segment("中国科学院计算技术研究所的宗成庆教授正在教授自然语言处理课程");
         System.out.println("NLP分词：");
