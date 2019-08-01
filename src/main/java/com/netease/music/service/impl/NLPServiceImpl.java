@@ -5,7 +5,11 @@ import com.hankcs.hanlp.seg.common.Term;
 import com.hankcs.hanlp.suggest.Suggester;
 import com.hankcs.hanlp.tokenizer.NLPTokenizer;
 import com.hankcs.hanlp.tokenizer.NotionalTokenizer;
+import com.netease.music.common.exception.CrawlerException;
+import com.netease.music.common.log.LogConstant;
 import com.netease.music.service.NLPService;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,9 +17,17 @@ import java.util.List;
 @Service
 public class NLPServiceImpl implements NLPService {
     @Override
+    public List<String> getKeywords(String sentence) {
+        if (StringUtils.isBlank(sentence)) {
+            throw new CrawlerException("input sentence is blank.");
+        }
+        return HanLP.extractKeyword(sentence, 10);
+    }
+
+    @Override
     public void testHanNlp() {
         System.out.println("首次编译运行时，HanLP会自动构建词典缓存，请稍候……\n");
-        //第一次运行会有文件找不到的错误但不影响运行，缓存完成后就不会再有了
+        // 第一次运行会有文件找不到的错误但不影响运行，缓存完成后就不会再有了
         System.out.println("标准分词：");
         System.out.println(HanLP.segment("你好，欢迎使用HanLP！"));
         System.out.println("\n");
@@ -23,7 +35,6 @@ public class NLPServiceImpl implements NLPService {
         System.out.println("去除停用词：");
         System.out.println(NotionalTokenizer.segment("你好，欢迎使用HanLP！"));
         System.out.println("\n");
-
 
         List<Term> termList = NLPTokenizer.segment("中国科学院计算技术研究所的宗成庆教授正在教授自然语言处理课程");
         System.out.println("NLP分词：");

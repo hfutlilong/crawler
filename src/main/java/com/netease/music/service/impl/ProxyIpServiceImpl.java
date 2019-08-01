@@ -1,6 +1,5 @@
 package com.netease.music.service.impl;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.netease.kaola.cs.utils.IpUtil;
 import com.netease.music.common.constant.CrawlerConstant;
 import com.netease.music.common.log.LogConstant;
@@ -21,7 +20,6 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import sun.rmi.runtime.Log;
 
 import java.io.IOException;
 import java.util.*;
@@ -29,8 +27,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @Description 上网代理
