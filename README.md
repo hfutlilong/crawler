@@ -9,7 +9,7 @@
 
 ## 二、结果展示 ##
 ### 1. 演唱关系 ###
-![演唱关系](http://nethard.pro/images/neo4j/singer_song_rel.svg)
+[http://nethard.pro/images/neo4j/singer_song_rel.svg](http://nethard.pro/images/neo4j/singer_song_rel.svg "演唱关系")
 
 ### 2. 评论关键词 ###
-![评论关键词](http://nethard.pro/images/neo4j/comment_keyword.svg)
+[http://nethard.pro/images/neo4j/comment_keyword.svg](http://nethard.pro/images/neo4j/comment_keyword.svg "评论关键词")
